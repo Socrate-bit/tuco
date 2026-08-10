@@ -34,13 +34,13 @@ class HomeHeader extends StatelessWidget {
       child: Stack(
         fit: StackFit.expand,
         children: [
-          // Radial navy gradient behind/around the robot image.
+          // Radial navy gradient matching the robot image's top edge.
           const DecoratedBox(
             decoration: BoxDecoration(
               gradient: RadialGradient(
-                center: Alignment(0, 0.55),
-                radius: 1.15,
-                colors: [AppColors.headerCenter, AppColors.headerEdge],
+                center: Alignment(0, 1.0),
+                radius: 1.5,
+                colors: [Color(0xFF33507F), Color(0xFF2B3D5F)],
               ),
             ),
           ),

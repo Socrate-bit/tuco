@@ -7,6 +7,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'app/app_shell.dart';
 import 'core/l10n/app_localizations.dart';
+import 'firebase_options.dart';
 import 'core/service/analytics_service.dart';
 import 'core/service/data_repository.dart';
 import 'core/theme/app_theme.dart';
@@ -22,7 +23,8 @@ Future<void> main() async {
   // Firebase is optional until the project is configured (flutterfire configure).
   var firebaseReady = false;
   try {
-    await Firebase.initializeApp();
+    await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform);
     await FirebaseAuth.instance.signInAnonymously();
     firebaseReady = true;
     debugPrint('[Main] Firebase initialized, anonymous session ready');
