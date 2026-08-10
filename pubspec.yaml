@@ -9,6 +9,52 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_bloc: ^9.1.1
+  equatable: ^2.0.8
+  flutter_native_splash: ^2.4.7
+  flutter_launcher_icons: ^0.14.4
+
+  ## TEST
+  mocktail: ^1.0.5
+  bloc_test: ^10.0.0
+
+  ## AUTH
+  firebase_auth: ^6.3.0
+  google_sign_in: ^7.2.0
+  sign_in_with_apple: ^8.1.0
+
+  ## LOCALIZATION
+  flutter_localizations:
+    sdk: flutter
+  intl: ^0.20.2
+
+  ## STORAGE
+  firebase_core: ^4.6.0
+  cloud_firestore: ^6.2.0
+
+  ## SUBSCRIPTION + ANALYTICS
+  superwallkit_flutter: ^2.4.11
+  mixpanel_flutter: ^2.9.0
+  mixpanel_flutter_session_replay: ^1.1.1
+
+  ## UI / UX
+  flutter_screenutil: ^5.9.3
+  uuid: ^4.5.1
+  crypto: ^3.0.7
+  confetti: ^0.8.0
+  url_launcher: ^6.3.1
+  in_app_review: ^2.0.11
+  time_picker_spinner: ^1.0.2
+  signature: ^6.3.0
+
+  ## FEATURES
+  firebase_ai: ^3.11.0
+  speech_to_text: ^7.3.0
+  camera: ^0.12.0+2
+  liquid_glass_widgets: ^0.29.4
+  flutter_local_notifications: ^22.1.0
+  timezone: ^0.11.1
+  flutter_timezone: ^5.1.0
 
 dev_dependencies:
   flutter_test:
