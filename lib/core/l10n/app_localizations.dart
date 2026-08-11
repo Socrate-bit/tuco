@@ -125,7 +125,7 @@ abstract class AppLocalizations {
   /// No description provided for @exchange.
   ///
   /// In fr, this message translates to:
-  /// **'Échange'**
+  /// **'Appeler'**
   String get exchange;
 
   /// No description provided for @levelBeginner.

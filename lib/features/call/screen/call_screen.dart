@@ -10,6 +10,7 @@ import '../../../core/theme/app_theme.dart';
 import '../../../core/widget/common_widgets.dart';
 import '../../curriculum/model/curriculum_models.dart';
 import '../../feedback/cubit/feedback_cubit.dart';
+import '../../game/cubit/game_cubit.dart';
 import '../../profile/cubit/profile_cubit.dart';
 import '../../progression/cubit/stats_cubit.dart';
 import '../cubit/call_cubit.dart';
@@ -352,7 +353,7 @@ class _CallViewState extends State<_CallView> {
   }
 }
 
-/// Dark header: robot image, close, TTS speed, phase stepper, expand.
+/// Dark header: pet animation, close, TTS speed, phase stepper, expand.
 class _CallHeader extends StatelessWidget {
   final Lesson? lesson;
   final CallPhase phase;
@@ -385,12 +386,14 @@ class _CallHeader extends StatelessWidget {
               ),
             ),
           ),
+          // The pet animation follows its mood (heart count), matching home.
           Align(
-            alignment: Alignment.bottomCenter,
+            alignment: const Alignment(0, 0.9),
             child: Image.asset(
-              'assets/images/robot_header.png',
-              width: 1.sw,
-              fit: BoxFit.fitWidth,
+              context.watch<GameCubit>().state.petAsset,
+              width: 0.5.sw,
+              height: 0.5.sw,
+              fit: BoxFit.contain,
             ),
           ),
           SafeArea(

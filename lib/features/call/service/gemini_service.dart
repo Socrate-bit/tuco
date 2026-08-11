@@ -45,8 +45,8 @@ class GeminiService {
       };
 
   GenerativeModel _model({String? systemPrompt, bool json = false}) =>
-      FirebaseAI.googleAI().generativeModel(
-        model: 'gemini-2.5-flash',
+      FirebaseAI.agentPlatform().generativeModel(
+        model: 'gemini-3.5-flash-lite',
         systemInstruction:
             systemPrompt != null ? Content.system(systemPrompt) : null,
         generationConfig: GenerationConfig(

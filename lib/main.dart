@@ -1,5 +1,7 @@
+import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -27,9 +29,17 @@ Future<void> main() async {
   try {
     await Firebase.initializeApp(
         options: DefaultFirebaseOptions.currentPlatform);
+    // App Check protects the Firebase AI Logic (Gemini) backend. Debug builds use
+    // the debug provider (register the printed token in the console); release
+    // builds attest with App Attest. Must run before any protected Firebase call.
+    await FirebaseAppCheck.instance.activate(
+      providerApple: kDebugMode
+          ? const AppleDebugProvider()
+          : const AppleAppAttestProvider(),
+    );
     await FirebaseAuth.instance.signInAnonymously();
     firebaseReady = true;
-    debugPrint('[Main] Firebase initialized, anonymous session ready');
+    debugPrint('[Main] Firebase initialized, App Check active, anonymous session ready');
   } catch (e) {
     debugPrint('[Main] Firebase unavailable, using in-memory store: $e');
   }

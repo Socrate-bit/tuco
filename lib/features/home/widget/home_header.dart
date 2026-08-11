@@ -12,7 +12,7 @@ import '../../game/widget/shop_sheet.dart';
 import '../../progression/cubit/stats_cubit.dart';
 
 /// Home header: the pet on its meadow, name + hearts top-left, streak pill
-/// top-right (swapped for the coin balance while the shop is open), Échange
+/// top-right (swapped for the coin balance while the shop is open), Appeler
 /// bottom-left and the shop button bottom-right.
 class HomeHeader extends StatelessWidget {
   final VoidCallback onStreakTap;
@@ -120,28 +120,45 @@ class HomeHeader extends StatelessWidget {
                   const Spacer(),
                   Row(
                     children: [
-                      // "Échange" free-conversation button (now bottom-left).
+                      // "Appeler" free-conversation call button (bottom-left).
                       GestureDetector(
                         onTap: () {
                           Haptics.impact();
                           onExchangeTap();
                         },
                         child: Container(
-                          height: 52.h,
+                          height: 48.h,
                           padding: EdgeInsets.symmetric(horizontal: 22.w),
                           decoration: BoxDecoration(
-                            color: AppColors.primary,
+                            gradient: LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: [AppColors.primary, AppColors.primaryDark],
+                            ),
                             borderRadius: BorderRadius.circular(26.r),
+                            border: Border.all(
+                                color: AppColors.whiteTranslucent, width: 1.5),
                             boxShadow: [
                               BoxShadow(
-                                  color: AppColors.primaryDark,
-                                  offset: Offset(0, 3.h)),
+                                color: AppColors.primaryDark,
+                                blurRadius: 12.r,
+                                offset: Offset(0, 4.h),
+                              ),
                             ],
                           ),
                           child: Row(
                             children: [
-                              Icon(Icons.videocam_rounded,
-                                  color: Colors.white, size: 24.r),
+                              // White circular badge holding the call glyph.
+                              Container(
+                                width: 24.r,
+                                height: 24.r,
+                                decoration: const BoxDecoration(
+                                  color: Colors.white,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Icon(Icons.call_rounded,
+                                    color: AppColors.primary, size: 16.r),
+                              ),
                               SizedBox(width: 10.w),
                               Text(l10n.exchange, style: AppTextStyles.button),
                             ],
@@ -149,7 +166,7 @@ class HomeHeader extends StatelessWidget {
                         ),
                       ),
                       const Spacer(),
-                      // Shop button (bottom-right, where Échange used to be).
+                      // Shop button (bottom-right, where the call button used to be).
                       GestureDetector(
                         onTap: () {
                           Haptics.tap();

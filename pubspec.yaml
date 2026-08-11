@@ -33,7 +33,7 @@ dependencies:
   cloud_firestore: ^6.2.0
 
   ## SUBSCRIPTION + ANALYTICS
-  superwallkit_flutter: ^2.4.11
+  # superwallkit_flutter: ^2.4.11
   mixpanel_flutter: ^2.9.0
   mixpanel_flutter_session_replay: ^1.1.1
 
@@ -49,6 +49,7 @@ dependencies:
 
   ## FEATURES
   firebase_ai: ^3.11.0
+  firebase_app_check: ^0.4.6 # App Check token required by Firebase AI Logic
   speech_to_text: ^7.3.0
   flutter_tts: ^4.2.2
   google_fonts: ^6.2.1

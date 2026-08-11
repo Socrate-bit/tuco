@@ -21,7 +21,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tabProfile => 'Profile';
 
   @override
-  String get exchange => 'Exchange';
+  String get exchange => 'Call';
 
   @override
   String get levelBeginner => 'Beginner';
