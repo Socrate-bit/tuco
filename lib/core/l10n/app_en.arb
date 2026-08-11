@@ -60,8 +60,12 @@
   "scoreLabel": "Score: {score} | {label}",
   "@scoreLabel": {
     "placeholders": {
-      "score": {"type": "int"},
-      "label": {"type": "String"}
+      "score": {
+        "type": "int"
+      },
+      "label": {
+        "type": "String"
+      }
     }
   },
   "noErrorsHere": "No errors here! You can tap the feedback button in the lesson to check your mistakes.",
@@ -76,7 +80,9 @@
   "minPerDay": "{minutes} min/day",
   "@minPerDay": {
     "placeholders": {
-      "minutes": {"type": "int"}
+      "minutes": {
+        "type": "int"
+      }
     }
   },
   "save": "Save",
@@ -89,7 +95,9 @@
   "skipLessonBody": "Following your personalized path will boost your {language}, but you can choose to jump straight to this exercise if you wish.",
   "@skipLessonBody": {
     "placeholders": {
-      "language": {"type": "String"}
+      "language": {
+        "type": "String"
+      }
     }
   },
   "followPath": "Follow the path",
@@ -105,13 +113,17 @@
   "wordsChip": "{count} Words",
   "@wordsChip": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int"
+      }
     }
   },
   "grammarChip": "{count} Grammar",
   "@grammarChip": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int"
+      }
     }
   },
   "languageFrench": "Français",
@@ -129,5 +141,12 @@
   "interestMusic": "Music",
   "interestMovies": "Movies",
   "interestArt": "Art",
-  "interestBusiness": "Business"
+  "interestBusiness": "Business",
+  "petName": "Tuco",
+  "shopComingSoon": "Coming soon",
+  "shopCtaBackground": "Change background",
+  "shopCtaHat": "Buy new hat",
+  "shopCtaGlass": "Buy new glasses",
+  "shopCtaScarf": "Buy new scarf",
+  "shopCtaColor": "Change color"
 }

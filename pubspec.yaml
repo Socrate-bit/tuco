@@ -68,3 +68,16 @@ flutter:
   generate: true
   assets:
     - assets/images/
+    - assets/images/game/
+    - assets/images/game/shop_tab/
+
+flutter_launcher_icons:
+  android: false
+  ios: true
+  image_path: "assets/app_icon.png"
+
+flutter_native_splash:
+  color: "#FFFFFF"
+  image: assets/logo.png
+  android: false
+  ios: true

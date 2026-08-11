@@ -33,7 +33,7 @@ class ProgressionScreen extends StatelessWidget {
       backgroundColor: AppColors.background,
       body: SafeArea(
         child: ListView(
-          padding: EdgeInsets.fromLTRB(20.w, 20.h, 20.w, 24.h),
+          padding: EdgeInsets.fromLTRB(20.w, 20.h, 20.w, 130.h),
           children: [
             // ---- Centre de feedback ----
             Text(l10n.feedbackCenter, style: AppTextStyles.sectionTitle),

@@ -7,10 +7,13 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'app/app_shell.dart';
 import 'core/l10n/app_localizations.dart';
+import 'firebase_options.dart';
 import 'core/service/analytics_service.dart';
 import 'core/service/data_repository.dart';
 import 'core/theme/app_theme.dart';
 import 'features/feedback/cubit/feedback_cubit.dart';
+import 'features/game/cubit/game_cubit.dart';
+import 'features/game/cubit/shop_cubit.dart';
 import 'features/home/cubit/path_cubit.dart';
 import 'features/profile/cubit/profile_cubit.dart';
 import 'features/progression/cubit/stats_cubit.dart';
@@ -22,7 +25,8 @@ Future<void> main() async {
   // Firebase is optional until the project is configured (flutterfire configure).
   var firebaseReady = false;
   try {
-    await Firebase.initializeApp();
+    await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform);
     await FirebaseAuth.instance.signInAnonymously();
     firebaseReady = true;
     debugPrint('[Main] Firebase initialized, anonymous session ready');
@@ -63,6 +67,8 @@ class LearnaApp extends StatelessWidget {
           BlocProvider(create: (_) => StatsCubit(repository)),
           BlocProvider(create: (_) => VocabCubit(repository)),
           BlocProvider(create: (_) => FeedbackCubit(repository)),
+          BlocProvider(create: (_) => GameCubit(repository)),
+          BlocProvider(create: (_) => ShopCubit()),
         ],
         child: ScreenUtilInit(
           designSize: const Size(414, 896),

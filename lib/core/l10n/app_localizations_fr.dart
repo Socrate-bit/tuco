@@ -336,4 +336,25 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get interestBusiness => 'Business';
+
+  @override
+  String get petName => 'Tuco';
+
+  @override
+  String get shopComingSoon => 'Bientôt disponible';
+
+  @override
+  String get shopCtaBackground => 'Changer le décor';
+
+  @override
+  String get shopCtaHat => 'Acheter un chapeau';
+
+  @override
+  String get shopCtaGlass => 'Acheter des lunettes';
+
+  @override
+  String get shopCtaScarf => 'Acheter une écharpe';
+
+  @override
+  String get shopCtaColor => 'Changer la couleur';
 }

@@ -4,6 +4,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 
+import '../../features/game/model/game_profile.dart';
+import '../../features/game/service/heart_service.dart';
 import '../model/models.dart';
 
 /// Central persistence layer. Uses Firestore streams when Firebase is
@@ -215,6 +217,93 @@ class DataRepository {
       debugPrint('[DataRepository] Lesson completed: $lessonId');
     } catch (e) {
       debugPrint('[DataRepository] markLessonCompleted error: $e');
+    }
+  }
+
+  // ---------------- Game profile (pet hearts + coins) ----------------
+
+  GameProfile _game = const GameProfile();
+  final _gameCtrl = StreamController<GameProfile>.broadcast();
+
+  DocumentReference<Map<String, dynamic>> get _gameDoc =>
+      _userDoc.collection('meta').doc('game');
+
+  Stream<GameProfile> gameProfileStream() {
+    if (_useFirestore) {
+      return _gameDoc.snapshots().map((doc) => doc.data() == null
+          ? const GameProfile()
+          : GameProfile.fromMap(doc.data()!));
+    }
+    return _seeded(_gameCtrl, () => _game);
+  }
+
+  /// Awards a completed lesson: +[coins] and hearts restored
+  /// (+[kHeartRestorePerAction], capped), re-basing the decay anchor.
+  Future<void> awardLessonCompletion({int coins = kCoinsPerLesson}) async {
+    final nowMs = DateTime.now().millisecondsSinceEpoch;
+    try {
+      if (_useFirestore) {
+        await FirebaseFirestore.instance.runTransaction((tx) async {
+          final snap = await tx.get(_gameDoc);
+          final profile = snap.exists && snap.data() != null
+              ? GameProfile.fromMap(snap.data()!)
+              : const GameProfile();
+          final hs =
+              HeartService.restore(profile.hearts, profile.heartsUpdatedAt, nowMs);
+          tx.set(
+              _gameDoc,
+              profile
+                  .copyWith(
+                      coins: profile.coins + coins,
+                      hearts: hs.hearts,
+                      heartsUpdatedAt: hs.anchorMs)
+                  .toMap());
+        });
+      } else {
+        final hs = HeartService.restore(_game.hearts, _game.heartsUpdatedAt, nowMs);
+        _game = _game.copyWith(
+            coins: _game.coins + coins,
+            hearts: hs.hearts,
+            heartsUpdatedAt: hs.anchorMs);
+        _gameCtrl.add(_game);
+      }
+      debugPrint('[DataRepository] Lesson awarded: +$coins coins, hearts restored');
+    } catch (e) {
+      debugPrint('[DataRepository] awardLessonCompletion error: $e');
+    }
+  }
+
+  /// Persists settled heart decay when whole steps have elapsed. Cheap to call
+  /// periodically — writes only when the settled value differs.
+  Future<void> settleHearts() async {
+    final nowMs = DateTime.now().millisecondsSinceEpoch;
+    try {
+      if (_useFirestore) {
+        await FirebaseFirestore.instance.runTransaction((tx) async {
+          final snap = await tx.get(_gameDoc);
+          if (!snap.exists || snap.data() == null) return;
+          final profile = GameProfile.fromMap(snap.data()!);
+          final hs =
+              HeartService.settle(profile.hearts, profile.heartsUpdatedAt, nowMs);
+          if (hs.hearts == profile.hearts &&
+              hs.anchorMs == profile.heartsUpdatedAt) {
+            return;
+          }
+          tx.set(
+              _gameDoc,
+              profile
+                  .copyWith(hearts: hs.hearts, heartsUpdatedAt: hs.anchorMs)
+                  .toMap());
+        });
+      } else {
+        final hs = HeartService.settle(_game.hearts, _game.heartsUpdatedAt, nowMs);
+        if (hs.hearts != _game.hearts || hs.anchorMs != _game.heartsUpdatedAt) {
+          _game = _game.copyWith(hearts: hs.hearts, heartsUpdatedAt: hs.anchorMs);
+          _gameCtrl.add(_game);
+        }
+      }
+    } catch (e) {
+      debugPrint('[DataRepository] settleHearts error: $e');
     }
   }
 

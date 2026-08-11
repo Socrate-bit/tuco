@@ -339,6 +339,7 @@ class CallCubit extends Cubit<CallState> {
     await _repo.recordPractice(
         addSeconds: state.elapsedSeconds, lessonCompleted: true);
     await _repo.markLessonCompleted(lesson!.id);
+    await _repo.awardLessonCompletion();
     await _repo.deleteSession(lesson!.id);
     debugPrint('[CallCubit] Lesson ${lesson!.id} completed');
     emit(state.copyWith(finished: true));

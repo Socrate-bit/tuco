@@ -379,9 +379,9 @@ class _CallHeader extends StatelessWidget {
           const DecoratedBox(
             decoration: BoxDecoration(
               gradient: RadialGradient(
-                center: Alignment(0, 0.4),
-                radius: 1.1,
-                colors: [AppColors.headerCenter, AppColors.headerEdge],
+                center: Alignment(0, 1.0),
+                radius: 1.5,
+                colors: [Color(0xFF33507F), Color(0xFF2B3D5F)],
               ),
             ),
           ),

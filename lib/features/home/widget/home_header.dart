@@ -5,55 +5,52 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../core/l10n/app_localizations.dart';
 import '../../../core/service/haptics.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../game/cubit/game_cubit.dart';
+import '../../game/cubit/shop_cubit.dart';
+import '../../game/service/heart_service.dart';
+import '../../game/widget/shop_sheet.dart';
 import '../../progression/cubit/stats_cubit.dart';
 
-/// Fixed dark header with the robot tutor, language pill, streak pill and
-/// the "Échange" (free conversation) button.
+/// Home header: the pet on its meadow, name + hearts top-left, streak pill
+/// top-right (swapped for the coin balance while the shop is open), Échange
+/// bottom-left and the shop button bottom-right.
 class HomeHeader extends StatelessWidget {
   final VoidCallback onStreakTap;
   final VoidCallback onExchangeTap;
-  final VoidCallback onLanguageTap;
 
   const HomeHeader({
     super.key,
     required this.onStreakTap,
     required this.onExchangeTap,
-    required this.onLanguageTap,
   });
-
-  static double height(BuildContext context) =>
-      278.h + MediaQuery.of(context).padding.top * 0;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final streak = context.watch<StatsCubit>().state.currentStreak;
+    final game = context.watch<GameCubit>().state;
 
     return SizedBox(
       height: 278.h,
       child: Stack(
         fit: StackFit.expand,
         children: [
-          // Radial navy gradient behind/around the robot image.
-          const DecoratedBox(
-            decoration: BoxDecoration(
-              gradient: RadialGradient(
-                center: Alignment(0, 0.55),
-                radius: 1.15,
-                colors: [AppColors.headerCenter, AppColors.headerEdge],
-              ),
-            ),
+          // Meadow background, framed on the stump/lake band.
+          Image.asset(
+            'assets/images/game/pet_background.png',
+            fit: BoxFit.cover,
+            alignment: const Alignment(0, -0.45),
           ),
-          // Robot image anchored to the bottom, full width.
+          // The pet, sitting above its stump — animation follows its mood.
           Align(
-            alignment: Alignment.bottomCenter,
+            alignment: const Alignment(0, 0.55),
             child: Image.asset(
-              'assets/images/robot_header.png',
-              width: 1.sw,
-              fit: BoxFit.fitWidth,
+              game.petAsset,
+              width: 0.42.sw,
+              height: 0.42.sw,
+              fit: BoxFit.contain,
             ),
           ),
-          // Overlaid controls.
           SafeArea(
             bottom: false,
             child: Padding(
@@ -62,41 +59,68 @@ class HomeHeader extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _HeaderPill(
-                        onTap: onLanguageTap,
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text('🇪🇸', style: TextStyle(fontSize: 20.sp)),
-                            SizedBox(width: 8.w),
-                            Text('ES',
-                                style: AppTextStyles.button
-                                    .copyWith(fontSize: 17.sp)),
-                          ],
-                        ),
+                      // Pet name + hearts row.
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            l10n.petName,
+                            style: AppTextStyles.button.copyWith(
+                              fontSize: 26.sp,
+                              shadows: const [
+                                Shadow(
+                                  color: Color(0x40000000),
+                                  blurRadius: 4,
+                                  offset: Offset(0, 1),
+                                ),
+                              ],
+                            ),
+                          ),
+                          SizedBox(height: 4.h),
+                          Row(
+                            children: [
+                              for (var i = 0; i < kHeartMax; i++)
+                                Padding(
+                                  padding: EdgeInsets.only(right: 4.w),
+                                  child: Image.asset(
+                                    i < game.hearts
+                                        ? 'assets/images/game/heart_icon.png'
+                                        : 'assets/images/game/heartempty_icon.png',
+                                    width: 28.w,
+                                    height: 28.w,
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ],
                       ),
-                      _HeaderPill(
-                        onTap: onStreakTap,
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text('🔥', style: TextStyle(fontSize: 18.sp)),
-                            SizedBox(width: 6.w),
-                            Text('$streak',
-                                style: AppTextStyles.button
-                                    .copyWith(fontSize: 17.sp)),
-                          ],
-                        ),
+                      const Spacer(),
+                      // Streak count — live coin balance while the shop is open.
+                      BlocBuilder<ShopCubit, bool>(
+                        builder: (context, shopOpen) => shopOpen
+                            ? _BareCounter(
+                                onTap: () {},
+                                icon: Icon(Icons.monetization_on_rounded,
+                                    size: 26.r, color: AppColors.streakOrange),
+                                value: '${game.coins}',
+                              )
+                            : _BareCounter(
+                                onTap: onStreakTap,
+                                icon: Image.asset(
+                                    'assets/images/game/streak_icon.png',
+                                    width: 28.w,
+                                    height: 28.w),
+                                value: '$streak',
+                              ),
                       ),
                     ],
                   ),
                   const Spacer(),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      // "Échange" free-conversation button.
+                      // "Échange" free-conversation button (now bottom-left).
                       GestureDetector(
                         onTap: () {
                           Haptics.impact();
@@ -124,6 +148,19 @@ class HomeHeader extends StatelessWidget {
                           ),
                         ),
                       ),
+                      const Spacer(),
+                      // Shop button (bottom-right, where Échange used to be).
+                      GestureDetector(
+                        onTap: () {
+                          Haptics.tap();
+                          showShopSheet(context);
+                        },
+                        child: Image.asset(
+                          'assets/images/game/shop_icon.png',
+                          width: 52.w,
+                          height: 52.w,
+                        ),
+                      ),
                     ],
                   ),
                 ],
@@ -136,28 +173,49 @@ class HomeHeader extends StatelessWidget {
   }
 }
 
-/// Translucent white pill used on the dark header.
-class _HeaderPill extends StatelessWidget {
-  final Widget child;
+/// Bare icon + count (no card), with a soft shadow on the text so it stays
+/// readable on the bright meadow.
+class _BareCounter extends StatelessWidget {
+  final Widget icon;
+  final String value;
   final VoidCallback onTap;
 
-  const _HeaderPill({required this.child, required this.onTap});
+  const _BareCounter({
+    required this.icon,
+    required this.value,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
+      behavior: HitTestBehavior.opaque,
       onTap: () {
         Haptics.tap();
         onTap();
       },
-      child: Container(
-        height: 44.h,
-        padding: EdgeInsets.symmetric(horizontal: 16.w),
-        decoration: BoxDecoration(
-          color: AppColors.whiteTranslucent,
-          borderRadius: BorderRadius.circular(22.r),
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 8.h),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            icon,
+            SizedBox(width: 6.w),
+            Text(
+              value,
+              style: AppTextStyles.button.copyWith(
+                fontSize: 20.sp,
+                shadows: const [
+                  Shadow(
+                    color: Color(0x40000000),
+                    blurRadius: 4,
+                    offset: Offset(0, 1),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
-        child: Center(child: child),
       ),
     );
   }

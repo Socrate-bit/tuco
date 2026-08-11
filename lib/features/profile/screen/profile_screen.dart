@@ -192,9 +192,13 @@ class ProfileScreen extends StatelessWidget {
                           children: [
                             Text('🇪🇸', style: TextStyle(fontSize: 18.sp)),
                             SizedBox(width: 6.w),
-                            Text(languageLabel(profile.targetLanguage),
-                                style: AppTextStyles.itemSubtitle
-                                    .copyWith(fontSize: 19.sp)),
+                            Flexible(
+                              child: Text(languageLabel(profile.targetLanguage),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: AppTextStyles.itemSubtitle
+                                      .copyWith(fontSize: 19.sp)),
+                            ),
                           ],
                         ),
                         onTap: () async {
@@ -216,6 +220,8 @@ class ProfileScreen extends StatelessWidget {
                         emoji: '🇪🇸',
                         label: l10n.languageLevel,
                         value: Text(levelLabel(profile.level),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                             style: AppTextStyles.itemSubtitle
                                 .copyWith(fontSize: 19.sp)),
                         onTap: () async {
@@ -246,6 +252,8 @@ class ProfileScreen extends StatelessWidget {
                         emoji: '👶',
                         label: l10n.nativeLanguage,
                         value: Text(languageLabel(profile.nativeLanguage),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                             style: AppTextStyles.itemSubtitle
                                 .copyWith(fontSize: 19.sp)),
                         onTap: () async {
@@ -326,6 +334,8 @@ class ProfileScreen extends StatelessWidget {
                         emoji: '⛳',
                         label: l10n.dailyGoal,
                         value: Text(l10n.minPerDay(profile.dailyGoalMinutes),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                             style: AppTextStyles.itemSubtitle
                                 .copyWith(fontSize: 19.sp)),
                         onTap: () async {
@@ -352,6 +362,8 @@ class ProfileScreen extends StatelessWidget {
                         label: l10n.dailyReminder,
                         value: Text(
                           profile.reminderTime ?? l10n.disabled,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                           style: AppTextStyles.itemSubtitle
                               .copyWith(fontSize: 19.sp),
                         ),
@@ -362,7 +374,7 @@ class ProfileScreen extends StatelessWidget {
                 ),
               ),
             ),
-            SizedBox(height: 30.h),
+            SizedBox(height: 130.h),
           ],
         ),
       ),
@@ -454,10 +466,17 @@ class _SettingsRow extends StatelessWidget {
           children: [
             Text(emoji, style: TextStyle(fontSize: 22.sp)),
             SizedBox(width: 14.w),
-            Text(label,
-                style: AppTextStyles.itemTitle.copyWith(fontSize: 20.sp)),
-            const Spacer(),
-            Flexible(child: value),
+            Expanded(
+              child: Text(label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTextStyles.itemTitle.copyWith(fontSize: 20.sp)),
+            ),
+            SizedBox(width: 8.w),
+            ConstrainedBox(
+              constraints: BoxConstraints(maxWidth: 140.w),
+              child: value,
+            ),
             SizedBox(width: 6.w),
             Icon(Icons.chevron_right_rounded,
                 color: AppColors.textLightGrey, size: 26.r),

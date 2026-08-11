@@ -721,6 +721,48 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Business'**
   String get interestBusiness;
+
+  /// No description provided for @petName.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tuco'**
+  String get petName;
+
+  /// No description provided for @shopComingSoon.
+  ///
+  /// In fr, this message translates to:
+  /// **'Bientôt disponible'**
+  String get shopComingSoon;
+
+  /// No description provided for @shopCtaBackground.
+  ///
+  /// In fr, this message translates to:
+  /// **'Changer le décor'**
+  String get shopCtaBackground;
+
+  /// No description provided for @shopCtaHat.
+  ///
+  /// In fr, this message translates to:
+  /// **'Acheter un chapeau'**
+  String get shopCtaHat;
+
+  /// No description provided for @shopCtaGlass.
+  ///
+  /// In fr, this message translates to:
+  /// **'Acheter des lunettes'**
+  String get shopCtaGlass;
+
+  /// No description provided for @shopCtaScarf.
+  ///
+  /// In fr, this message translates to:
+  /// **'Acheter une écharpe'**
+  String get shopCtaScarf;
+
+  /// No description provided for @shopCtaColor.
+  ///
+  /// In fr, this message translates to:
+  /// **'Changer la couleur'**
+  String get shopCtaColor;
 }
 
 class _AppLocalizationsDelegate
