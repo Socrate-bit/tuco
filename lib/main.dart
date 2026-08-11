@@ -12,6 +12,8 @@ import 'core/service/analytics_service.dart';
 import 'core/service/data_repository.dart';
 import 'core/theme/app_theme.dart';
 import 'features/feedback/cubit/feedback_cubit.dart';
+import 'features/game/cubit/game_cubit.dart';
+import 'features/game/cubit/shop_cubit.dart';
 import 'features/home/cubit/path_cubit.dart';
 import 'features/profile/cubit/profile_cubit.dart';
 import 'features/progression/cubit/stats_cubit.dart';
@@ -65,6 +67,8 @@ class LearnaApp extends StatelessWidget {
           BlocProvider(create: (_) => StatsCubit(repository)),
           BlocProvider(create: (_) => VocabCubit(repository)),
           BlocProvider(create: (_) => FeedbackCubit(repository)),
+          BlocProvider(create: (_) => GameCubit(repository)),
+          BlocProvider(create: (_) => ShopCubit()),
         ],
         child: ScreenUtilInit(
           designSize: const Size(414, 896),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 
 import '../core/l10n/app_localizations.dart';
 import '../core/service/haptics.dart';
@@ -8,7 +9,8 @@ import '../features/home/screen/home_screen.dart';
 import '../features/profile/screen/profile_screen.dart';
 import '../features/progression/screen/progression_screen.dart';
 
-/// Root shell with the 3-tab bottom navigation (Accueil / Progression / Profil).
+/// Root shell with the floating liquid-glass bottom navigation
+/// (Accueil / Progression / Profil) — bar style ported from Elevate.
 class AppShell extends StatefulWidget {
   const AppShell({super.key});
 
@@ -23,6 +25,8 @@ class _AppShellState extends State<AppShell> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return Scaffold(
+      // Content scrolls behind the floating glass bar.
+      extendBody: true,
       body: IndexedStack(
         index: _index,
         children: const [
@@ -31,77 +35,53 @@ class _AppShellState extends State<AppShell> {
           ProfileScreen(),
         ],
       ),
-      bottomNavigationBar: Container(
-        decoration: const BoxDecoration(
-          color: AppColors.card,
-          border: Border(top: BorderSide(color: AppColors.divider, width: 1)),
-        ),
-        child: SafeArea(
-          top: false,
-          child: SizedBox(
-            height: 64.h,
-            child: Row(
-              children: [
-                _NavItem(
-                  icon: Icons.home_rounded,
-                  label: l10n.tabHome,
-                  selected: _index == 0,
-                  onTap: () => _select(0),
-                ),
-                _NavItem(
-                  icon: Icons.bar_chart_rounded,
-                  label: l10n.tabProgress,
-                  selected: _index == 1,
-                  onTap: () => _select(1),
-                ),
-                _NavItem(
-                  icon: Icons.person_rounded,
-                  label: l10n.tabProfile,
-                  selected: _index == 2,
-                  onTap: () => _select(2),
-                ),
-              ],
+      bottomNavigationBar: Padding(
+        padding: EdgeInsets.only(bottom: 16.h, left: 24.w, right: 24.w),
+        child: GlassTabBar.bottom(
+          tabs: [
+            GlassTab(
+              thickness: 1,
+              label: l10n.tabHome,
+              icon: const Icon(Icons.home_rounded),
             ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  void _select(int i) {
-    Haptics.select();
-    setState(() => _index = i);
-  }
-}
-
-class _NavItem extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final bool selected;
-  final VoidCallback onTap;
-
-  const _NavItem({
-    required this.icon,
-    required this.label,
-    required this.selected,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final color = selected ? AppColors.primary : AppColors.textLightGrey;
-    return Expanded(
-      child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onTap: onTap,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, color: color, size: 28.r),
-            SizedBox(height: 2.h),
-            Text(label,
-                style: AppTextStyles.small.copyWith(color: color)),
+            GlassTab(
+              label: l10n.tabProgress,
+              icon: const Icon(Icons.bar_chart_rounded),
+            ),
+            GlassTab(
+              label: l10n.tabProfile,
+              icon: const Icon(Icons.person_rounded),
+            ),
           ],
+          selectedIndex: _index,
+          onTabSelected: (i) {
+            Haptics.select();
+            setState(() => _index = i);
+          },
+          // Outer Padding owns the margins; let the bar fill the slot.
+          horizontalPadding: 0,
+          verticalPadding: 0,
+          barHeight: 80.h,
+          iconSize: 35.sp,
+          labelFontSize: 11.sp,
+          iconLabelSpacing: 1,
+          selectedIconColor: AppColors.primary,
+          unselectedIconColor: AppColors.textGrey,
+          indicatorColor: AppColors.primaryLight,
+          quality: GlassQuality.premium,
+          interactionBehavior: GlassInteractionBehavior.full,
+          settings: LiquidGlassSettings(
+            glassColor: Colors.white.withValues(alpha: 0.8),
+            thickness: 30,
+            blur: 2,
+            chromaticAberration: .01,
+            lightAngle: GlassDefaults.lightAngle,
+            lightIntensity: .5,
+            ambientStrength: 0,
+            refractiveIndex: 1.2,
+            saturation: 1.2,
+            specularSharpness: GlassSpecularSharpness.medium,
+          ),
         ),
       ),
     );

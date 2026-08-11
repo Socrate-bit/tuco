@@ -333,4 +333,25 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get interestBusiness => 'Business';
+
+  @override
+  String get petName => 'Tuco';
+
+  @override
+  String get shopComingSoon => 'Coming soon';
+
+  @override
+  String get shopCtaBackground => 'Change background';
+
+  @override
+  String get shopCtaHat => 'Buy new hat';
+
+  @override
+  String get shopCtaGlass => 'Buy new glasses';
+
+  @override
+  String get shopCtaScarf => 'Buy new scarf';
+
+  @override
+  String get shopCtaColor => 'Change color';
 }

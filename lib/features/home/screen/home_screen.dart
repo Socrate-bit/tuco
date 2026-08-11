@@ -65,12 +65,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     MaterialPageRoute(
                         builder: (_) => const StreakScreen())),
                 onExchangeTap: _startFreeConversation,
-                onLanguageTap: () {},
               ),
               Expanded(
                 child: ListView(
                   controller: _scrollCtrl,
-                  padding: EdgeInsets.only(bottom: 30.h),
+                  padding: EdgeInsets.only(bottom: 130.h),
                   children: [
                     for (final level in CurriculumData.levels)
                       LevelSection(
@@ -88,7 +87,7 @@ class _HomeScreenState extends State<HomeScreen> {
           if (_showScrollTop)
             Positioned(
               right: 20.w,
-              bottom: 24.h,
+              bottom: 120.h,
               child: GestureDetector(
                 onTap: () {
                   Haptics.tap();
