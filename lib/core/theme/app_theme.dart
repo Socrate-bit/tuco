@@ -47,7 +47,7 @@ abstract class AppColors {
   // Misc
   static const lockedNode = Color(0xFFB9BDC3);
   static const pathLine = Color(0xFFF3F4F4);
-  static const whiteTranslucent = Color(0x33FFFFFF); // pills on header
+  static const whiteTranslucent = Color(0x8CFFFFFF); // pills on header
   static const levelDivider = Color(0xFFB4C7D9); // "Débutant" section label
 }
 

@@ -173,8 +173,8 @@ class HomeHeader extends StatelessWidget {
   }
 }
 
-/// Bare icon + count (no card), with a soft shadow on the text so it stays
-/// readable on the bright meadow.
+/// Icon + count inside a translucent pill card so it reads clearly on the
+/// bright meadow.
 class _BareCounter extends StatelessWidget {
   final Widget icon;
   final String value;
@@ -194,8 +194,13 @@ class _BareCounter extends StatelessWidget {
         Haptics.tap();
         onTap();
       },
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 8.h),
+      child: Container(
+        height: 44.h,
+        padding: EdgeInsets.symmetric(horizontal: 14.w),
+        decoration: BoxDecoration(
+          color: AppColors.whiteTranslucent,
+          borderRadius: BorderRadius.circular(22.r),
+        ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -205,13 +210,7 @@ class _BareCounter extends StatelessWidget {
               value,
               style: AppTextStyles.button.copyWith(
                 fontSize: 20.sp,
-                shadows: const [
-                  Shadow(
-                    color: Color(0x40000000),
-                    blurRadius: 4,
-                    offset: Offset(0, 1),
-                  ),
-                ],
+                color: AppColors.titleDark,
               ),
             ),
           ],
