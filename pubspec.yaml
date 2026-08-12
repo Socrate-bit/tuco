@@ -39,6 +39,7 @@ dependencies:
 
   ## UI / UX
   flutter_screenutil: ^5.9.3
+  connectivity_plus: ^7.0.0
   uuid: ^4.5.1
   crypto: ^3.0.7
   confetti: ^0.8.0
@@ -52,6 +53,8 @@ dependencies:
   firebase_app_check: ^0.4.6 # App Check token required by Firebase AI Logic
   speech_to_text: ^7.3.0
   flutter_tts: ^4.2.2
+  cloud_functions: ^6.1.0
+  audioplayers: ^6.1.0
   google_fonts: ^6.2.1
   liquid_glass_widgets: ^0.29.4
   flutter_local_notifications: ^22.1.0
@@ -70,6 +73,7 @@ flutter:
     - assets/images/
     - assets/images/game/
     - assets/images/game/shop_tab/
+    - assets/images/streak_badges/
 
 flutter_launcher_icons:
   android: false

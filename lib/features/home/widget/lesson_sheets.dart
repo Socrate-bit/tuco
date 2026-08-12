@@ -98,14 +98,12 @@ class _LessonStartSheet extends StatelessWidget {
                       label: l10n.lessonExercise,
                       badgeColor: AppColors.green,
                       icon: Icons.spellcheck_rounded,
-                      onTap: () => Navigator.pop(context, 'lesson'),
                     ),
                     SizedBox(width: 18.w),
                     _ExerciseButton(
                       label: l10n.practiceExercise,
                       badgeColor: AppColors.purple,
                       icon: Icons.theater_comedy_rounded,
-                      onTap: () => Navigator.pop(context, 'practice'),
                     ),
                   ],
                 ),
@@ -137,7 +135,7 @@ class _LessonStartSheet extends StatelessWidget {
             padding: EdgeInsets.fromLTRB(24.w, 24.h, 24.w, 16.h),
             child: PrimaryButton(
               label: l10n.wellUnderstood,
-              onPressed: () => Navigator.pop(context),
+              onPressed: () => Navigator.pop(context, 'lesson'),
             ),
           ),
           SizedBox(height: MediaQuery.of(context).padding.bottom),
@@ -166,46 +164,40 @@ class _HeaderChip extends StatelessWidget {
   }
 }
 
+/// Display-only chip listing an exercise type (not tappable — the lesson is
+/// started with the primary button below).
 class _ExerciseButton extends StatelessWidget {
   final String label;
   final Color badgeColor;
   final IconData icon;
-  final VoidCallback onTap;
 
   const _ExerciseButton({
     required this.label,
     required this.badgeColor,
     required this.icon,
-    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        Haptics.impact();
-        onTap();
-      },
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 18.w, vertical: 12.h),
-        decoration: BoxDecoration(
-          border: Border.all(color: badgeColor, width: 1.5),
-          borderRadius: BorderRadius.circular(16.r),
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 40.r,
-              height: 40.r,
-              decoration:
-                  BoxDecoration(color: badgeColor, shape: BoxShape.circle),
-              child: Icon(icon, color: Colors.white, size: 22.r),
-            ),
-            SizedBox(width: 12.w),
-            Text(label,
-                style: AppTextStyles.itemTitle.copyWith(color: badgeColor)),
-          ],
-        ),
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 18.w, vertical: 12.h),
+      decoration: BoxDecoration(
+        border: Border.all(color: badgeColor, width: 1.5),
+        borderRadius: BorderRadius.circular(16.r),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 40.r,
+            height: 40.r,
+            decoration:
+                BoxDecoration(color: badgeColor, shape: BoxShape.circle),
+            child: Icon(icon, color: Colors.white, size: 22.r),
+          ),
+          SizedBox(width: 12.w),
+          Text(label,
+              style: AppTextStyles.itemTitle.copyWith(color: badgeColor)),
+        ],
       ),
     );
   }

@@ -5,8 +5,8 @@ import 'package:google_fonts/google_fonts.dart';
 /// Single source of truth for all colors used in the app.
 abstract class AppColors {
   // Brand / primary
-  static const primary = Color(0xFF3F9FFF); // bright azure (buttons, active tab)
-  static const primaryDark = Color(0xFF2D7FD6); // 3D button bottom edge
+  static const primary = Color.fromARGB(255, 250, 150, 0); // bright azure (buttons, active tab)
+  static const primaryDark = Color.fromARGB(255, 213, 128, 0); // 3D button bottom edge
   static const primaryLight = Color(0xFFDEEEFF); // light blue circles / user bubble
   static const navy = Color(0xFF0B4983); // titles & emphasised text
   static const textDark = Color(0xFF3A4254);
@@ -30,7 +30,7 @@ abstract class AppColors {
   // Accents
   static const streakOrange = Color(0xFFFF9E0D); // fire / streak
   static const streakCream = Color(0xFFFDF3DC); // streak page header bg
-  static const lessonRed = Color(0xFFF45B3D); // Saludos node / current lesson
+  static const lessonRed = Color(0xFFF45B3D); // first lesson node / current lesson
   static const teal = Color(0xFF17CDD8); // grammaire card, teal lessons
   static const green = Color(0xFF7BC537); // alternatives card, success
   static const purple = Color(0xFF9355D1); // entraînement banner

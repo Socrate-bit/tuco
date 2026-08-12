@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../core/l10n/app_localizations.dart';
 import '../../../core/service/haptics.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../settings/screen/settings_screen.dart';
 import '../cubit/profile_cubit.dart';
 import '../service/reminder_service.dart';
 import '../widget/picker_sheet.dart';
@@ -13,10 +14,11 @@ import '../widget/picker_sheet.dart';
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
-  static const _languageOptions = [
+  // Languages the app can teach in (explanations); the learning language
+  // itself is locked to Spanish.
+  static const _teachingLanguageOptions = [
     PickerOption(value: 'fr', label: 'Français', emoji: '🇫🇷'),
     PickerOption(value: 'ar', label: 'العربية', emoji: '🇸🇦'),
-    PickerOption(value: 'es', label: 'Español', emoji: '🇪🇸'),
     PickerOption(value: 'en', label: 'English', emoji: '🇬🇧'),
     PickerOption(value: 'tr', label: 'Türkçe', emoji: '🇹🇷'),
   ];
@@ -34,6 +36,15 @@ class ProfileScreen extends StatelessWidget {
           'tr' => 'Türkçe',
           'ar' => 'العربية',
           _ => code,
+        };
+
+    String languageFlag(String code) => switch (code) {
+          'fr' => '🇫🇷',
+          'es' => '🇪🇸',
+          'en' => '🇬🇧',
+          'tr' => '🇹🇷',
+          'ar' => '🇸🇦',
+          _ => '🌐',
         };
 
     String levelLabel(String level) => switch (level) {
@@ -133,44 +144,17 @@ class ProfileScreen extends StatelessWidget {
                     ),
                   ),
                   GestureDetector(
-                    onTap: () => Haptics.tap(),
+                    onTap: () {
+                      Haptics.tap();
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => const SettingsScreen()));
+                    },
                     child: Icon(Icons.settings_rounded,
-                        color: const Color(0xFF8A8F98), size: 32.r),
+                        color: AppColors.textGrey, size: 32.r),
                   ),
                 ],
-              ),
-            ),
-            SizedBox(height: 24.h),
-
-            // ---- Study in native language toggle ----
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.w),
-              child: Container(
-                padding:
-                    EdgeInsets.symmetric(horizontal: 20.w, vertical: 8.h),
-                decoration: BoxDecoration(
-                  color: AppColors.card,
-                  borderRadius: BorderRadius.circular(20.r),
-                ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Text(l10n.studyInNative,
-                          style: AppTextStyles.itemTitle
-                              .copyWith(fontSize: 19.sp)),
-                    ),
-                    Switch(
-                      value: profile.studyInNativeLanguage,
-                      activeThumbColor: Colors.white,
-                      activeTrackColor: AppColors.primary,
-                      onChanged: (v) {
-                        Haptics.select();
-                        cubit.update(
-                            profile.copyWith(studyInNativeLanguage: v));
-                      },
-                    ),
-                  ],
-                ),
               ),
             ),
             SizedBox(height: 24.h),
@@ -186,14 +170,15 @@ class ProfileScreen extends StatelessWidget {
                     children: [
                       _SettingsRow(
                         emoji: '🎯',
-                        label: l10n.targetLanguage,
+                        label: l10n.teachingLanguage,
                         value: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Text('🇪🇸', style: TextStyle(fontSize: 18.sp)),
+                            Text(languageFlag(profile.nativeLanguage),
+                                style: TextStyle(fontSize: 18.sp)),
                             SizedBox(width: 6.w),
                             Flexible(
-                              child: Text(languageLabel(profile.targetLanguage),
+                              child: Text(languageLabel(profile.nativeLanguage),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                   style: AppTextStyles.itemSubtitle
@@ -205,13 +190,13 @@ class ProfileScreen extends StatelessWidget {
                           final result = await showPickerSheet(
                             context,
                             emoji: '🎯',
-                            title: l10n.targetLanguage,
-                            options: _languageOptions,
-                            selected: [profile.targetLanguage],
+                            title: l10n.teachingLanguage,
+                            options: _teachingLanguageOptions,
+                            selected: [profile.nativeLanguage],
                           );
                           if (result != null && result.isNotEmpty) {
                             cubit.update(
-                                profile.copyWith(targetLanguage: result.first));
+                                profile.copyWith(nativeLanguage: result.first));
                           }
                         },
                       ),
@@ -244,29 +229,6 @@ class ProfileScreen extends StatelessWidget {
                           );
                           if (result != null && result.isNotEmpty) {
                             cubit.update(profile.copyWith(level: result.first));
-                          }
-                        },
-                      ),
-                      _divider(),
-                      _SettingsRow(
-                        emoji: '👶',
-                        label: l10n.nativeLanguage,
-                        value: Text(languageLabel(profile.nativeLanguage),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: AppTextStyles.itemSubtitle
-                                .copyWith(fontSize: 19.sp)),
-                        onTap: () async {
-                          final result = await showPickerSheet(
-                            context,
-                            emoji: '👶',
-                            title: l10n.nativeLanguage,
-                            options: _languageOptions,
-                            selected: [profile.nativeLanguage],
-                          );
-                          if (result != null && result.isNotEmpty) {
-                            cubit.update(
-                                profile.copyWith(nativeLanguage: result.first));
                           }
                         },
                       ),

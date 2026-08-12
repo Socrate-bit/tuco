@@ -185,13 +185,25 @@ class CallCubit extends Cubit<CallState> {
           role: MessageRole.ai, text: '', banner: 'courseDone'));
       _append(const ChatMessage(
           role: MessageRole.ai, text: '', banner: 'practice'));
-      emit(state.copyWith(phase: CallPhase.practice));
+      emit(state.copyWith(phase: CallPhase.practice, aiThinking: true));
+      _persistSession();
+      // Kick off the practice role-play without waiting for the learner.
+      _startPractice();
+      return;
     }
     if (practiceDone) {
       _finishLesson();
     }
     emit(state.copyWith(aiThinking: false));
     _persistSession();
+  }
+
+  /// Automatically opens the practice role-play once the lesson phase ends.
+  Future<void> _startPractice() async {
+    final reply = await _gemini.send(
+        '(The lesson is finished. Start the practice role-play now.)');
+    if (isClosed) return;
+    _handleAiReply(reply);
   }
 
   /// Learner sent a message (voice final result or typed text).

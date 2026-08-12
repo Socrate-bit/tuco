@@ -9,7 +9,7 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get appName => 'Learna';
+  String get appName => 'Tuco';
 
   @override
   String get tabHome => 'Home';
@@ -142,6 +142,101 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dailyStreak => 'Daily streak';
 
   @override
+  String nextMilestone(int days) {
+    return 'Next badge: $days days';
+  }
+
+  @override
+  String get allMilestonesEarned => 'All badges earned!';
+
+  @override
+  String get milestonesTitle => 'Streak badges';
+
+  @override
+  String milestonesEarnedCount(int earned, int total) {
+    return '$earned / $total badges earned';
+  }
+
+  @override
+  String milestoneDays(int days) {
+    return '$days days';
+  }
+
+  @override
+  String get badgeRisen => 'Risen';
+
+  @override
+  String get badgeIgnite => 'Ignite';
+
+  @override
+  String get badgeHorizon => 'Horizon';
+
+  @override
+  String get badgeAurora => 'Aurora';
+
+  @override
+  String get badgeCelestial => 'Celestial';
+
+  @override
+  String get badgeNebula => 'Nebula';
+
+  @override
+  String get badgeEternal => 'Eternal';
+
+  @override
+  String get settingsTitle => 'Settings';
+
+  @override
+  String get settingsAccount => 'ACCOUNT';
+
+  @override
+  String get settingsUserType => 'User type';
+
+  @override
+  String get settingsUserTypeFree => 'Free';
+
+  @override
+  String get settingsCopyUserId => 'Copy user ID';
+
+  @override
+  String get settingsUserIdCopied => 'User ID copied';
+
+  @override
+  String get settingsAbout => 'ABOUT';
+
+  @override
+  String get settingsPrivacyPolicy => 'Privacy policy';
+
+  @override
+  String get settingsTermsOfService => 'Terms of service';
+
+  @override
+  String get settingsDangerZone => 'DANGER ZONE';
+
+  @override
+  String get settingsDeleteAccount => 'Delete account';
+
+  @override
+  String get settingsDeleteAccountTitle => 'Delete account?';
+
+  @override
+  String get settingsDeleteAccountBody =>
+      'This will permanently delete all your data (progress, vocabulary, call history, streaks). This cannot be undone.';
+
+  @override
+  String get settingsDeleteAccountConfirm => 'Delete';
+
+  @override
+  String get settingsDeleteAccountCancel => 'Cancel';
+
+  @override
+  String get settingsDeleteAccountDone => 'Your account data has been deleted';
+
+  @override
+  String get settingsDeleteAccountError =>
+      'Could not delete your data. Please try again.';
+
+  @override
   String get callTimeTitle => 'Time spent on calls';
 
   @override
@@ -190,16 +285,13 @@ class AppLocalizationsEn extends AppLocalizations {
       'No errors here! You can tap the feedback button in the lesson to check your mistakes.';
 
   @override
-  String get studyInNative => 'Study in my native language';
+  String get learningLanguage => 'Learning language';
 
   @override
-  String get targetLanguage => 'Target language';
+  String get teachingLanguage => 'Teaching language';
 
   @override
   String get languageLevel => 'Language level';
-
-  @override
-  String get nativeLanguage => 'Native language';
 
   @override
   String get interests => 'Interests';
@@ -225,11 +317,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get more => 'More...';
 
   @override
-  String get reviewTitle => 'Thanks for using Learna!';
+  String get reviewTitle => 'Thanks for using Tuco!';
 
   @override
   String get reviewBody =>
-      'Do you like Learna? Leave us a rating, it helps us a lot!';
+      'Do you like Tuco? Leave us a rating, it helps us a lot!';
 
   @override
   String get letsGo => 'Let\'s go!';
@@ -309,6 +401,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get errorGeneric => 'Something went wrong. Please try again.';
+
+  @override
+  String get errorNoInternet =>
+      'No internet connection. Please connect and try again.';
 
   @override
   String get interestTechnology => 'Technology';

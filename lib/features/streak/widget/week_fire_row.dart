@@ -37,9 +37,13 @@ class WeekFireRow extends StatelessWidget {
             ),
             SizedBox(height: 10.h),
             practiced
-                ? Text('🔥', style: TextStyle(fontSize: 30.sp))
-                : Icon(Icons.local_fire_department_rounded,
-                    color: AppColors.divider, size: 34.r),
+                ? Image.asset('assets/images/streaks.png',
+                    width: 34.r, height: 34.r)
+                : Image.asset('assets/images/streaks.png',
+                    width: 34.r,
+                    height: 34.r,
+                    color: AppColors.divider,
+                    colorBlendMode: BlendMode.srcIn),
           ],
         );
       }),

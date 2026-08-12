@@ -9,13 +9,13 @@ import '../../../core/service/haptics.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widget/common_widgets.dart';
 import '../../curriculum/model/curriculum_models.dart';
-import '../../feedback/cubit/feedback_cubit.dart';
-import '../../game/cubit/game_cubit.dart';
 import '../../profile/cubit/profile_cubit.dart';
 import '../../progression/cubit/stats_cubit.dart';
 import '../cubit/call_cubit.dart';
 import '../widget/call_controls.dart';
 import '../widget/chat_bubbles.dart';
+import '../../feedback/cubit/feedback_cubit.dart';
+import '../widget/feedback_sheet.dart';
 import 'lesson_end_screen.dart';
 
 /// Arguments to open a call: lesson (null = free conversation), optional
@@ -66,6 +66,7 @@ class _CallViewState extends State<_CallView> {
   final _scrollCtrl = ScrollController();
   final _textCtrl = TextEditingController();
   bool _showScrollDown = false;
+  int _lastMessageCount = 0;
   late final bool _hadLessonToday;
 
   @override
@@ -104,8 +105,16 @@ class _CallViewState extends State<_CallView> {
   Widget build(BuildContext context) {
     return BlocConsumer<CallCubit, CallState>(
       listener: (context, state) {
-        // Auto-scroll on new messages.
-        WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToBottom());
+        // Auto-scroll only when a new message arrives and the user is already
+        // near the bottom — never yank the list down while they scroll up.
+        final newMessage = state.messages.length != _lastMessageCount;
+        _lastMessageCount = state.messages.length;
+        final nearBottom = !_scrollCtrl.hasClients ||
+            _scrollCtrl.position.extentAfter < 120;
+        if (newMessage && nearBottom) {
+          WidgetsBinding.instance
+              .addPostFrameCallback((_) => _scrollToBottom());
+        }
         if (state.finished && widget.lesson != null) {
           Navigator.of(context).pushReplacement(MaterialPageRoute(
             builder: (_) => LessonEndScreen(
@@ -166,8 +175,13 @@ class _CallViewState extends State<_CallView> {
                             ),
                           MessageRole.user => UserBubble(
                               message: msg,
+                              hasFeedback: context
+                                  .watch<FeedbackCubit>()
+                                  .state
+                                  .items
+                                  .any((f) => f.originalText == msg.text),
                               onFeedbackTap: () =>
-                                  _showFeedbackSheet(context, msg.text),
+                                  showFeedbackSheet(context, msg.text),
                             ),
                           MessageRole.inspiration =>
                             InspirationBubble(message: msg),
@@ -284,73 +298,6 @@ class _CallViewState extends State<_CallView> {
     }
   }
 
-  /// Feedback sheet for one user sentence (grammar corrections if any).
-  void _showFeedbackSheet(BuildContext context, String text) {
-    Haptics.tap();
-    final l10n = AppLocalizations.of(context)!;
-    final items = context
-        .read<FeedbackCubit>()
-        .state
-        .items
-        .where((f) => f.originalText == text)
-        .toList();
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: AppColors.card,
-      shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(28.r))),
-      builder: (_) => Padding(
-        padding: EdgeInsets.all(24.r),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (items.isEmpty)
-              Padding(
-                padding: EdgeInsets.symmetric(vertical: 30.h),
-                child: Center(
-                  child: Text(l10n.noErrorsHere,
-                      textAlign: TextAlign.center,
-                      style: AppTextStyles.bodyGrey),
-                ),
-              )
-            else
-              for (final item in items) ...[
-                for (final c in item.corrections) ...[
-                  Row(
-                    children: [
-                      Text('• ', style: AppTextStyles.body),
-                      Text(c.wrong,
-                          style: AppTextStyles.body.copyWith(
-                              decoration: TextDecoration.lineThrough,
-                              decorationColor: AppColors.scoreRed)),
-                      Text('  →  ', style: AppTextStyles.body),
-                      Container(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 10.w, vertical: 4.h),
-                        decoration: BoxDecoration(
-                          color: AppColors.scoreGreenBg,
-                          borderRadius: BorderRadius.circular(8.r),
-                        ),
-                        child: Text(c.right,
-                            style: AppTextStyles.body
-                                .copyWith(color: Colors.white)),
-                      ),
-                    ],
-                  ),
-                  if (c.explanation.isNotEmpty) ...[
-                    SizedBox(height: 8.h),
-                    Text(c.explanation, style: AppTextStyles.bodyGrey),
-                  ],
-                  SizedBox(height: 16.h),
-                ],
-              ],
-            SizedBox(height: MediaQuery.of(context).padding.bottom),
-          ],
-        ),
-      ),
-    );
-  }
 }
 
 /// Dark header: pet animation, close, TTS speed, phase stepper, expand.
@@ -386,11 +333,11 @@ class _CallHeader extends StatelessWidget {
               ),
             ),
           ),
-          // The pet animation follows its mood (heart count), matching home.
+          // Always the happy animation during a call, regardless of hearts.
           Align(
             alignment: const Alignment(0, 0.9),
             child: Image.asset(
-              context.watch<GameCubit>().state.petAsset,
+              'assets/images/game/pet_rest_animation.gif',
               width: 0.5.sw,
               height: 0.5.sw,
               fit: BoxFit.contain,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../../../core/cubit/connectivity_cubit.dart';
 import '../../../core/l10n/app_localizations.dart';
 import '../../../core/service/data_repository.dart';
 import '../../../core/service/haptics.dart';
@@ -113,7 +114,18 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  // Lessons and free practice need the network; blocks with an error when offline.
+  bool _checkInternet() {
+    if (context.read<ConnectivityCubit>().state.isOnline) return true;
+    Haptics.impact();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(AppLocalizations.of(context)!.errorNoInternet)),
+    );
+    return false;
+  }
+
   Future<void> _onLessonTap(Lesson lesson, PathState pathState) async {
+    if (!_checkInternet()) return;
     final l10n = AppLocalizations.of(context)!;
     final status = pathState.statusOf(lesson);
 
@@ -153,8 +165,10 @@ class _HomeScreenState extends State<HomeScreen> {
     ));
   }
 
-  void _startFreeConversation() =>
-      _startCall(const CallScreenArgs(lesson: null));
+  void _startFreeConversation() {
+    if (!_checkInternet()) return;
+    _startCall(const CallScreenArgs(lesson: null));
+  }
 
   void _startCall(CallScreenArgs args) {
     Navigator.push(

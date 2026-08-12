@@ -85,12 +85,14 @@ class UserBubble extends StatelessWidget {
   final ChatMessage message;
   final VoidCallback onFeedbackTap;
   final bool pending; // partial voice transcript
+  final bool hasFeedback; // corrections exist → show notification dot
 
   const UserBubble({
     super.key,
     required this.message,
     required this.onFeedbackTap,
     this.pending = false,
+    this.hasFeedback = false,
   });
 
   @override
@@ -105,16 +107,17 @@ class UserBubble extends StatelessWidget {
             child: Stack(
               children: [
                 Icon(Icons.sms_rounded, size: 20.r, color: AppColors.textGrey),
-                Positioned(
-                  right: 0,
-                  top: 0,
-                  child: Container(
-                    width: 8.r,
-                    height: 8.r,
-                    decoration: const BoxDecoration(
-                        color: AppColors.primary, shape: BoxShape.circle),
+                if (hasFeedback)
+                  Positioned(
+                    right: 0,
+                    top: 0,
+                    child: Container(
+                      width: 8.r,
+                      height: 8.r,
+                      decoration: const BoxDecoration(
+                          color: AppColors.primary, shape: BoxShape.circle),
+                    ),
                   ),
-                ),
               ],
             ),
           ),

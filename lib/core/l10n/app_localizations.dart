@@ -101,7 +101,7 @@ abstract class AppLocalizations {
   /// No description provided for @appName.
   ///
   /// In fr, this message translates to:
-  /// **'Learna'**
+  /// **'Tuco'**
   String get appName;
 
   /// No description provided for @tabHome.
@@ -362,6 +362,180 @@ abstract class AppLocalizations {
   /// **'Série quotidienne'**
   String get dailyStreak;
 
+  /// No description provided for @nextMilestone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Prochain badge : {days} jours'**
+  String nextMilestone(int days);
+
+  /// No description provided for @allMilestonesEarned.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tous les badges sont débloqués !'**
+  String get allMilestonesEarned;
+
+  /// No description provided for @milestonesTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Badges de série'**
+  String get milestonesTitle;
+
+  /// No description provided for @milestonesEarnedCount.
+  ///
+  /// In fr, this message translates to:
+  /// **'{earned} / {total} badges débloqués'**
+  String milestonesEarnedCount(int earned, int total);
+
+  /// No description provided for @milestoneDays.
+  ///
+  /// In fr, this message translates to:
+  /// **'{days} jours'**
+  String milestoneDays(int days);
+
+  /// No description provided for @badgeRisen.
+  ///
+  /// In fr, this message translates to:
+  /// **'Éveil'**
+  String get badgeRisen;
+
+  /// No description provided for @badgeIgnite.
+  ///
+  /// In fr, this message translates to:
+  /// **'Étincelle'**
+  String get badgeIgnite;
+
+  /// No description provided for @badgeHorizon.
+  ///
+  /// In fr, this message translates to:
+  /// **'Horizon'**
+  String get badgeHorizon;
+
+  /// No description provided for @badgeAurora.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aurore'**
+  String get badgeAurora;
+
+  /// No description provided for @badgeCelestial.
+  ///
+  /// In fr, this message translates to:
+  /// **'Céleste'**
+  String get badgeCelestial;
+
+  /// No description provided for @badgeNebula.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nébuleuse'**
+  String get badgeNebula;
+
+  /// No description provided for @badgeEternal.
+  ///
+  /// In fr, this message translates to:
+  /// **'Éternel'**
+  String get badgeEternal;
+
+  /// No description provided for @settingsTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Réglages'**
+  String get settingsTitle;
+
+  /// No description provided for @settingsAccount.
+  ///
+  /// In fr, this message translates to:
+  /// **'COMPTE'**
+  String get settingsAccount;
+
+  /// No description provided for @settingsUserType.
+  ///
+  /// In fr, this message translates to:
+  /// **'Type d\'utilisateur'**
+  String get settingsUserType;
+
+  /// No description provided for @settingsUserTypeFree.
+  ///
+  /// In fr, this message translates to:
+  /// **'Gratuit'**
+  String get settingsUserTypeFree;
+
+  /// No description provided for @settingsCopyUserId.
+  ///
+  /// In fr, this message translates to:
+  /// **'Copier l\'identifiant utilisateur'**
+  String get settingsCopyUserId;
+
+  /// No description provided for @settingsUserIdCopied.
+  ///
+  /// In fr, this message translates to:
+  /// **'Identifiant utilisateur copié'**
+  String get settingsUserIdCopied;
+
+  /// No description provided for @settingsAbout.
+  ///
+  /// In fr, this message translates to:
+  /// **'À PROPOS'**
+  String get settingsAbout;
+
+  /// No description provided for @settingsPrivacyPolicy.
+  ///
+  /// In fr, this message translates to:
+  /// **'Politique de confidentialité'**
+  String get settingsPrivacyPolicy;
+
+  /// No description provided for @settingsTermsOfService.
+  ///
+  /// In fr, this message translates to:
+  /// **'Conditions d\'utilisation'**
+  String get settingsTermsOfService;
+
+  /// No description provided for @settingsDangerZone.
+  ///
+  /// In fr, this message translates to:
+  /// **'ZONE DE DANGER'**
+  String get settingsDangerZone;
+
+  /// No description provided for @settingsDeleteAccount.
+  ///
+  /// In fr, this message translates to:
+  /// **'Supprimer le compte'**
+  String get settingsDeleteAccount;
+
+  /// No description provided for @settingsDeleteAccountTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Supprimer le compte ?'**
+  String get settingsDeleteAccountTitle;
+
+  /// No description provided for @settingsDeleteAccountBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Toutes vos données seront définitivement supprimées (progression, vocabulaire, historique d\'appels, séries). Cette action est irréversible.'**
+  String get settingsDeleteAccountBody;
+
+  /// No description provided for @settingsDeleteAccountConfirm.
+  ///
+  /// In fr, this message translates to:
+  /// **'Supprimer'**
+  String get settingsDeleteAccountConfirm;
+
+  /// No description provided for @settingsDeleteAccountCancel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Annuler'**
+  String get settingsDeleteAccountCancel;
+
+  /// No description provided for @settingsDeleteAccountDone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les données de votre compte ont été supprimées'**
+  String get settingsDeleteAccountDone;
+
+  /// No description provided for @settingsDeleteAccountError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible de supprimer vos données. Veuillez réessayer.'**
+  String get settingsDeleteAccountError;
+
   /// No description provided for @callTimeTitle.
   ///
   /// In fr, this message translates to:
@@ -452,29 +626,23 @@ abstract class AppLocalizations {
   /// **'Pas d\'erreurs ici ! Vous pouvez appuyer sur le bouton de commentaires dans la leçon pour vérifier vos erreurs.'**
   String get noErrorsHere;
 
-  /// No description provided for @studyInNative.
+  /// No description provided for @learningLanguage.
   ///
   /// In fr, this message translates to:
-  /// **'Étudier dans ma langue maternelle'**
-  String get studyInNative;
+  /// **'Langue d\'apprentissage'**
+  String get learningLanguage;
 
-  /// No description provided for @targetLanguage.
+  /// No description provided for @teachingLanguage.
   ///
   /// In fr, this message translates to:
-  /// **'Langue cible'**
-  String get targetLanguage;
+  /// **'Langue d\'enseignement'**
+  String get teachingLanguage;
 
   /// No description provided for @languageLevel.
   ///
   /// In fr, this message translates to:
   /// **'Niveau de langue'**
   String get languageLevel;
-
-  /// No description provided for @nativeLanguage.
-  ///
-  /// In fr, this message translates to:
-  /// **'Langue maternelle'**
-  String get nativeLanguage;
 
   /// No description provided for @interests.
   ///
@@ -521,13 +689,13 @@ abstract class AppLocalizations {
   /// No description provided for @reviewTitle.
   ///
   /// In fr, this message translates to:
-  /// **'Merci d\'utiliser Learna !'**
+  /// **'Merci d\'utiliser Tuco !'**
   String get reviewTitle;
 
   /// No description provided for @reviewBody.
   ///
   /// In fr, this message translates to:
-  /// **'Vous aimez Learna ? Laissez-nous une note, ça nous aide beaucoup !'**
+  /// **'Vous aimez Tuco ? Laissez-nous une note, ça nous aide beaucoup !'**
   String get reviewBody;
 
   /// No description provided for @letsGo.
@@ -673,6 +841,12 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Une erreur est survenue. Veuillez réessayer.'**
   String get errorGeneric;
+
+  /// No description provided for @errorNoInternet.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pas de connexion Internet. Veuillez vous connecter et réessayer.'**
+  String get errorNoInternet;
 
   /// No description provided for @interestTechnology.
   ///

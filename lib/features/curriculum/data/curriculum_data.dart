@@ -15,7 +15,7 @@ abstract class CurriculumData {
       lessons: [
         Lesson(
           id: 'saludos',
-          title: 'Saludos',
+          title: '¡Hola Y Adiós!',
           description: 'Learn to greet people and say goodbye.',
           icon: 'wave',
           color: 0xFFF45B3D,
@@ -34,7 +34,7 @@ abstract class CurriculumData {
         ),
         Lesson(
           id: 'introducciones-1',
-          title: 'Introducciones I',
+          title: 'Primeros Encuentros I',
           description: 'Learn to introduce yourself in a basic way.',
           icon: 'flag',
           color: 0xFF16C4C4,
@@ -54,7 +54,7 @@ abstract class CurriculumData {
         ),
         Lesson(
           id: 'introducciones-2',
-          title: 'Introducciones II',
+          title: 'Primeros Encuentros II',
           description: 'Share more details about yourself and where you live.',
           icon: 'chat',
           color: 0xFFA159E5,
@@ -75,7 +75,7 @@ abstract class CurriculumData {
         ),
         Lesson(
           id: 'pedir-en-un-cafe',
-          title: 'Pedir En Un Café',
+          title: 'Un Café, Por Favor',
           description: 'Order drinks politely at a café.',
           icon: 'food',
           color: 0xFF6EC53E,
@@ -97,7 +97,7 @@ abstract class CurriculumData {
         ),
         Lesson(
           id: 'los-numeros',
-          title: 'Los Números',
+          title: 'Contar Hasta Diez',
           description: 'Count from one to ten in Spanish.',
           icon: 'numbers',
           color: 0xFFF2A93B,
@@ -119,7 +119,7 @@ abstract class CurriculumData {
         ),
         Lesson(
           id: 'la-familia',
-          title: 'La Familia',
+          title: 'En Familia',
           description: 'Talk about your close family members.',
           icon: 'family',
           color: 0xFF3F9FFF,
@@ -141,7 +141,7 @@ abstract class CurriculumData {
         ),
         Lesson(
           id: 'en-el-restaurante',
-          title: 'En El Restaurante',
+          title: 'A La Mesa',
           description: 'Order a full meal at a restaurant.',
           icon: 'restaurant',
           color: 0xFFFF6FA5,
@@ -163,7 +163,7 @@ abstract class CurriculumData {
         ),
         Lesson(
           id: 'direcciones',
-          title: 'Direcciones',
+          title: 'Encontrar El Camino',
           description: 'Ask for and understand simple directions.',
           icon: 'directions',
           color: 0xFF8A6FE8,
@@ -184,7 +184,7 @@ abstract class CurriculumData {
         ),
         Lesson(
           id: 'de-compras',
-          title: 'De Compras',
+          title: 'Ir De Tiendas',
           description: 'Shop for things and talk about prices.',
           icon: 'shopping',
           color: 0xFFF45B3D,
@@ -205,7 +205,7 @@ abstract class CurriculumData {
         ),
         Lesson(
           id: 'el-tiempo',
-          title: 'El Tiempo',
+          title: 'Qué Tiempo Hace',
           description: 'Describe the weather in any season.',
           icon: 'weather',
           color: 0xFF16C4C4,
@@ -226,7 +226,7 @@ abstract class CurriculumData {
         ),
         Lesson(
           id: 'mi-rutina-diaria',
-          title: 'Mi Rutina Diaria',
+          title: 'Un Día Normal',
           description: 'Describe your daily routine from morning to night.',
           icon: 'routine',
           color: 0xFFA159E5,
@@ -247,7 +247,7 @@ abstract class CurriculumData {
         ),
         Lesson(
           id: 'buenos-amigos',
-          title: 'Buenos amigos',
+          title: 'Entre Amigos',
           description: 'Talk about friendship and spending time together.',
           icon: 'friends',
           color: 0xFF6EC53E,
@@ -267,7 +267,7 @@ abstract class CurriculumData {
         ),
         Lesson(
           id: 'celebraciones-y-festivales',
-          title: 'Celebraciones y festivales',
+          title: 'Días De Fiesta',
           description: 'Celebrate birthdays, holidays and festivals.',
           icon: 'celebration',
           color: 0xFFF2A93B,
@@ -289,7 +289,7 @@ abstract class CurriculumData {
         ),
         Lesson(
           id: 'expresando-opiniones',
-          title: 'Expresando opiniones',
+          title: 'Dar Tu Opinión',
           description: 'Give simple opinions and agree or disagree.',
           icon: 'opinions',
           color: 0xFF3F9FFF,

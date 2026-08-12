@@ -31,7 +31,7 @@ class HomeHeader extends StatelessWidget {
     final game = context.watch<GameCubit>().state;
 
     return SizedBox(
-      height: 278.h,
+      height: 320.h,
       child: Stack(
         fit: StackFit.expand,
         children: [
@@ -129,19 +129,14 @@ class HomeHeader extends StatelessWidget {
                         child: Container(
                           height: 48.h,
                           padding: EdgeInsets.symmetric(horizontal: 22.w),
+                          // Same "3D" style as PrimaryButton: flat fill with a
+                          // hard darker bottom edge.
                           decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                              colors: [AppColors.primary, AppColors.primaryDark],
-                            ),
-                            borderRadius: BorderRadius.circular(26.r),
-                            border: Border.all(
-                                color: AppColors.whiteTranslucent, width: 1.5),
+                            color: AppColors.primary,
+                            borderRadius: BorderRadius.circular(20.r),
                             boxShadow: [
                               BoxShadow(
                                 color: AppColors.primaryDark,
-                                blurRadius: 12.r,
                                 offset: Offset(0, 4.h),
                               ),
                             ],
@@ -167,17 +162,17 @@ class HomeHeader extends StatelessWidget {
                       ),
                       const Spacer(),
                       // Shop button (bottom-right, where the call button used to be).
-                      GestureDetector(
-                        onTap: () {
-                          Haptics.tap();
-                          showShopSheet(context);
-                        },
-                        child: Image.asset(
-                          'assets/images/game/shop_icon.png',
-                          width: 52.w,
-                          height: 52.w,
-                        ),
-                      ),
+                      // GestureDetector(
+                      //   onTap: () {
+                      //     Haptics.tap();
+                      //     showShopSheet(context);
+                      //   },
+                      //   child: Image.asset(
+                      //     'assets/images/game/shop_icon.png',
+                      //     width: 52.w,
+                      //     height: 52.w,
+                      //   ),
+                      // ),
                     ],
                   ),
                 ],

@@ -9,7 +9,7 @@ class AppLocalizationsFr extends AppLocalizations {
   AppLocalizationsFr([String locale = 'fr']) : super(locale);
 
   @override
-  String get appName => 'Learna';
+  String get appName => 'Tuco';
 
   @override
   String get tabHome => 'Accueil';
@@ -144,6 +144,102 @@ class AppLocalizationsFr extends AppLocalizations {
   String get dailyStreak => 'Série quotidienne';
 
   @override
+  String nextMilestone(int days) {
+    return 'Prochain badge : $days jours';
+  }
+
+  @override
+  String get allMilestonesEarned => 'Tous les badges sont débloqués !';
+
+  @override
+  String get milestonesTitle => 'Badges de série';
+
+  @override
+  String milestonesEarnedCount(int earned, int total) {
+    return '$earned / $total badges débloqués';
+  }
+
+  @override
+  String milestoneDays(int days) {
+    return '$days jours';
+  }
+
+  @override
+  String get badgeRisen => 'Éveil';
+
+  @override
+  String get badgeIgnite => 'Étincelle';
+
+  @override
+  String get badgeHorizon => 'Horizon';
+
+  @override
+  String get badgeAurora => 'Aurore';
+
+  @override
+  String get badgeCelestial => 'Céleste';
+
+  @override
+  String get badgeNebula => 'Nébuleuse';
+
+  @override
+  String get badgeEternal => 'Éternel';
+
+  @override
+  String get settingsTitle => 'Réglages';
+
+  @override
+  String get settingsAccount => 'COMPTE';
+
+  @override
+  String get settingsUserType => 'Type d\'utilisateur';
+
+  @override
+  String get settingsUserTypeFree => 'Gratuit';
+
+  @override
+  String get settingsCopyUserId => 'Copier l\'identifiant utilisateur';
+
+  @override
+  String get settingsUserIdCopied => 'Identifiant utilisateur copié';
+
+  @override
+  String get settingsAbout => 'À PROPOS';
+
+  @override
+  String get settingsPrivacyPolicy => 'Politique de confidentialité';
+
+  @override
+  String get settingsTermsOfService => 'Conditions d\'utilisation';
+
+  @override
+  String get settingsDangerZone => 'ZONE DE DANGER';
+
+  @override
+  String get settingsDeleteAccount => 'Supprimer le compte';
+
+  @override
+  String get settingsDeleteAccountTitle => 'Supprimer le compte ?';
+
+  @override
+  String get settingsDeleteAccountBody =>
+      'Toutes vos données seront définitivement supprimées (progression, vocabulaire, historique d\'appels, séries). Cette action est irréversible.';
+
+  @override
+  String get settingsDeleteAccountConfirm => 'Supprimer';
+
+  @override
+  String get settingsDeleteAccountCancel => 'Annuler';
+
+  @override
+  String get settingsDeleteAccountDone =>
+      'Les données de votre compte ont été supprimées';
+
+  @override
+  String get settingsDeleteAccountError =>
+      'Impossible de supprimer vos données. Veuillez réessayer.';
+
+  @override
   String get callTimeTitle => 'Temps passé en appel';
 
   @override
@@ -192,16 +288,13 @@ class AppLocalizationsFr extends AppLocalizations {
       'Pas d\'erreurs ici ! Vous pouvez appuyer sur le bouton de commentaires dans la leçon pour vérifier vos erreurs.';
 
   @override
-  String get studyInNative => 'Étudier dans ma langue maternelle';
+  String get learningLanguage => 'Langue d\'apprentissage';
 
   @override
-  String get targetLanguage => 'Langue cible';
+  String get teachingLanguage => 'Langue d\'enseignement';
 
   @override
   String get languageLevel => 'Niveau de langue';
-
-  @override
-  String get nativeLanguage => 'Langue maternelle';
 
   @override
   String get interests => 'Centres d\'intérêt';
@@ -227,11 +320,11 @@ class AppLocalizationsFr extends AppLocalizations {
   String get more => 'Plus...';
 
   @override
-  String get reviewTitle => 'Merci d\'utiliser Learna !';
+  String get reviewTitle => 'Merci d\'utiliser Tuco !';
 
   @override
   String get reviewBody =>
-      'Vous aimez Learna ? Laissez-nous une note, ça nous aide beaucoup !';
+      'Vous aimez Tuco ? Laissez-nous une note, ça nous aide beaucoup !';
 
   @override
   String get letsGo => 'C\'est parti !';
@@ -312,6 +405,10 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get errorGeneric => 'Une erreur est survenue. Veuillez réessayer.';
+
+  @override
+  String get errorNoInternet =>
+      'Pas de connexion Internet. Veuillez vous connecter et réessayer.';
 
   @override
   String get interestTechnology => 'Technologie';

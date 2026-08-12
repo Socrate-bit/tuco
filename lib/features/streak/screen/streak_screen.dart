@@ -63,7 +63,8 @@ class _StreakScreenState extends State<StreakScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Text('🔥', style: TextStyle(fontSize: 86.sp)),
+                        Image.asset('assets/images/streaks.png',
+                            width: 96.r, height: 96.r),
                         SizedBox(width: 18.w),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
