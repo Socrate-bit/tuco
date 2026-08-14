@@ -8,7 +8,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import 'app/app_shell.dart';
+import 'app/onboarding_gate.dart';
 import 'core/l10n/app_localizations.dart';
 import 'firebase_options.dart';
 import 'core/service/analytics_service.dart';
@@ -19,7 +19,10 @@ import 'features/feedback/cubit/feedback_cubit.dart';
 import 'features/game/cubit/game_cubit.dart';
 import 'features/game/cubit/shop_cubit.dart';
 import 'features/home/cubit/path_cubit.dart';
+import 'features/onboarding/cubit/onboarding_cubit.dart';
 import 'features/profile/cubit/profile_cubit.dart';
+import 'features/subscription/cubit/subscription_cubit.dart';
+import 'features/subscription/service/superwall_service.dart';
 import 'features/progression/cubit/stats_cubit.dart';
 import 'features/vocabulary/cubit/vocab_cubit.dart';
 
@@ -54,20 +57,29 @@ Future<void> main() async {
   final analytics = AnalyticsService();
   await analytics.init();
 
+  // Paywall SDK (no-op without a SUPERWALL_KEY dart-define).
+  SuperwallService.configure();
+
+  // Skip the funnel for users who already completed it.
+  final onboardingDone = await OnboardingCubit.readCompletedFlag();
+
   runApp(TucoApp(
     repository: DataRepository(useFirestore: firebaseReady),
     analytics: analytics,
+    onboardingDone: onboardingDone,
   ));
 }
 
 class TucoApp extends StatelessWidget {
   final DataRepository repository;
   final AnalyticsService analytics;
+  final bool onboardingDone;
 
   const TucoApp({
     super.key,
     required this.repository,
     required this.analytics,
+    required this.onboardingDone,
   });
 
   // Maps the teaching-language code to a locale the app has translations for.
@@ -93,6 +105,10 @@ class TucoApp extends StatelessWidget {
           BlocProvider(create: (_) => FeedbackCubit(repository)),
           BlocProvider(create: (_) => GameCubit(repository)),
           BlocProvider(create: (_) => ShopCubit()),
+          BlocProvider(
+              create: (_) => OnboardingCubit(repository, analytics,
+                  alreadyComplete: onboardingDone)),
+          BlocProvider(create: (_) => SubscriptionCubit(analytics)),
         ],
         child: ScreenUtilInit(
           designSize: const Size(414, 896),
@@ -112,7 +128,7 @@ class TucoApp extends StatelessWidget {
               GlobalWidgetsLocalizations.delegate,
               GlobalCupertinoLocalizations.delegate,
             ],
-            home: const AppShell(),
+            home: const OnboardingGate(),
           ),
         ),
       ),

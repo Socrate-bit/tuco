@@ -9,6 +9,7 @@ import '../../../core/service/data_repository.dart';
 import '../../../core/service/haptics.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widget/common_widgets.dart';
+import '../../onboarding/cubit/onboarding_cubit.dart';
 import 'privacy_policy_screen.dart';
 import 'terms_conditions_screen.dart';
 
@@ -34,6 +35,8 @@ class SettingsScreen extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     final messenger = ScaffoldMessenger.of(context);
     final repository = context.read<DataRepository>();
+    final onboarding = context.read<OnboardingCubit>();
+    final navigator = Navigator.of(context);
 
     final confirmed = await showDialog<bool>(
       context: context,
@@ -63,6 +66,22 @@ class SettingsScreen extends StatelessWidget {
 
     try {
       await repository.deleteAllUserData();
+      // Drop the anonymous auth user and mint a fresh session so the
+      // account starts from a clean uid.
+      try {
+        await FirebaseAuth.instance.currentUser?.delete();
+      } catch (e) {
+        debugPrint('[SettingsScreen] auth delete failed, signing out: $e');
+        await FirebaseAuth.instance.signOut();
+      }
+      try {
+        await FirebaseAuth.instance.signInAnonymously();
+      } catch (e) {
+        debugPrint('[SettingsScreen] anonymous re-sign-in failed: $e');
+      }
+      // Send the user back through onboarding (gate rebuilds at root).
+      await onboarding.reset();
+      navigator.popUntil((route) => route.isFirst);
       debugPrint('[SettingsScreen] Account data deleted');
       messenger.showSnackBar(
           SnackBar(content: Text(l10n.settingsDeleteAccountDone)));

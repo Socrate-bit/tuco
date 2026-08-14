@@ -31,9 +31,10 @@ dependencies:
   ## STORAGE
   firebase_core: ^4.6.0
   cloud_firestore: ^6.2.0
+  shared_preferences: ^2.3.3
 
   ## SUBSCRIPTION + ANALYTICS
-  # superwallkit_flutter: ^2.4.11
+  superwallkit_flutter: ^2.4.11
   mixpanel_flutter: ^2.9.0
   mixpanel_flutter_session_replay: ^1.1.1
 
@@ -74,6 +75,7 @@ flutter:
     - assets/images/game/
     - assets/images/game/shop_tab/
     - assets/images/streak_badges/
+    - assets/songs/
 
 flutter_launcher_icons:
   android: false

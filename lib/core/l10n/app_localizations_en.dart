@@ -57,6 +57,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get inspirationButton => 'Inspiration';
 
   @override
+  String get clearButton => 'Delete';
+
+  @override
   String get replyHere => 'Reply here';
 
   @override
@@ -450,4 +453,290 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get shopCtaColor => 'Change color';
+
+  @override
+  String get readyToContinue => 'Are you ready to continue?';
+
+  @override
+  String get continueButton => 'Continue';
+
+  @override
+  String get onboardingContinue => 'Continue';
+
+  @override
+  String get onboardingWelcomeTitle => 'Learn Spanish by talking';
+
+  @override
+  String get onboardingWelcomeSubtitle =>
+      'Real conversations with Tuco, your AI companion.';
+
+  @override
+  String get onboardingWelcomeCta => 'Get started';
+
+  @override
+  String get onboardingMeetTitle => 'Meet Tuco, your new companion';
+
+  @override
+  String get onboardingMeetSubtitle =>
+      'Tuco will call you every day to practice real conversations.';
+
+  @override
+  String get onboardingMeet2Title => 'Tuco is preparing your journey';
+
+  @override
+  String get onboardingMeet2Subtitle =>
+      'Your daily calls will match your goals, level and interests.';
+
+  @override
+  String get onboardingLanguageTitle => 'What language do you want to learn?';
+
+  @override
+  String get onboardingLanguageEs => 'Spanish';
+
+  @override
+  String get onboardingLanguageEn => 'English';
+
+  @override
+  String get onboardingLevelTitle => 'What is your Spanish level?';
+
+  @override
+  String get onboardingLevelSubtitle =>
+      'We\'ll use this to tailor the experience to you.';
+
+  @override
+  String get onboardingLevelNew => 'I\'m new to Spanish';
+
+  @override
+  String get onboardingLevelSomeWords => 'I know some common words';
+
+  @override
+  String get onboardingLevelBasic => 'I can have basic conversations';
+
+  @override
+  String get onboardingLevelVarious => 'I can talk about various topics';
+
+  @override
+  String get onboardingLevelDetailed => 'I can discuss most topics in detail';
+
+  @override
+  String get onboardingChallengesTitle => 'What are your main challenges?';
+
+  @override
+  String get onboardingMultiSelectHint => 'Select all that apply.';
+
+  @override
+  String get onboardingChallengeSpeaking => 'I freeze when I have to speak';
+
+  @override
+  String get onboardingChallengeVocabulary => 'I lack vocabulary';
+
+  @override
+  String get onboardingChallengeConsistency => 'I can\'t stay consistent';
+
+  @override
+  String get onboardingChallengeConfidence => 'I lack confidence';
+
+  @override
+  String get onboardingChallengeListening => 'I struggle to understand natives';
+
+  @override
+  String get onboardingEducation1Title => 'Tuco creates long-term results';
+
+  @override
+  String get onboardingEducation1Subtitle =>
+      'Our method is backed by proven learning science.';
+
+  @override
+  String get onboardingChartTitle => 'Your Spanish progress';
+
+  @override
+  String get onboardingChartTraditional => 'Traditional';
+
+  @override
+  String get onboardingChartMonth1 => 'Month 1';
+
+  @override
+  String get onboardingChartMonth12 => 'Month 12';
+
+  @override
+  String get onboardingChartCaption =>
+      'Speaking every day builds skills that stick, even months later.';
+
+  @override
+  String get onboardingInterestsTitle => 'What are your topics of interest?';
+
+  @override
+  String get onboardingInterestTravel => 'Travel';
+
+  @override
+  String get onboardingInterestFood => 'Food';
+
+  @override
+  String get onboardingInterestTechnology => 'Technology';
+
+  @override
+  String get onboardingInterestSport => 'Sport';
+
+  @override
+  String get onboardingInterestCulture => 'Culture';
+
+  @override
+  String get onboardingInterestBusiness => 'Business';
+
+  @override
+  String get onboardingFluencyTitle =>
+      'When do you want to be fluent in Spanish?';
+
+  @override
+  String get onboardingFluencySubtitle =>
+      'Set your fluency goal. Let\'s make it realistic.';
+
+  @override
+  String onboardingFluencyChip(String date) {
+    return '🇪🇸 Fluent by $date!';
+  }
+
+  @override
+  String get onboardingFluencyUnit => 'months';
+
+  @override
+  String get onboardingMinutesTitle =>
+      'How much time can you practice each day?';
+
+  @override
+  String get onboardingMinutesSubtitle =>
+      'Consistency matters. Even 5 minutes a day gets results.';
+
+  @override
+  String onboardingMinutesChip(int words) {
+    return '🦜 Learn ~$words words each month';
+  }
+
+  @override
+  String onboardingMinutesValue(int minutes) {
+    return '$minutes minutes';
+  }
+
+  @override
+  String get onboardingRecommended => 'Recommended';
+
+  @override
+  String get onboardingEducation2Title =>
+      'Make twice as much progress with Tuco';
+
+  @override
+  String get onboardingEducation2Subtitle =>
+      'Learn new languages 2.7x faster with real conversations.';
+
+  @override
+  String get onboardingCompareOthers => 'Other apps';
+
+  @override
+  String get onboardingCompareTuco => 'With Tuco';
+
+  @override
+  String get onboardingTimeTitle => 'When do you want to practice?';
+
+  @override
+  String get onboardingTimeSubtitle =>
+      'Tuco will call you at the perfect moment.';
+
+  @override
+  String get onboardingNotifTitle => 'Never miss a Spanish lesson again';
+
+  @override
+  String get onboardingNotifSubtitle =>
+      '86% of users hit their goals with daily reminders.';
+
+  @override
+  String get onboardingNotifAllow => 'Allow notifications';
+
+  @override
+  String get onboardingNotifLater => 'Not now';
+
+  @override
+  String get onboardingRatingTitle => 'Give us a rating';
+
+  @override
+  String get onboardingRatingCount => 'App Store ratings';
+
+  @override
+  String get onboardingRatingMadeForYou => 'Tuco was made for people like you';
+
+  @override
+  String get onboardingRatingUsers =>
+      'Thousands of learners practice with Tuco';
+
+  @override
+  String get onboardingReview1Name => 'Rita Y.';
+
+  @override
+  String get onboardingReview1Text =>
+      'I knew tons of vocab but froze every time I tried to speak. Talking with Tuco every day gave me the confidence to actually chat with natives.';
+
+  @override
+  String get onboardingReview2Name => 'Marc D.';
+
+  @override
+  String get onboardingReview2Text =>
+      '5 minutes a day on my way to work. After 3 months I could hold a real conversation on my trip to Madrid.';
+
+  @override
+  String get onboardingLoadingTitle => 'Making your plan...';
+
+  @override
+  String get onboardingLoadingStep1 => 'Analyzing your level...';
+
+  @override
+  String get onboardingLoadingStep2 => 'Picking your topics...';
+
+  @override
+  String get onboardingLoadingStep3 => 'Building your daily plan...';
+
+  @override
+  String get onboardingPlanTitle => 'Your custom plan is ready!';
+
+  @override
+  String get onboardingPlanSubtitle => 'Here\'s what your journey looks like.';
+
+  @override
+  String get onboardingPlanFluentBy => 'Fluent by';
+
+  @override
+  String get onboardingPlanDailyGoal => 'Daily goal';
+
+  @override
+  String get onboardingPlanReminder => 'Daily call';
+
+  @override
+  String get onboardingPlanMethod => 'Method';
+
+  @override
+  String get onboardingPlanMethodValue => 'Real conversations';
+
+  @override
+  String get onboardingTrialTitle => 'We want you to try Tuco for free';
+
+  @override
+  String get onboardingTrialSubtitle =>
+      'Unlock your full plan with a free trial.';
+
+  @override
+  String get onboardingTrialPoint1 => 'Full access to every lesson and call';
+
+  @override
+  String get onboardingTrialPoint2 => 'We\'ll remind you before the trial ends';
+
+  @override
+  String get onboardingTrialPoint3 => 'Cancel anytime in two taps';
+
+  @override
+  String get onboardingSignInTitle => 'Let\'s finish your set-up';
+
+  @override
+  String get onboardingSignInSubtitle =>
+      'Your progress will be saved on this device.';
+
+  @override
+  String get onboardingSignInCta => 'Start learning';
 }

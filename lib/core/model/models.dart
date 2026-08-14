@@ -97,19 +97,22 @@ class ChatMessage extends Equatable {
   final String text;
   final String? translation; // lazily fetched translation
   final String? banner; // 'course' | 'courseDone' | 'practice' when banner row
+  final String? verdict; // 'win' | 'fail' — exercise result on user messages
 
   const ChatMessage({
     required this.role,
     required this.text,
     this.translation,
     this.banner,
+    this.verdict,
   });
 
-  ChatMessage copyWith({String? translation}) => ChatMessage(
+  ChatMessage copyWith({String? translation, String? verdict}) => ChatMessage(
         role: role,
         text: text,
         translation: translation ?? this.translation,
         banner: banner,
+        verdict: verdict ?? this.verdict,
       );
 
   Map<String, dynamic> toMap() => {
@@ -117,6 +120,7 @@ class ChatMessage extends Equatable {
         'text': text,
         'translation': translation,
         'banner': banner,
+        'verdict': verdict,
       };
 
   factory ChatMessage.fromMap(Map<String, dynamic> map) => ChatMessage(
@@ -124,10 +128,11 @@ class ChatMessage extends Equatable {
         text: map['text'] as String? ?? '',
         translation: map['translation'] as String?,
         banner: map['banner'] as String?,
+        verdict: map['verdict'] as String?,
       );
 
   @override
-  List<Object?> get props => [role, text, translation, banner];
+  List<Object?> get props => [role, text, translation, banner, verdict];
 }
 
 /// A completed (or aborted) call session.

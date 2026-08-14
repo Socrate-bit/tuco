@@ -9,7 +9,7 @@ import 'package:flutter_tts/flutter_tts.dart';
 
 /// Character voice. Speaks via the `tts` Cloud Function (ElevenLabs proxy,
 /// key stays server-side) and falls back to on-device flutter_tts when the
-/// call fails. Keeps the cycling speed control (1x → 0.75x → 0.5x).
+/// call fails. Keeps the cycling speed control (1x → 1.5x → 2x → 0.5x → 0.75x).
 class TtsService {
   final HttpsCallable _tts = FirebaseFunctions.instanceFor(
           region: 'europe-west1')
@@ -21,14 +21,16 @@ class TtsService {
   String _languageCode = 'en';
   int _requestId = 0; // Drops stale responses when speak() is called again.
 
-  static const speeds = [1.0, 0.75, 0.5];
+  static const speeds = [1.0, 1.5, 2.0, 0.5, 0.75];
   int _speedIndex = 0;
 
   double get speed => speeds[_speedIndex];
-  String get speedLabel => switch (_speedIndex) {
-        0 => '1x',
-        1 => '0.75x',
-        _ => '0.5x',
+  String get speedLabel => switch (speed) {
+        1.0 => '1x',
+        1.5 => '1.5x',
+        2.0 => '2x',
+        0.5 => '0.5x',
+        _ => '0.75x',
       };
 
   Future<void> init(String languageCode) async {
@@ -85,6 +87,28 @@ class TtsService {
     } catch (e) {
       debugPrint('[TtsService] cloud tts error, falling back: $e');
       if (id == _requestId) await _speakFallback(text);
+    }
+  }
+
+  /// Speak [text] and complete only when playback has finished (or was
+  /// stopped/superseded). Lets callers reveal UI in sync with the audio.
+  Future<void> speakAndWait(String text) async {
+    await stop();
+    final id = ++_requestId;
+    try {
+      final bytes = await _synthesize(text);
+      if (id != _requestId) return; // A newer speak/stop superseded this one.
+      final file = File('${Directory.systemTemp.path}/tts_${id % 4}.mp3');
+      await file.writeAsBytes(bytes, flush: true);
+      await _player.setPlaybackRate(speed);
+      // Resolves on natural completion or when stop() halts playback.
+      final done = _player.onPlayerStateChanged.firstWhere(
+          (s) => s == PlayerState.completed || s == PlayerState.stopped);
+      await _player.play(DeviceFileSource(file.path));
+      await done;
+    } catch (e) {
+      debugPrint('[TtsService] speakAndWait error, falling back: $e');
+      if (id == _requestId) await _speakFallback(text); // awaits completion
     }
   }
 

@@ -61,8 +61,12 @@ class TranscriptScreen extends StatelessWidget {
                             onFeedbackTap: () =>
                                 showFeedbackSheet(context, msg.text),
                           ),
-                        MessageRole.inspiration =>
-                          InspirationBubble(message: msg),
+                        MessageRole.inspiration => InspirationBubble(
+                            message: msg,
+                            translating: state.translatingIndex == i,
+                            onTranslate: () => cubit.translateMessage(i),
+                            onPlay: () => cubit.playMessage(i),
+                          ),
                       };
                     },
                   );

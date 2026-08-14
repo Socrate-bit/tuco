@@ -194,6 +194,12 @@ abstract class AppLocalizations {
   /// **'Inspiration'**
   String get inspirationButton;
 
+  /// No description provided for @clearButton.
+  ///
+  /// In fr, this message translates to:
+  /// **'Effacer'**
+  String get clearButton;
+
   /// No description provided for @replyHere.
   ///
   /// In fr, this message translates to:
@@ -937,6 +943,528 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Changer la couleur'**
   String get shopCtaColor;
+
+  /// No description provided for @readyToContinue.
+  ///
+  /// In fr, this message translates to:
+  /// **'Es-tu prêt(e) à continuer ?'**
+  String get readyToContinue;
+
+  /// No description provided for @continueButton.
+  ///
+  /// In fr, this message translates to:
+  /// **'Continuer'**
+  String get continueButton;
+
+  /// No description provided for @onboardingContinue.
+  ///
+  /// In fr, this message translates to:
+  /// **'Continuer'**
+  String get onboardingContinue;
+
+  /// No description provided for @onboardingWelcomeTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Apprends l\'espagnol en parlant'**
+  String get onboardingWelcomeTitle;
+
+  /// No description provided for @onboardingWelcomeSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'De vraies conversations avec Tuco, ton compagnon IA.'**
+  String get onboardingWelcomeSubtitle;
+
+  /// No description provided for @onboardingWelcomeCta.
+  ///
+  /// In fr, this message translates to:
+  /// **'Commencer'**
+  String get onboardingWelcomeCta;
+
+  /// No description provided for @onboardingMeetTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rencontre Tuco, ton nouveau compagnon'**
+  String get onboardingMeetTitle;
+
+  /// No description provided for @onboardingMeetSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tuco t\'appellera chaque jour pour pratiquer de vraies conversations.'**
+  String get onboardingMeetSubtitle;
+
+  /// No description provided for @onboardingMeet2Title.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tuco prépare ton parcours'**
+  String get onboardingMeet2Title;
+
+  /// No description provided for @onboardingMeet2Subtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tes appels quotidiens suivront tes objectifs, ton niveau et tes centres d\'intérêt.'**
+  String get onboardingMeet2Subtitle;
+
+  /// No description provided for @onboardingLanguageTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Quelle langue veux-tu apprendre ?'**
+  String get onboardingLanguageTitle;
+
+  /// No description provided for @onboardingLanguageEs.
+  ///
+  /// In fr, this message translates to:
+  /// **'Espagnol'**
+  String get onboardingLanguageEs;
+
+  /// No description provided for @onboardingLanguageEn.
+  ///
+  /// In fr, this message translates to:
+  /// **'Anglais'**
+  String get onboardingLanguageEn;
+
+  /// No description provided for @onboardingLevelTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Quel est ton niveau d\'espagnol ?'**
+  String get onboardingLevelTitle;
+
+  /// No description provided for @onboardingLevelSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nous adapterons l\'expérience à ton profil.'**
+  String get onboardingLevelSubtitle;
+
+  /// No description provided for @onboardingLevelNew.
+  ///
+  /// In fr, this message translates to:
+  /// **'Je débute en espagnol'**
+  String get onboardingLevelNew;
+
+  /// No description provided for @onboardingLevelSomeWords.
+  ///
+  /// In fr, this message translates to:
+  /// **'Je connais quelques mots courants'**
+  String get onboardingLevelSomeWords;
+
+  /// No description provided for @onboardingLevelBasic.
+  ///
+  /// In fr, this message translates to:
+  /// **'Je peux tenir des conversations simples'**
+  String get onboardingLevelBasic;
+
+  /// No description provided for @onboardingLevelVarious.
+  ///
+  /// In fr, this message translates to:
+  /// **'Je peux parler de sujets variés'**
+  String get onboardingLevelVarious;
+
+  /// No description provided for @onboardingLevelDetailed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Je peux discuter de la plupart des sujets en détail'**
+  String get onboardingLevelDetailed;
+
+  /// No description provided for @onboardingChallengesTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Quels sont tes principaux défis ?'**
+  String get onboardingChallengesTitle;
+
+  /// No description provided for @onboardingMultiSelectHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sélectionne tout ce qui s\'applique.'**
+  String get onboardingMultiSelectHint;
+
+  /// No description provided for @onboardingChallengeSpeaking.
+  ///
+  /// In fr, this message translates to:
+  /// **'Je me bloque quand je dois parler'**
+  String get onboardingChallengeSpeaking;
+
+  /// No description provided for @onboardingChallengeVocabulary.
+  ///
+  /// In fr, this message translates to:
+  /// **'Je manque de vocabulaire'**
+  String get onboardingChallengeVocabulary;
+
+  /// No description provided for @onboardingChallengeConsistency.
+  ///
+  /// In fr, this message translates to:
+  /// **'Je n\'arrive pas à être régulier(ère)'**
+  String get onboardingChallengeConsistency;
+
+  /// No description provided for @onboardingChallengeConfidence.
+  ///
+  /// In fr, this message translates to:
+  /// **'Je manque de confiance'**
+  String get onboardingChallengeConfidence;
+
+  /// No description provided for @onboardingChallengeListening.
+  ///
+  /// In fr, this message translates to:
+  /// **'J\'ai du mal à comprendre les natifs'**
+  String get onboardingChallengeListening;
+
+  /// No description provided for @onboardingEducation1Title.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tuco crée des résultats durables'**
+  String get onboardingEducation1Title;
+
+  /// No description provided for @onboardingEducation1Subtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Notre méthode s\'appuie sur la science de l\'apprentissage.'**
+  String get onboardingEducation1Subtitle;
+
+  /// No description provided for @onboardingChartTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ta progression en espagnol'**
+  String get onboardingChartTitle;
+
+  /// No description provided for @onboardingChartTraditional.
+  ///
+  /// In fr, this message translates to:
+  /// **'Traditionnel'**
+  String get onboardingChartTraditional;
+
+  /// No description provided for @onboardingChartMonth1.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mois 1'**
+  String get onboardingChartMonth1;
+
+  /// No description provided for @onboardingChartMonth12.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mois 12'**
+  String get onboardingChartMonth12;
+
+  /// No description provided for @onboardingChartCaption.
+  ///
+  /// In fr, this message translates to:
+  /// **'Parler chaque jour construit des compétences qui restent, même des mois plus tard.'**
+  String get onboardingChartCaption;
+
+  /// No description provided for @onboardingInterestsTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Quels sont tes centres d\'intérêt ?'**
+  String get onboardingInterestsTitle;
+
+  /// No description provided for @onboardingInterestTravel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Voyages'**
+  String get onboardingInterestTravel;
+
+  /// No description provided for @onboardingInterestFood.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cuisine'**
+  String get onboardingInterestFood;
+
+  /// No description provided for @onboardingInterestTechnology.
+  ///
+  /// In fr, this message translates to:
+  /// **'Technologie'**
+  String get onboardingInterestTechnology;
+
+  /// No description provided for @onboardingInterestSport.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sport'**
+  String get onboardingInterestSport;
+
+  /// No description provided for @onboardingInterestCulture.
+  ///
+  /// In fr, this message translates to:
+  /// **'Culture'**
+  String get onboardingInterestCulture;
+
+  /// No description provided for @onboardingInterestBusiness.
+  ///
+  /// In fr, this message translates to:
+  /// **'Business'**
+  String get onboardingInterestBusiness;
+
+  /// No description provided for @onboardingFluencyTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Quand veux-tu parler couramment espagnol ?'**
+  String get onboardingFluencyTitle;
+
+  /// No description provided for @onboardingFluencySubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fixe ton objectif. Restons réalistes.'**
+  String get onboardingFluencySubtitle;
+
+  /// No description provided for @onboardingFluencyChip.
+  ///
+  /// In fr, this message translates to:
+  /// **'🇪🇸 Courant d\'ici {date} !'**
+  String onboardingFluencyChip(String date);
+
+  /// No description provided for @onboardingFluencyUnit.
+  ///
+  /// In fr, this message translates to:
+  /// **'mois'**
+  String get onboardingFluencyUnit;
+
+  /// No description provided for @onboardingMinutesTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Combien de temps peux-tu pratiquer par jour ?'**
+  String get onboardingMinutesTitle;
+
+  /// No description provided for @onboardingMinutesSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'La régularité compte. Même 5 minutes par jour donnent des résultats.'**
+  String get onboardingMinutesSubtitle;
+
+  /// No description provided for @onboardingMinutesChip.
+  ///
+  /// In fr, this message translates to:
+  /// **'🦜 Apprends ~{words} mots chaque mois'**
+  String onboardingMinutesChip(int words);
+
+  /// No description provided for @onboardingMinutesValue.
+  ///
+  /// In fr, this message translates to:
+  /// **'{minutes} minutes'**
+  String onboardingMinutesValue(int minutes);
+
+  /// No description provided for @onboardingRecommended.
+  ///
+  /// In fr, this message translates to:
+  /// **'Recommandé'**
+  String get onboardingRecommended;
+
+  /// No description provided for @onboardingEducation2Title.
+  ///
+  /// In fr, this message translates to:
+  /// **'Progresse deux fois plus vite avec Tuco'**
+  String get onboardingEducation2Title;
+
+  /// No description provided for @onboardingEducation2Subtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Apprends les langues 2,7x plus vite grâce à de vraies conversations.'**
+  String get onboardingEducation2Subtitle;
+
+  /// No description provided for @onboardingCompareOthers.
+  ///
+  /// In fr, this message translates to:
+  /// **'Autres apps'**
+  String get onboardingCompareOthers;
+
+  /// No description provided for @onboardingCompareTuco.
+  ///
+  /// In fr, this message translates to:
+  /// **'Avec Tuco'**
+  String get onboardingCompareTuco;
+
+  /// No description provided for @onboardingTimeTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Quand veux-tu pratiquer ?'**
+  String get onboardingTimeTitle;
+
+  /// No description provided for @onboardingTimeSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tuco t\'appellera au moment parfait.'**
+  String get onboardingTimeSubtitle;
+
+  /// No description provided for @onboardingNotifTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ne rate plus jamais ta leçon d\'espagnol'**
+  String get onboardingNotifTitle;
+
+  /// No description provided for @onboardingNotifSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'86 % des utilisateurs atteignent leurs objectifs grâce aux rappels quotidiens.'**
+  String get onboardingNotifSubtitle;
+
+  /// No description provided for @onboardingNotifAllow.
+  ///
+  /// In fr, this message translates to:
+  /// **'Autoriser les notifications'**
+  String get onboardingNotifAllow;
+
+  /// No description provided for @onboardingNotifLater.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pas maintenant'**
+  String get onboardingNotifLater;
+
+  /// No description provided for @onboardingRatingTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Donne-nous une note'**
+  String get onboardingRatingTitle;
+
+  /// No description provided for @onboardingRatingCount.
+  ///
+  /// In fr, this message translates to:
+  /// **'notes sur l\'App Store'**
+  String get onboardingRatingCount;
+
+  /// No description provided for @onboardingRatingMadeForYou.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tuco a été créé pour des gens comme toi'**
+  String get onboardingRatingMadeForYou;
+
+  /// No description provided for @onboardingRatingUsers.
+  ///
+  /// In fr, this message translates to:
+  /// **'Des milliers d\'apprenants pratiquent avec Tuco'**
+  String get onboardingRatingUsers;
+
+  /// No description provided for @onboardingReview1Name.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rita Y.'**
+  String get onboardingReview1Name;
+
+  /// No description provided for @onboardingReview1Text.
+  ///
+  /// In fr, this message translates to:
+  /// **'Je connaissais plein de vocabulaire mais je me bloquais dès que je devais parler. Parler avec Tuco chaque jour m\'a donné confiance pour discuter avec des natifs.'**
+  String get onboardingReview1Text;
+
+  /// No description provided for @onboardingReview2Name.
+  ///
+  /// In fr, this message translates to:
+  /// **'Marc D.'**
+  String get onboardingReview2Name;
+
+  /// No description provided for @onboardingReview2Text.
+  ///
+  /// In fr, this message translates to:
+  /// **'5 minutes par jour sur le trajet du travail. Après 3 mois, je tenais une vraie conversation lors de mon voyage à Madrid.'**
+  String get onboardingReview2Text;
+
+  /// No description provided for @onboardingLoadingTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Création de ton plan...'**
+  String get onboardingLoadingTitle;
+
+  /// No description provided for @onboardingLoadingStep1.
+  ///
+  /// In fr, this message translates to:
+  /// **'Analyse de ton niveau...'**
+  String get onboardingLoadingStep1;
+
+  /// No description provided for @onboardingLoadingStep2.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sélection de tes sujets...'**
+  String get onboardingLoadingStep2;
+
+  /// No description provided for @onboardingLoadingStep3.
+  ///
+  /// In fr, this message translates to:
+  /// **'Construction de ton plan quotidien...'**
+  String get onboardingLoadingStep3;
+
+  /// No description provided for @onboardingPlanTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ton plan personnalisé est prêt !'**
+  String get onboardingPlanTitle;
+
+  /// No description provided for @onboardingPlanSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Voici à quoi ressemble ton parcours.'**
+  String get onboardingPlanSubtitle;
+
+  /// No description provided for @onboardingPlanFluentBy.
+  ///
+  /// In fr, this message translates to:
+  /// **'Courant d\'ici'**
+  String get onboardingPlanFluentBy;
+
+  /// No description provided for @onboardingPlanDailyGoal.
+  ///
+  /// In fr, this message translates to:
+  /// **'Objectif quotidien'**
+  String get onboardingPlanDailyGoal;
+
+  /// No description provided for @onboardingPlanReminder.
+  ///
+  /// In fr, this message translates to:
+  /// **'Appel quotidien'**
+  String get onboardingPlanReminder;
+
+  /// No description provided for @onboardingPlanMethod.
+  ///
+  /// In fr, this message translates to:
+  /// **'Méthode'**
+  String get onboardingPlanMethod;
+
+  /// No description provided for @onboardingPlanMethodValue.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vraies conversations'**
+  String get onboardingPlanMethodValue;
+
+  /// No description provided for @onboardingTrialTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'On veut te faire essayer Tuco gratuitement'**
+  String get onboardingTrialTitle;
+
+  /// No description provided for @onboardingTrialSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Débloque ton plan complet avec un essai gratuit.'**
+  String get onboardingTrialSubtitle;
+
+  /// No description provided for @onboardingTrialPoint1.
+  ///
+  /// In fr, this message translates to:
+  /// **'Accès complet à toutes les leçons et appels'**
+  String get onboardingTrialPoint1;
+
+  /// No description provided for @onboardingTrialPoint2.
+  ///
+  /// In fr, this message translates to:
+  /// **'On te préviendra avant la fin de l\'essai'**
+  String get onboardingTrialPoint2;
+
+  /// No description provided for @onboardingTrialPoint3.
+  ///
+  /// In fr, this message translates to:
+  /// **'Annulable à tout moment en deux clics'**
+  String get onboardingTrialPoint3;
+
+  /// No description provided for @onboardingSignInTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Finalisons ta configuration'**
+  String get onboardingSignInTitle;
+
+  /// No description provided for @onboardingSignInSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ta progression sera sauvegardée sur cet appareil.'**
+  String get onboardingSignInSubtitle;
+
+  /// No description provided for @onboardingSignInCta.
+  ///
+  /// In fr, this message translates to:
+  /// **'Commencer à apprendre'**
+  String get onboardingSignInCta;
 }
 
 class _AppLocalizationsDelegate

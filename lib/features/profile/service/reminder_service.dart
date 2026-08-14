@@ -27,6 +27,22 @@ class ReminderService {
     _initialized = true;
   }
 
+  /// Ask the OS for notification permission (iOS prompt). Returns granted.
+  static Future<bool> requestPermission() async {
+    try {
+      await _init();
+      final ios = _plugin.resolvePlatformSpecificImplementation<
+          IOSFlutterLocalNotificationsPlugin>();
+      final granted =
+          await ios?.requestPermissions(alert: true, badge: true, sound: true);
+      debugPrint('[ReminderService] Notification permission granted: $granted');
+      return granted ?? true;
+    } catch (e) {
+      debugPrint('[ReminderService] requestPermission error: $e');
+      return false;
+    }
+  }
+
   /// Schedule (or reschedule) the daily reminder at [hour]:[minute].
   static Future<void> schedule(
       {required int hour,

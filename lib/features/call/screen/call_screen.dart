@@ -183,8 +183,12 @@ class _CallViewState extends State<_CallView> {
                               onFeedbackTap: () =>
                                   showFeedbackSheet(context, msg.text),
                             ),
-                          MessageRole.inspiration =>
-                            InspirationBubble(message: msg),
+                          MessageRole.inspiration => InspirationBubble(
+                              message: msg,
+                              translating: state.translatingIndex == i,
+                              onTranslate: () => cubit.translateMessage(i),
+                              onPlay: () => cubit.replayMessage(i),
+                            ),
                         };
                       },
                     ),
@@ -227,7 +231,14 @@ class _CallViewState extends State<_CallView> {
               ),
               SafeArea(
                 top: false,
-                child: state.typingMode
+                child: state.pendingContinue != ContinuePrompt.none
+                    ? _ContinuePrompt(
+                        onContinue: () {
+                          Haptics.success();
+                          cubit.confirmContinue();
+                        },
+                      )
+                    : state.typingMode
                     ? TypeInputBar(
                         controller: _textCtrl,
                         onSubmit: (text) {
@@ -241,9 +252,11 @@ class _CallViewState extends State<_CallView> {
                       )
                     : CallControls(
                         listening: state.listening,
-                        onType: () => cubit.setTypingMode(true),
+                        onType: cubit.switchToTyping,
                         onMic: cubit.toggleListening,
                         onInspiration: cubit.requestInspiration,
+                        onClear: cubit.clearTranscript,
+                        inspirationEnabled: !state.inspirationUsed,
                       ),
               ),
             ],
@@ -464,6 +477,30 @@ class _RoundOverlayButton extends StatelessWidget {
           shape: BoxShape.circle,
         ),
         child: Center(child: child),
+      ),
+    );
+  }
+}
+
+/// "Are you ready to continue?" bar shown before a phase transition.
+class _ContinuePrompt extends StatelessWidget {
+  final VoidCallback onContinue;
+
+  const _ContinuePrompt({required this.onContinue});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return Padding(
+      padding: EdgeInsets.fromLTRB(24.w, 12.h, 24.w, 12.h),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(l10n.readyToContinue,
+              textAlign: TextAlign.center, style: AppTextStyles.modalTitle),
+          SizedBox(height: 14.h),
+          PrimaryButton(label: l10n.continueButton, onPressed: onContinue),
+        ],
       ),
     );
   }
