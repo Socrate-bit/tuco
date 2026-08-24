@@ -49,10 +49,10 @@ class SubscriptionCubit extends Cubit<SubscriptionState> {
   /// Shows the onboarding paywall. Resolves when the paywall is dismissed
   /// (or immediately when Superwall isn't configured).
   Future<void> registerOnboardingPaywall() =>
-      _register('onboarding_paywall');
+      _register('app_gate');
 
   /// Re-fires the app-start gate paywall (tap on the locked overlay).
-  Future<void> registerAppStart() => _register('app_start');
+  Future<void> registerAppStart() => _register('app_gate');
 
   Future<void> _register(String placement) async {
     _analytics.track('paywall_placement', {'placement': placement});
