@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../core/l10n/app_localizations.dart';
 import '../../../core/service/haptics.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widget/common_widgets.dart';
+import '../../call/service/tts_service.dart';
 import '../../curriculum/model/curriculum_models.dart';
+import '../../profile/cubit/profile_cubit.dart';
 
 /// Bottom sheet shown when tapping an unlocked lesson: colored header with
 /// title/description/chips, exercise buttons and the word grid.
@@ -19,13 +22,33 @@ Future<String?> showLessonStartSheet(BuildContext context, Lesson lesson) {
   );
 }
 
-class _LessonStartSheet extends StatelessWidget {
+class _LessonStartSheet extends StatefulWidget {
   final Lesson lesson;
 
   const _LessonStartSheet({required this.lesson});
 
   @override
+  State<_LessonStartSheet> createState() => _LessonStartSheetState();
+}
+
+class _LessonStartSheetState extends State<_LessonStartSheet> {
+  final _tts = TtsService();
+
+  @override
+  void initState() {
+    super.initState();
+    _tts.init(context.read<ProfileCubit>().state.targetLanguage);
+  }
+
+  @override
+  void dispose() {
+    _tts.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final lesson = widget.lesson;
     final l10n = AppLocalizations.of(context)!;
     final color = Color(lesson.color);
 
@@ -125,7 +148,13 @@ class _LessonStartSheet extends StatelessWidget {
                       childAspectRatio: 78.h / 280.w,
                     ),
                     itemCount: lesson.vocab.length,
-                    itemBuilder: (_, i) => _WordCard(word: lesson.vocab[i]),
+                    itemBuilder: (_, i) => _WordCard(
+                      word: lesson.vocab[i],
+                      onTap: () {
+                        Haptics.tap();
+                        _tts.speak(lesson.vocab[i].word);
+                      },
+                    ),
                   ),
                 ),
               ],
@@ -205,12 +234,16 @@ class _ExerciseButton extends StatelessWidget {
 
 class _WordCard extends StatelessWidget {
   final VocabWord word;
+  final VoidCallback? onTap;
 
-  const _WordCard({required this.word});
+  const _WordCard({required this.word, this.onTap});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: onTap,
+      child: Container(
       padding: EdgeInsets.symmetric(horizontal: 12.w),
       decoration: BoxDecoration(
         border: Border.all(color: AppColors.divider, width: 1.5),
@@ -244,6 +277,7 @@ class _WordCard extends StatelessWidget {
             ),
           ),
         ],
+      ),
       ),
     );
   }

@@ -8,6 +8,7 @@ import '../../../core/theme/app_theme.dart';
 import '../../../core/widget/common_widgets.dart';
 import '../cubit/feedback_cubit.dart';
 import '../widget/feedback_card.dart';
+import '../widget/feedback_empty_state.dart';
 
 /// "Grammaire" page: score filter chips + expandable feedback cards.
 class GrammarScreen extends StatefulWidget {
@@ -91,12 +92,14 @@ class _GrammarScreenState extends State<GrammarScreen> {
             ),
           ),
           Expanded(
-            child: ListView.separated(
-              padding: EdgeInsets.all(20.r),
-              itemCount: filtered.length,
-              separatorBuilder: (_, _) => SizedBox(height: 14.h),
-              itemBuilder: (_, i) => FeedbackCard(item: filtered[i]),
-            ),
+            child: filtered.isEmpty
+                ? FeedbackEmptyState(text: l10n.noErrorsHere)
+                : ListView.separated(
+                    padding: EdgeInsets.all(20.r),
+                    itemCount: filtered.length,
+                    separatorBuilder: (_, _) => SizedBox(height: 14.h),
+                    itemBuilder: (_, i) => FeedbackCard(item: filtered[i]),
+                  ),
           ),
         ],
       ),
