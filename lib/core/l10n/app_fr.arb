@@ -188,13 +188,15 @@
   "onboardingWelcomeTitle": "Apprends l'espagnol en parlant",
   "onboardingWelcomeSubtitle": "De vraies conversations avec Tuco, ton compagnon IA.",
   "onboardingWelcomeCta": "Commencer",
+  "onboardingWelcomeJoin": "Rejoins des milliers d'apprenants qui parlent avec Tuco",
+  "onboardingAlreadyAccount": "Tu as déjà un compte ? ",
+  "onboardingSignInLink": "Se connecter",
   "onboardingMeetTitle": "Rencontre Tuco, ton nouveau compagnon",
   "onboardingMeetSubtitle": "Tuco t'appellera chaque jour pour pratiquer de vraies conversations.",
-  "onboardingMeet2Title": "Tuco prépare ton parcours",
-  "onboardingMeet2Subtitle": "Tes appels quotidiens suivront tes objectifs, ton niveau et tes centres d'intérêt.",
   "onboardingLanguageTitle": "Quelle langue veux-tu apprendre ?",
   "onboardingLanguageEs": "Espagnol",
   "onboardingLanguageEn": "Anglais",
+  "onboardingLanguageFr": "Français",
   "onboardingLevelTitle": "Quel est ton niveau d'espagnol ?",
   "onboardingLevelSubtitle": "Nous adapterons l'expérience à ton profil.",
   "onboardingLevelNew": "Je débute en espagnol",
@@ -209,6 +211,7 @@
   "onboardingChallengeConsistency": "Je n'arrive pas à être régulier(ère)",
   "onboardingChallengeConfidence": "Je manque de confiance",
   "onboardingChallengeListening": "J'ai du mal à comprendre les natifs",
+  "onboardingChallengeOther": "Autre",
   "onboardingEducation1Title": "Tuco crée des résultats durables",
   "onboardingEducation1Subtitle": "Notre méthode s'appuie sur la science de l'apprentissage.",
   "onboardingChartTitle": "Ta progression en espagnol",
@@ -269,19 +272,40 @@
   "onboardingLoadingStep1": "Analyse de ton niveau...",
   "onboardingLoadingStep2": "Sélection de tes sujets...",
   "onboardingLoadingStep3": "Construction de ton plan quotidien...",
-  "onboardingPlanTitle": "Ton plan personnalisé est prêt !",
-  "onboardingPlanSubtitle": "Voici à quoi ressemble ton parcours.",
-  "onboardingPlanFluentBy": "Courant d'ici",
-  "onboardingPlanDailyGoal": "Objectif quotidien",
-  "onboardingPlanReminder": "Appel quotidien",
-  "onboardingPlanMethod": "Méthode",
-  "onboardingPlanMethodValue": "Vraies conversations",
+  "onboardingPlanTitle": "Félicitations !\nTon plan personnalisé est prêt",
+  "onboardingPlanDailyRecommendation": "Recommandation quotidienne",
+  "onboardingPlanStayConsistent": "Reste régulier(ère) pour atteindre tes objectifs",
+  "onboardingPlanStatSpeaking": "Expression orale",
+  "onboardingPlanStatWords": "Nouveaux mots",
+  "onboardingPlanStatCall": "Appel avec Tuco",
+  "onboardingPlanTileLessons": "{lessons} leçons chargées",
+  "@onboardingPlanTileLessons": {
+    "placeholders": {
+      "lessons": {"type": "int"}
+    }
+  },
+  "onboardingPlanTileFluent": "Courant d'ici {date}",
+  "@onboardingPlanTileFluent": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "onboardingPlanTilePath": "Parcours optimisé pour toi",
+  "onboardingPlanTileMinutes": "{minutes} min/jour",
+  "@onboardingPlanTileMinutes": {
+    "placeholders": {
+      "minutes": {"type": "int"}
+    }
+  },
   "onboardingTrialTitle": "On veut te faire essayer Tuco gratuitement",
   "onboardingTrialSubtitle": "Débloque ton plan complet avec un essai gratuit.",
   "onboardingTrialPoint1": "Accès complet à toutes les leçons et appels",
   "onboardingTrialPoint2": "On te préviendra avant la fin de l'essai",
   "onboardingTrialPoint3": "Annulable à tout moment en deux clics",
   "onboardingSignInTitle": "Finalisons ta configuration",
-  "onboardingSignInSubtitle": "Ta progression sera sauvegardée sur cet appareil.",
-  "onboardingSignInCta": "Commencer à apprendre"
+  "onboardingSignInSubtitle": "Sauvegarde ta progression et synchronise ton plan.",
+  "onboardingSignInApple": "Se connecter avec Apple",
+  "onboardingSignInGoogle": "Continuer avec Google",
+  "onboardingSignInSkip": "Passer pour l'instant",
+  "onboardingSignInFailed": "Échec de la connexion. Réessaie."
 }

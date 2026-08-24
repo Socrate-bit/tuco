@@ -71,7 +71,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         // 0: Tuco start page
         _OnboardingStep(
           ownNavigation: true,
-          build: (context, state, cubit) => WelcomeStep(onStart: _next),
+          build: (context, state, cubit) => WelcomeStep(
+            onStart: _next,
+            onSignIn: () => _pushDirectSignIn(cubit),
+          ),
         ),
         // 1: Meet Tuco your new companion
         _OnboardingStep(
@@ -94,6 +97,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   id: 'en',
                   label: l10n.onboardingLanguageEn,
                   icon: Text('🇬🇧', style: TextStyle(fontSize: 24.sp))),
+              SurveyOption(
+                  id: 'fr',
+                  label: l10n.onboardingLanguageFr,
+                  icon: Text('🇫🇷', style: TextStyle(fontSize: 24.sp))),
             ],
             selected: {state.targetLanguage},
             onTap: cubit.setTargetLanguage,
@@ -132,6 +139,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 ('consistency', l10n.onboardingChallengeConsistency, '📅'),
                 ('confidence', l10n.onboardingChallengeConfidence, '💪'),
                 ('listening', l10n.onboardingChallengeListening, '👂'),
+                ('other', l10n.onboardingChallengeOther, '✨'),
               ])
                 SurveyOption(
                     id: id,
@@ -245,23 +253,16 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           },
           build: (context, state, cubit) => const RatingStep(),
         ),
-        // 13: Meet Tuco again — your plan companion
-        _OnboardingStep(
-          build: (context, state, cubit) => MeetTucoStep(
-            title: l10n.onboardingMeet2Title,
-            subtitle: l10n.onboardingMeet2Subtitle,
-          ),
-        ),
-        // 14: Making your plan (auto-advances)
+        // 13: Making your plan (auto-advances)
         _OnboardingStep(
           ownNavigation: true,
           build: (context, state, cubit) => LoadingStep(onDone: _next),
         ),
-        // 15: Your custom plan is ready
+        // 14: Your custom plan is ready
         _OnboardingStep(
           build: (context, state, cubit) => PlanReadyStep(state: state),
         ),
-        // 16: We want you to try for free → Superwall paywall
+        // 15: We want you to try for free → Superwall paywall
         _OnboardingStep(
           onContinue: (context) async {
             await context
@@ -270,7 +271,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           },
           build: (context, state, cubit) => const FreeTrialStep(),
         ),
-        // 17: Let's finish your set-up
+        // 16: Let's finish your set-up
         _OnboardingStep(
           ownNavigation: true,
           build: (context, state, cubit) => SignInStep(
@@ -280,6 +281,40 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           ),
         ),
       ];
+
+  /// Existing-user sign-in pushed from the start page: on success we mark
+  /// onboarding complete without overwriting the account's profile.
+  void _pushDirectSignIn(OnboardingCubit cubit) {
+    final navigator = Navigator.of(context);
+    navigator.push(
+      MaterialPageRoute(
+        builder: (_) => Scaffold(
+          backgroundColor: AppColors.background,
+          body: SafeArea(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: EdgeInsets.all(16.r),
+                  child: const BackCircleButton(),
+                ),
+                Expanded(
+                  child: SignInStep(
+                    showSkip: false,
+                    onFinish: () async {
+                      await cubit.markComplete();
+                      // Reveal the gate (now showing the app) underneath.
+                      navigator.popUntil((route) => route.isFirst);
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 
   // ---------------- Navigation ----------------
 
@@ -299,7 +334,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   /// Pages where going back makes no sense (loading and after it).
-  bool get _backHidden => _page == 0 || _page >= 14;
+  bool get _backHidden => _page == 0 || _page >= 13;
 
   @override
   Widget build(BuildContext context) {

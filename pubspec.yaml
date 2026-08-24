@@ -20,8 +20,8 @@ dependencies:
 
   ## AUTH
   firebase_auth: ^6.3.0
-  # google_sign_in: ^7.2.0
-  # sign_in_with_apple: ^8.1.0
+  google_sign_in: ^7.2.0
+  sign_in_with_apple: ^8.1.0
 
   ## LOCALIZATION
   flutter_localizations:
@@ -71,6 +71,7 @@ flutter:
   uses-material-design: true
   generate: true
   assets:
+    - assets/onboarding/
     - assets/images/
     - assets/images/game/
     - assets/images/game/shop_tab/

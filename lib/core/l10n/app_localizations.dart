@@ -980,6 +980,24 @@ abstract class AppLocalizations {
   /// **'Commencer'**
   String get onboardingWelcomeCta;
 
+  /// No description provided for @onboardingWelcomeJoin.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rejoins des milliers d\'apprenants qui parlent avec Tuco'**
+  String get onboardingWelcomeJoin;
+
+  /// No description provided for @onboardingAlreadyAccount.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tu as déjà un compte ? '**
+  String get onboardingAlreadyAccount;
+
+  /// No description provided for @onboardingSignInLink.
+  ///
+  /// In fr, this message translates to:
+  /// **'Se connecter'**
+  String get onboardingSignInLink;
+
   /// No description provided for @onboardingMeetTitle.
   ///
   /// In fr, this message translates to:
@@ -991,18 +1009,6 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Tuco t\'appellera chaque jour pour pratiquer de vraies conversations.'**
   String get onboardingMeetSubtitle;
-
-  /// No description provided for @onboardingMeet2Title.
-  ///
-  /// In fr, this message translates to:
-  /// **'Tuco prépare ton parcours'**
-  String get onboardingMeet2Title;
-
-  /// No description provided for @onboardingMeet2Subtitle.
-  ///
-  /// In fr, this message translates to:
-  /// **'Tes appels quotidiens suivront tes objectifs, ton niveau et tes centres d\'intérêt.'**
-  String get onboardingMeet2Subtitle;
 
   /// No description provided for @onboardingLanguageTitle.
   ///
@@ -1021,6 +1027,12 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Anglais'**
   String get onboardingLanguageEn;
+
+  /// No description provided for @onboardingLanguageFr.
+  ///
+  /// In fr, this message translates to:
+  /// **'Français'**
+  String get onboardingLanguageFr;
 
   /// No description provided for @onboardingLevelTitle.
   ///
@@ -1105,6 +1117,12 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'J\'ai du mal à comprendre les natifs'**
   String get onboardingChallengeListening;
+
+  /// No description provided for @onboardingChallengeOther.
+  ///
+  /// In fr, this message translates to:
+  /// **'Autre'**
+  String get onboardingChallengeOther;
 
   /// No description provided for @onboardingEducation1Title.
   ///
@@ -1379,44 +1397,62 @@ abstract class AppLocalizations {
   /// No description provided for @onboardingPlanTitle.
   ///
   /// In fr, this message translates to:
-  /// **'Ton plan personnalisé est prêt !'**
+  /// **'Félicitations !\nTon plan personnalisé est prêt'**
   String get onboardingPlanTitle;
 
-  /// No description provided for @onboardingPlanSubtitle.
+  /// No description provided for @onboardingPlanDailyRecommendation.
   ///
   /// In fr, this message translates to:
-  /// **'Voici à quoi ressemble ton parcours.'**
-  String get onboardingPlanSubtitle;
+  /// **'Recommandation quotidienne'**
+  String get onboardingPlanDailyRecommendation;
 
-  /// No description provided for @onboardingPlanFluentBy.
+  /// No description provided for @onboardingPlanStayConsistent.
   ///
   /// In fr, this message translates to:
-  /// **'Courant d\'ici'**
-  String get onboardingPlanFluentBy;
+  /// **'Reste régulier(ère) pour atteindre tes objectifs'**
+  String get onboardingPlanStayConsistent;
 
-  /// No description provided for @onboardingPlanDailyGoal.
+  /// No description provided for @onboardingPlanStatSpeaking.
   ///
   /// In fr, this message translates to:
-  /// **'Objectif quotidien'**
-  String get onboardingPlanDailyGoal;
+  /// **'Expression orale'**
+  String get onboardingPlanStatSpeaking;
 
-  /// No description provided for @onboardingPlanReminder.
+  /// No description provided for @onboardingPlanStatWords.
   ///
   /// In fr, this message translates to:
-  /// **'Appel quotidien'**
-  String get onboardingPlanReminder;
+  /// **'Nouveaux mots'**
+  String get onboardingPlanStatWords;
 
-  /// No description provided for @onboardingPlanMethod.
+  /// No description provided for @onboardingPlanStatCall.
   ///
   /// In fr, this message translates to:
-  /// **'Méthode'**
-  String get onboardingPlanMethod;
+  /// **'Appel avec Tuco'**
+  String get onboardingPlanStatCall;
 
-  /// No description provided for @onboardingPlanMethodValue.
+  /// No description provided for @onboardingPlanTileLessons.
   ///
   /// In fr, this message translates to:
-  /// **'Vraies conversations'**
-  String get onboardingPlanMethodValue;
+  /// **'{lessons} leçons chargées'**
+  String onboardingPlanTileLessons(int lessons);
+
+  /// No description provided for @onboardingPlanTileFluent.
+  ///
+  /// In fr, this message translates to:
+  /// **'Courant d\'ici {date}'**
+  String onboardingPlanTileFluent(String date);
+
+  /// No description provided for @onboardingPlanTilePath.
+  ///
+  /// In fr, this message translates to:
+  /// **'Parcours optimisé pour toi'**
+  String get onboardingPlanTilePath;
+
+  /// No description provided for @onboardingPlanTileMinutes.
+  ///
+  /// In fr, this message translates to:
+  /// **'{minutes} min/jour'**
+  String onboardingPlanTileMinutes(int minutes);
 
   /// No description provided for @onboardingTrialTitle.
   ///
@@ -1457,14 +1493,32 @@ abstract class AppLocalizations {
   /// No description provided for @onboardingSignInSubtitle.
   ///
   /// In fr, this message translates to:
-  /// **'Ta progression sera sauvegardée sur cet appareil.'**
+  /// **'Sauvegarde ta progression et synchronise ton plan.'**
   String get onboardingSignInSubtitle;
 
-  /// No description provided for @onboardingSignInCta.
+  /// No description provided for @onboardingSignInApple.
   ///
   /// In fr, this message translates to:
-  /// **'Commencer à apprendre'**
-  String get onboardingSignInCta;
+  /// **'Se connecter avec Apple'**
+  String get onboardingSignInApple;
+
+  /// No description provided for @onboardingSignInGoogle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Continuer avec Google'**
+  String get onboardingSignInGoogle;
+
+  /// No description provided for @onboardingSignInSkip.
+  ///
+  /// In fr, this message translates to:
+  /// **'Passer pour l\'instant'**
+  String get onboardingSignInSkip;
+
+  /// No description provided for @onboardingSignInFailed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Échec de la connexion. Réessaie.'**
+  String get onboardingSignInFailed;
 }
 
 class _AppLocalizationsDelegate

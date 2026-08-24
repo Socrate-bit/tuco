@@ -32,6 +32,19 @@ class OnboardingCubit extends Cubit<OnboardingState> {
     }
   }
 
+  /// Marks onboarding done without writing a profile — used when an
+  /// existing user signs in directly from the start page.
+  Future<void> markComplete() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool(_prefsKey, true);
+    } catch (e) {
+      debugPrint('[OnboardingCubit] markComplete error: $e');
+    }
+    emit(state.copyWith(isComplete: true));
+    _step('direct_sign_in', {});
+  }
+
   /// Clears the completion flag and answers (account deletion / reset).
   Future<void> reset() async {
     try {

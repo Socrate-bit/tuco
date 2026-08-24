@@ -478,18 +478,21 @@ class AppLocalizationsFr extends AppLocalizations {
   String get onboardingWelcomeCta => 'Commencer';
 
   @override
+  String get onboardingWelcomeJoin =>
+      'Rejoins des milliers d\'apprenants qui parlent avec Tuco';
+
+  @override
+  String get onboardingAlreadyAccount => 'Tu as déjà un compte ? ';
+
+  @override
+  String get onboardingSignInLink => 'Se connecter';
+
+  @override
   String get onboardingMeetTitle => 'Rencontre Tuco, ton nouveau compagnon';
 
   @override
   String get onboardingMeetSubtitle =>
       'Tuco t\'appellera chaque jour pour pratiquer de vraies conversations.';
-
-  @override
-  String get onboardingMeet2Title => 'Tuco prépare ton parcours';
-
-  @override
-  String get onboardingMeet2Subtitle =>
-      'Tes appels quotidiens suivront tes objectifs, ton niveau et tes centres d\'intérêt.';
 
   @override
   String get onboardingLanguageTitle => 'Quelle langue veux-tu apprendre ?';
@@ -499,6 +502,9 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get onboardingLanguageEn => 'Anglais';
+
+  @override
+  String get onboardingLanguageFr => 'Français';
 
   @override
   String get onboardingLevelTitle => 'Quel est ton niveau d\'espagnol ?';
@@ -546,6 +552,9 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get onboardingChallengeListening =>
       'J\'ai du mal à comprendre les natifs';
+
+  @override
+  String get onboardingChallengeOther => 'Autre';
 
   @override
   String get onboardingEducation1Title => 'Tuco crée des résultats durables';
@@ -702,25 +711,42 @@ class AppLocalizationsFr extends AppLocalizations {
   String get onboardingLoadingStep3 => 'Construction de ton plan quotidien...';
 
   @override
-  String get onboardingPlanTitle => 'Ton plan personnalisé est prêt !';
+  String get onboardingPlanTitle =>
+      'Félicitations !\nTon plan personnalisé est prêt';
 
   @override
-  String get onboardingPlanSubtitle => 'Voici à quoi ressemble ton parcours.';
+  String get onboardingPlanDailyRecommendation => 'Recommandation quotidienne';
 
   @override
-  String get onboardingPlanFluentBy => 'Courant d\'ici';
+  String get onboardingPlanStayConsistent =>
+      'Reste régulier(ère) pour atteindre tes objectifs';
 
   @override
-  String get onboardingPlanDailyGoal => 'Objectif quotidien';
+  String get onboardingPlanStatSpeaking => 'Expression orale';
 
   @override
-  String get onboardingPlanReminder => 'Appel quotidien';
+  String get onboardingPlanStatWords => 'Nouveaux mots';
 
   @override
-  String get onboardingPlanMethod => 'Méthode';
+  String get onboardingPlanStatCall => 'Appel avec Tuco';
 
   @override
-  String get onboardingPlanMethodValue => 'Vraies conversations';
+  String onboardingPlanTileLessons(int lessons) {
+    return '$lessons leçons chargées';
+  }
+
+  @override
+  String onboardingPlanTileFluent(String date) {
+    return 'Courant d\'ici $date';
+  }
+
+  @override
+  String get onboardingPlanTilePath => 'Parcours optimisé pour toi';
+
+  @override
+  String onboardingPlanTileMinutes(int minutes) {
+    return '$minutes min/jour';
+  }
 
   @override
   String get onboardingTrialTitle =>
@@ -746,8 +772,17 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get onboardingSignInSubtitle =>
-      'Ta progression sera sauvegardée sur cet appareil.';
+      'Sauvegarde ta progression et synchronise ton plan.';
 
   @override
-  String get onboardingSignInCta => 'Commencer à apprendre';
+  String get onboardingSignInApple => 'Se connecter avec Apple';
+
+  @override
+  String get onboardingSignInGoogle => 'Continuer avec Google';
+
+  @override
+  String get onboardingSignInSkip => 'Passer pour l\'instant';
+
+  @override
+  String get onboardingSignInFailed => 'Échec de la connexion. Réessaie.';
 }

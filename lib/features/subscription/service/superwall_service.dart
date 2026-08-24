@@ -4,9 +4,8 @@ import 'package:flutter/foundation.dart';
 import 'package:superwallkit_flutter/superwallkit_flutter.dart';
 
 /// Configures the Superwall SDK at startup.
-/// No-op when no key is provided (--dart-define=SUPERWALL_KEY=pk_...).
 class SuperwallService {
-  static const _key = String.fromEnvironment('SUPERWALL_KEY');
+  static const _key = 'pk_CQ3WsXRN9vvfQKgESbqmn';
 
   static bool get isConfigured => _key.isNotEmpty;
 
