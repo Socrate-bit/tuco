@@ -753,4 +753,21 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get onboardingSignInFailed => 'Sign-in failed. Please try again.';
+
+  @override
+  String get pronunciationSheetTitle => 'Pronunciation';
+
+  @override
+  String get pronunciationTapWordHint => 'Tap a word to practice it.';
+
+  @override
+  String nativeSpeakerScore(int score) {
+    return 'You sound $score% like a native speaker!';
+  }
+
+  @override
+  String get tryAgainButton => 'Try again!';
+
+  @override
+  String get stopRecordingButton => 'Stop';
 }

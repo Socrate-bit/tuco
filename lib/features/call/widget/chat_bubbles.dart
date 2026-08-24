@@ -5,6 +5,8 @@ import '../../../core/l10n/app_localizations.dart';
 import '../../../core/model/models.dart';
 import '../../../core/service/haptics.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../pronunciation/widget/phoneme_detail_sheet.dart';
+import '../../pronunciation/widget/pronunciation_ring.dart';
 
 /// Grey AI bubble with translate + play buttons on its right.
 class AiBubble extends StatelessWidget {
@@ -129,15 +131,25 @@ class UserBubble extends StatelessWidget {
             child: Stack(
               clipBehavior: Clip.none,
               children: [
-                Container(
-                  constraints: BoxConstraints(maxWidth: 0.64.sw),
-                  padding:
-                      EdgeInsets.symmetric(horizontal: 18.w, vertical: 14.h),
-                  decoration: BoxDecoration(
-                    color: AppColors.userBubble,
-                    borderRadius: BorderRadius.circular(22.r),
+                GestureDetector(
+                  // Tap a scored message to open its phoneme breakdown.
+                  onTap: message.pronunciation == null
+                      ? null
+                      : () {
+                          Haptics.tap();
+                          showPhonemeDetailSheet(
+                              context, message.pronunciation!);
+                        },
+                  child: Container(
+                    constraints: BoxConstraints(maxWidth: 0.64.sw),
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 18.w, vertical: 14.h),
+                    decoration: BoxDecoration(
+                      color: AppColors.userBubble,
+                      borderRadius: BorderRadius.circular(22.r),
+                    ),
+                    child: Text(message.text, style: AppTextStyles.body),
                   ),
-                  child: Text(message.text, style: AppTextStyles.body),
                 ),
                 // Exercise result badge (correct / wrong attempt).
                 if (message.verdict != null)
@@ -159,6 +171,22 @@ class UserBubble extends StatelessWidget {
                             : Icons.close_rounded,
                         size: 15.r,
                         color: Colors.white,
+                      ),
+                    ),
+                  ),
+                // Progressive pronunciation score ring.
+                if (message.pronunciation != null)
+                  Positioned(
+                    bottom: -6.r,
+                    right: -6.r,
+                    child: Container(
+                      padding: EdgeInsets.all(2.r),
+                      decoration: const BoxDecoration(
+                          color: AppColors.card, shape: BoxShape.circle),
+                      child: PronunciationRing(
+                        score: message.pronunciation!.pronScore,
+                        size: 24,
+                        stroke: 3,
                       ),
                     ),
                   ),

@@ -43,6 +43,7 @@ abstract class AppColors {
   static const scoreOrange = Color(0xFFF2A93B);
   static const scoreGreen = Color(0xFF3ED598);
   static const scoreGreenBg = Color(0xFF4CD08D);
+  static const scoreBlue = Color(0xFF3B82F6); // top pronunciation tier
 
   // Misc
   static const lockedNode = Color(0xFFB9BDC3);

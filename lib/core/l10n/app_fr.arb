@@ -300,5 +300,17 @@
   "onboardingSignInApple": "Se connecter avec Apple",
   "onboardingSignInGoogle": "Continuer avec Google",
   "onboardingSignInSkip": "Passer pour l'instant",
-  "onboardingSignInFailed": "Échec de la connexion. Réessaie."
+  "onboardingSignInFailed": "Échec de la connexion. Réessaie.",
+  "pronunciationSheetTitle": "Prononciation",
+  "pronunciationTapWordHint": "Appuie sur un mot pour t'entraîner.",
+  "nativeSpeakerScore": "Tu parles comme un natif à {score}% !",
+  "@nativeSpeakerScore": {
+    "placeholders": {
+      "score": {
+        "type": "int"
+      }
+    }
+  },
+  "tryAgainButton": "Réessayer !",
+  "stopRecordingButton": "Arrêter"
 }

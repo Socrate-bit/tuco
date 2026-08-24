@@ -1477,6 +1477,36 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Échec de la connexion. Réessaie.'**
   String get onboardingSignInFailed;
+
+  /// No description provided for @pronunciationSheetTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Prononciation'**
+  String get pronunciationSheetTitle;
+
+  /// No description provided for @pronunciationTapWordHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Appuie sur un mot pour t\'entraîner.'**
+  String get pronunciationTapWordHint;
+
+  /// No description provided for @nativeSpeakerScore.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tu parles comme un natif à {score}% !'**
+  String nativeSpeakerScore(int score);
+
+  /// No description provided for @tryAgainButton.
+  ///
+  /// In fr, this message translates to:
+  /// **'Réessayer !'**
+  String get tryAgainButton;
+
+  /// No description provided for @stopRecordingButton.
+  ///
+  /// In fr, this message translates to:
+  /// **'Arrêter'**
+  String get stopRecordingButton;
 }
 
 class _AppLocalizationsDelegate
