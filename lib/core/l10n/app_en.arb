@@ -102,8 +102,8 @@
     }
   },
   "noErrorsHere": "No errors here! You can tap the feedback button in the lesson to check your mistakes.",
-  "learningLanguage": "Learning language",
-  "teachingLanguage": "Teaching language",
+  "targetLanguage": "Target language",
+  "nativeLanguage": "Native language",
   "languageLevel": "Language level",
   "interests": "Interests",
   "dailyGoal": "Daily goal",

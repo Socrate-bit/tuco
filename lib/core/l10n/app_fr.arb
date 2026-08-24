@@ -102,8 +102,8 @@
     }
   },
   "noErrorsHere": "Pas d'erreurs ici ! Vous pouvez appuyer sur le bouton de commentaires dans la leçon pour vérifier vos erreurs.",
-  "learningLanguage": "Langue d'apprentissage",
-  "teachingLanguage": "Langue d'enseignement",
+  "targetLanguage": "Langue cible",
+  "nativeLanguage": "Langue maternelle",
   "languageLevel": "Niveau de langue",
   "interests": "Centres d'intérêt",
   "dailyGoal": "Objectif quotidien",

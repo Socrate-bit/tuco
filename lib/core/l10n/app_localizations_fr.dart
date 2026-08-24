@@ -291,10 +291,10 @@ class AppLocalizationsFr extends AppLocalizations {
       'Pas d\'erreurs ici ! Vous pouvez appuyer sur le bouton de commentaires dans la leçon pour vérifier vos erreurs.';
 
   @override
-  String get learningLanguage => 'Langue d\'apprentissage';
+  String get targetLanguage => 'Langue cible';
 
   @override
-  String get teachingLanguage => 'Langue d\'enseignement';
+  String get nativeLanguage => 'Langue maternelle';
 
   @override
   String get languageLevel => 'Niveau de langue';

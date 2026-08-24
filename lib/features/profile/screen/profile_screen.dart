@@ -153,7 +153,7 @@ class ProfileScreen extends StatelessWidget {
                     children: [
                       _SettingsRow(
                         emoji: '🎯',
-                        label: l10n.learningLanguage,
+                        label: l10n.targetLanguage,
                         value: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
@@ -174,13 +174,13 @@ class ProfileScreen extends StatelessWidget {
                           final result = await showPickerSheet(
                             context,
                             emoji: '🎯',
-                            title: l10n.learningLanguage,
+                            title: l10n.targetLanguage,
                             options: _languageOptions(AppLanguages.learnable),
                             selected: [profile.targetLanguage],
                           );
                           if (result != null && result.isNotEmpty) {
                             cubit.update(
-                                profile.copyWith(nativeLanguage: result.first));
+                                profile.copyWith(targetLanguage: result.first));
                           }
                         },
                       ),
@@ -219,7 +219,7 @@ class ProfileScreen extends StatelessWidget {
                       _divider(),
                       _SettingsRow(
                         emoji: '👶',
-                        label: l10n.teachingLanguage,
+                        label: l10n.nativeLanguage,
                         value: Text(AppLanguages.labelOf(profile.nativeLanguage),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -229,7 +229,7 @@ class ProfileScreen extends StatelessWidget {
                           final result = await showPickerSheet(
                             context,
                             emoji: '👶',
-                            title: l10n.teachingLanguage,
+                            title: l10n.nativeLanguage,
                             options: _languageOptions(AppLanguages.native),
                             selected: [profile.nativeLanguage],
                           );
