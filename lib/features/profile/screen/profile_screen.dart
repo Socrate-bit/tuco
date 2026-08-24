@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../core/l10n/app_localizations.dart';
+import '../../../core/model/app_language.dart';
 import '../../../core/service/haptics.dart';
 import '../../../core/theme/app_theme.dart';
 import '../cubit/profile_cubit.dart';
@@ -13,28 +14,20 @@ import '../widget/picker_sheet.dart';
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
-  static const _languageOptions = [
-    PickerOption(value: 'fr', label: 'Français', emoji: '🇫🇷'),
-    PickerOption(value: 'ar', label: 'العربية', emoji: '🇸🇦'),
-    PickerOption(value: 'es', label: 'Español', emoji: '🇪🇸'),
-    PickerOption(value: 'en', label: 'English', emoji: '🇬🇧'),
-    PickerOption(value: 'tr', label: 'Türkçe', emoji: '🇹🇷'),
-  ];
+  /// Picker options for a list of language codes.
+  static List<PickerOption> _languageOptions(List<String> codes) => [
+        for (final code in codes)
+          PickerOption(
+              value: code,
+              label: AppLanguages.of(code).label,
+              emoji: AppLanguages.of(code).flag),
+      ];
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final profile = context.watch<ProfileCubit>().state;
     final cubit = context.read<ProfileCubit>();
-
-    String languageLabel(String code) => switch (code) {
-          'fr' => 'Français',
-          'es' => l10n.languageSpanishName,
-          'en' => 'English',
-          'tr' => 'Türkçe',
-          'ar' => 'العربية',
-          _ => code,
-        };
 
     String levelLabel(String level) => switch (level) {
           'beginner' => l10n.levelBeginner,
@@ -190,10 +183,12 @@ class ProfileScreen extends StatelessWidget {
                         value: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Text('🇪🇸', style: TextStyle(fontSize: 18.sp)),
+                            Text(AppLanguages.of(profile.targetLanguage).flag,
+                                style: TextStyle(fontSize: 18.sp)),
                             SizedBox(width: 6.w),
                             Flexible(
-                              child: Text(languageLabel(profile.targetLanguage),
+                              child: Text(
+                                  AppLanguages.labelOf(profile.targetLanguage),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                   style: AppTextStyles.itemSubtitle
@@ -206,7 +201,7 @@ class ProfileScreen extends StatelessWidget {
                             context,
                             emoji: '🎯',
                             title: l10n.targetLanguage,
-                            options: _languageOptions,
+                            options: _languageOptions(AppLanguages.learnable),
                             selected: [profile.targetLanguage],
                           );
                           if (result != null && result.isNotEmpty) {
@@ -217,7 +212,7 @@ class ProfileScreen extends StatelessWidget {
                       ),
                       _divider(),
                       _SettingsRow(
-                        emoji: '🇪🇸',
+                        emoji: AppLanguages.of(profile.targetLanguage).flag,
                         label: l10n.languageLevel,
                         value: Text(levelLabel(profile.level),
                             maxLines: 1,
@@ -227,7 +222,7 @@ class ProfileScreen extends StatelessWidget {
                         onTap: () async {
                           final result = await showPickerSheet(
                             context,
-                            emoji: '🇪🇸',
+                            emoji: AppLanguages.of(profile.targetLanguage).flag,
                             title: l10n.languageLevel,
                             options: [
                               PickerOption(
@@ -251,7 +246,7 @@ class ProfileScreen extends StatelessWidget {
                       _SettingsRow(
                         emoji: '👶',
                         label: l10n.nativeLanguage,
-                        value: Text(languageLabel(profile.nativeLanguage),
+                        value: Text(AppLanguages.labelOf(profile.nativeLanguage),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: AppTextStyles.itemSubtitle
@@ -261,7 +256,7 @@ class ProfileScreen extends StatelessWidget {
                             context,
                             emoji: '👶',
                             title: l10n.nativeLanguage,
-                            options: _languageOptions,
+                            options: _languageOptions(AppLanguages.native),
                             selected: [profile.nativeLanguage],
                           );
                           if (result != null && result.isNotEmpty) {

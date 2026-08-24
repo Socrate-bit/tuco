@@ -1,6 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 
+import '../../../core/model/app_language.dart';
+
 /// Speech input. Wraps speech_to_text for push-to-talk recognition.
 class SttService {
   final SpeechToText _stt = SpeechToText();
@@ -31,7 +33,8 @@ class SttService {
     try {
       await _stt.listen(
         listenOptions: SpeechListenOptions(
-            partialResults: true, localeId: _localeFor(languageCode)),
+            partialResults: true,
+            localeId: AppLanguages.of(languageCode).sttLocale),
         onResult: (r) => onResult(r.recognizedWords, r.finalResult),
       );
     } catch (e) {
@@ -46,13 +49,4 @@ class SttService {
       debugPrint('[SttService] stop error: $e');
     }
   }
-
-  String _localeFor(String code) => switch (code) {
-        'es' => 'es_ES',
-        'fr' => 'fr_FR',
-        'en' => 'en_US',
-        'tr' => 'tr_TR',
-        'ar' => 'ar_SA',
-        _ => 'en_US',
-      };
 }

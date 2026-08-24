@@ -45,3 +45,23 @@ class Level extends Equatable {
   @override
   List<Object?> get props => [id, lessons];
 }
+
+/// A full course for one target language: the lesson path plus the extra
+/// vocabulary bank feeding the "upcoming words" queue.
+class Curriculum extends Equatable {
+  final String language; // target language code: 'es', 'fr', 'zh', 'en'
+  final List<Level> levels;
+  final List<VocabWord> extraVocabulary;
+
+  const Curriculum({
+    required this.language,
+    required this.levels,
+    required this.extraVocabulary,
+  });
+
+  /// Flat ordered list of every lesson across levels.
+  List<Lesson> get lessons => levels.expand((l) => l.lessons).toList();
+
+  @override
+  List<Object?> get props => [language];
+}

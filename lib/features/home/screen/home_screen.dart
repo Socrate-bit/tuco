@@ -3,11 +3,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../core/l10n/app_localizations.dart';
+import '../../../core/model/app_language.dart';
 import '../../../core/service/data_repository.dart';
 import '../../../core/service/haptics.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../call/screen/call_screen.dart';
-import '../../curriculum/data/curriculum_data.dart';
 import '../../curriculum/model/curriculum_models.dart';
 import '../../streak/screen/streak_screen.dart';
 import '../cubit/path_cubit.dart';
@@ -71,7 +71,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   controller: _scrollCtrl,
                   padding: EdgeInsets.only(bottom: 130.h),
                   children: [
-                    for (final level in CurriculumData.levels)
+                    for (final level in pathState.levels)
                       LevelSection(
                         title: levelTitle(level.id),
                         lessons: level.lessons,
@@ -114,13 +114,12 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _onLessonTap(Lesson lesson, PathState pathState) async {
-    final l10n = AppLocalizations.of(context)!;
     final status = pathState.statusOf(lesson);
 
     // Locked lessons ask for confirmation before skipping ahead.
     if (status == LessonStatus.locked) {
-      final skip =
-          await showSkipLessonDialog(context, l10n.languageSpanishName);
+      final skip = await showSkipLessonDialog(
+          context, AppLanguages.labelOf(pathState.targetLanguage));
       if (skip != true || !mounted) return;
     }
 

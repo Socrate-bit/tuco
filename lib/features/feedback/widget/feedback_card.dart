@@ -39,14 +39,7 @@ class _FeedbackCardState extends State<FeedbackCard> {
     };
   }
 
-  Lesson? get _lesson {
-    for (final level in CurriculumData.levels) {
-      for (final lesson in level.lessons) {
-        if (lesson.id == widget.item.lessonId) return lesson;
-      }
-    }
-    return null;
-  }
+  Lesson? get _lesson => CurriculumData.lessonById(widget.item.lessonId);
 
   /// Sentence with erroneous fragments highlighted red + underlined.
   TextSpan _highlightedSentence() {

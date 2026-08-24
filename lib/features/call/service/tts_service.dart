@@ -1,6 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 
+import '../../../core/model/app_language.dart';
+
 /// Robot voice. Wraps flutter_tts with target-language voice and
 /// the cycling speed control (1x → 0.75x → 0.5x).
 class TtsService {
@@ -17,7 +19,7 @@ class TtsService {
 
   Future<void> init(String languageCode) async {
     try {
-      await _tts.setLanguage(_localeFor(languageCode));
+      await _tts.setLanguage(AppLanguages.of(languageCode).ttsLocale);
       await _tts.setSpeechRate(0.5); // flutter_tts default-ish natural rate
       await _tts.awaitSpeakCompletion(true);
       debugPrint('[TtsService] Initialized for $languageCode');
@@ -55,13 +57,4 @@ class TtsService {
   }
 
   void dispose() => stop();
-
-  String _localeFor(String code) => switch (code) {
-        'es' => 'es-ES',
-        'fr' => 'fr-FR',
-        'en' => 'en-US',
-        'tr' => 'tr-TR',
-        'ar' => 'ar-SA',
-        _ => 'en-US',
-      };
 }

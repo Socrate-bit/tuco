@@ -140,12 +140,12 @@ class DataRepository {
       if (_useFirestore) {
         final batch = FirebaseFirestore.instance.batch();
         for (final w in words) {
-          batch.set(_userDoc.collection('vocab').doc(w.word), w.toMap());
+          batch.set(_userDoc.collection('vocab').doc(w.id), w.toMap());
         }
         await batch.commit();
       } else {
         for (final w in words) {
-          if (!_learned.any((e) => e.word == w.word)) _learned.add(w);
+          if (!_learned.any((e) => e.id == w.id)) _learned.add(w);
         }
         _learnedCtrl.add(List.from(_learned));
       }

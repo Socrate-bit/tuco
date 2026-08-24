@@ -17,14 +17,7 @@ class CallCard extends StatelessWidget {
 
   const CallCard({super.key, required this.call});
 
-  Lesson? get _lesson {
-    for (final level in CurriculumData.levels) {
-      for (final lesson in level.lessons) {
-        if (lesson.id == call.lessonId) return lesson;
-      }
-    }
-    return null;
-  }
+  Lesson? get _lesson => CurriculumData.lessonById(call.lessonId);
 
   @override
   Widget build(BuildContext context) {

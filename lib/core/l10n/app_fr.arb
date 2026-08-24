@@ -126,13 +126,6 @@
       }
     }
   },
-  "languageFrench": "Français",
-  "languageEnglish": "English",
-  "languageSpanish": "Español",
-  "languageArabic": "العربية",
-  "languageTurkish": "Türkçe",
-  "languageSpanishName": "Espagnol",
-  "languageEnglishName": "English",
   "errorGeneric": "Une erreur est survenue. Veuillez réessayer.",
   "interestTechnology": "Technologie",
   "interestTravel": "Voyages",

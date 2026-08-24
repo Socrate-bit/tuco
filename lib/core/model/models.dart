@@ -270,19 +270,25 @@ class FeedbackItem extends Equatable {
 class LearnedWord extends Equatable {
   final String word;
   final String translation;
+  final String language; // target language the word was learned in
   final String? lessonId;
   final DateTime learnedAt;
 
   const LearnedWord({
     required this.word,
     required this.translation,
+    this.language = 'es',
     this.lessonId,
     required this.learnedAt,
   });
 
+  /// Storage id — words of different languages can share the same spelling.
+  String get id => '${language}_$word';
+
   Map<String, dynamic> toMap() => {
         'word': word,
         'translation': translation,
+        'language': language,
         'lessonId': lessonId,
         'learnedAt': learnedAt.millisecondsSinceEpoch,
       };
@@ -290,13 +296,14 @@ class LearnedWord extends Equatable {
   factory LearnedWord.fromMap(Map<String, dynamic> map) => LearnedWord(
         word: map['word'] as String? ?? '',
         translation: map['translation'] as String? ?? '',
+        language: map['language'] as String? ?? 'es',
         lessonId: map['lessonId'] as String?,
         learnedAt:
             DateTime.fromMillisecondsSinceEpoch(map['learnedAt'] as int? ?? 0),
       );
 
   @override
-  List<Object?> get props => [word];
+  List<Object?> get props => [word, language];
 }
 
 /// Aggregated practice for one day (streak + call time).

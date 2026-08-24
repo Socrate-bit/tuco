@@ -333,6 +333,7 @@ class CallCubit extends Cubit<CallState> {
         LearnedWord(
             word: w.word,
             translation: w.translation,
+            language: _profile.targetLanguage,
             lessonId: lesson!.id,
             learnedAt: DateTime.now()),
     ]);

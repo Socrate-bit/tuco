@@ -287,27 +287,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get languageFrench => 'Français';
-
-  @override
-  String get languageEnglish => 'English';
-
-  @override
-  String get languageSpanish => 'Español';
-
-  @override
-  String get languageArabic => 'العربية';
-
-  @override
-  String get languageTurkish => 'Türkçe';
-
-  @override
-  String get languageSpanishName => 'Spanish';
-
-  @override
-  String get languageEnglishName => 'English';
-
-  @override
   String get errorGeneric => 'Something went wrong. Please try again.';
 
   @override

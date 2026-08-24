@@ -4,6 +4,7 @@ import 'package:firebase_ai/firebase_ai.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 
+import '../../../core/model/app_language.dart';
 import '../../../core/model/models.dart';
 import '../../curriculum/model/curriculum_models.dart';
 
@@ -29,20 +30,9 @@ class GeminiService {
   GeminiService({required this.profile, required this.lesson})
       : available = Firebase.apps.isNotEmpty;
 
-  String get _nativeName => switch (profile.nativeLanguage) {
-        'fr' => 'French',
-        'es' => 'Spanish',
-        'tr' => 'Turkish',
-        'ar' => 'Arabic',
-        _ => 'English',
-      };
+  String get _nativeName => AppLanguages.of(profile.nativeLanguage).englishName;
 
-  String get _targetName => switch (profile.targetLanguage) {
-        'es' => 'Spanish',
-        'fr' => 'French',
-        'en' => 'English',
-        _ => 'Spanish',
-      };
+  String get _targetName => AppLanguages.of(profile.targetLanguage).englishName;
 
   GenerativeModel _model({String? systemPrompt, bool json = false}) =>
       FirebaseAI.googleAI().generativeModel(

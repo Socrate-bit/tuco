@@ -13,12 +13,27 @@ enum LessonStatus { completed, current, locked }
 
 class PathState extends Equatable {
   final Set<String> completedLessons;
+  final String targetLanguage;
 
-  const PathState({this.completedLessons = const {}});
+  const PathState({
+    this.completedLessons = const {},
+    this.targetLanguage = 'es',
+  });
+
+  PathState copyWith({
+    Set<String>? completedLessons,
+    String? targetLanguage,
+  }) =>
+      PathState(
+        completedLessons: completedLessons ?? this.completedLessons,
+        targetLanguage: targetLanguage ?? this.targetLanguage,
+      );
+
+  /// Levels of the curriculum currently being learned.
+  List<Level> get levels => CurriculumData.levelsOf(targetLanguage);
 
   /// Flat ordered list of all lessons across levels.
-  List<Lesson> get allLessons =>
-      CurriculumData.levels.expand((l) => l.lessons).toList();
+  List<Lesson> get allLessons => CurriculumData.of(targetLanguage).lessons;
 
   /// The next lesson to take (first not completed).
   Lesson get currentLesson => allLessons.firstWhere(
@@ -40,24 +55,30 @@ class PathState extends Equatable {
   }
 
   @override
-  List<Object?> get props => [completedLessons];
+  List<Object?> get props => [completedLessons, targetLanguage];
 }
 
-/// Tracks lesson completion to drive the home path.
+/// Tracks lesson completion and the target language to drive the home path.
 class PathCubit extends Cubit<PathState> {
   final DataRepository _repo;
   StreamSubscription? _sub;
+  StreamSubscription? _profileSub;
 
   PathCubit(this._repo) : super(const PathState()) {
     _sub = _repo.completedLessonsStream().listen(
-      (completed) => emit(PathState(completedLessons: completed)),
+      (completed) => emit(state.copyWith(completedLessons: completed)),
       onError: (e) => debugPrint('[PathCubit] stream error: $e'),
+    );
+    _profileSub = _repo.profileStream().listen(
+      (profile) => emit(state.copyWith(targetLanguage: profile.targetLanguage)),
+      onError: (e) => debugPrint('[PathCubit] profile stream error: $e'),
     );
   }
 
   @override
   Future<void> close() {
     _sub?.cancel();
+    _profileSub?.cancel();
     return super.close();
   }
 }

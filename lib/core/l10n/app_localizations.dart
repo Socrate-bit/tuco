@@ -626,48 +626,6 @@ abstract class AppLocalizations {
   /// **'{count} Grammaire'**
   String grammarChip(int count);
 
-  /// No description provided for @languageFrench.
-  ///
-  /// In fr, this message translates to:
-  /// **'Français'**
-  String get languageFrench;
-
-  /// No description provided for @languageEnglish.
-  ///
-  /// In fr, this message translates to:
-  /// **'English'**
-  String get languageEnglish;
-
-  /// No description provided for @languageSpanish.
-  ///
-  /// In fr, this message translates to:
-  /// **'Español'**
-  String get languageSpanish;
-
-  /// No description provided for @languageArabic.
-  ///
-  /// In fr, this message translates to:
-  /// **'العربية'**
-  String get languageArabic;
-
-  /// No description provided for @languageTurkish.
-  ///
-  /// In fr, this message translates to:
-  /// **'Türkçe'**
-  String get languageTurkish;
-
-  /// No description provided for @languageSpanishName.
-  ///
-  /// In fr, this message translates to:
-  /// **'Espagnol'**
-  String get languageSpanishName;
-
-  /// No description provided for @languageEnglishName.
-  ///
-  /// In fr, this message translates to:
-  /// **'English'**
-  String get languageEnglishName;
-
   /// No description provided for @errorGeneric.
   ///
   /// In fr, this message translates to:
