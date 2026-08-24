@@ -85,12 +85,14 @@ class UserBubble extends StatelessWidget {
   final ChatMessage message;
   final VoidCallback onFeedbackTap;
   final bool pending; // partial voice transcript
+  final bool hasFeedback; // corrections exist → show notification dot
 
   const UserBubble({
     super.key,
     required this.message,
     required this.onFeedbackTap,
     this.pending = false,
+    this.hasFeedback = false,
   });
 
   @override
@@ -105,16 +107,17 @@ class UserBubble extends StatelessWidget {
             child: Stack(
               children: [
                 Icon(Icons.sms_rounded, size: 20.r, color: AppColors.textGrey),
-                Positioned(
-                  right: 0,
-                  top: 0,
-                  child: Container(
-                    width: 8.r,
-                    height: 8.r,
-                    decoration: const BoxDecoration(
-                        color: AppColors.primary, shape: BoxShape.circle),
+                if (hasFeedback)
+                  Positioned(
+                    right: 0,
+                    top: 0,
+                    child: Container(
+                      width: 8.r,
+                      height: 8.r,
+                      decoration: const BoxDecoration(
+                          color: AppColors.primary, shape: BoxShape.circle),
+                    ),
                   ),
-                ),
               ],
             ),
           ),
@@ -123,14 +126,43 @@ class UserBubble extends StatelessWidget {
         Flexible(
           child: Opacity(
             opacity: pending ? 0.6 : 1,
-            child: Container(
-              constraints: BoxConstraints(maxWidth: 0.64.sw),
-              padding: EdgeInsets.symmetric(horizontal: 18.w, vertical: 14.h),
-              decoration: BoxDecoration(
-                color: AppColors.userBubble,
-                borderRadius: BorderRadius.circular(22.r),
-              ),
-              child: Text(message.text, style: AppTextStyles.body),
+            child: Stack(
+              clipBehavior: Clip.none,
+              children: [
+                Container(
+                  constraints: BoxConstraints(maxWidth: 0.64.sw),
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 18.w, vertical: 14.h),
+                  decoration: BoxDecoration(
+                    color: AppColors.userBubble,
+                    borderRadius: BorderRadius.circular(22.r),
+                  ),
+                  child: Text(message.text, style: AppTextStyles.body),
+                ),
+                // Exercise result badge (correct / wrong attempt).
+                if (message.verdict != null)
+                  Positioned(
+                    top: -6.r,
+                    right: -6.r,
+                    child: Container(
+                      width: 22.r,
+                      height: 22.r,
+                      decoration: BoxDecoration(
+                        color: message.verdict == 'win'
+                            ? AppColors.scoreGreen
+                            : AppColors.scoreRed,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        message.verdict == 'win'
+                            ? Icons.check_rounded
+                            : Icons.close_rounded,
+                        size: 15.r,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+              ],
             ),
           ),
         ),
@@ -142,20 +174,45 @@ class UserBubble extends StatelessWidget {
 /// Cream "Inspiration" bubble with example sentences.
 class InspirationBubble extends StatelessWidget {
   final ChatMessage message;
+  final bool translating;
+  final VoidCallback onTranslate;
+  final VoidCallback onPlay;
 
-  const InspirationBubble({super.key, required this.message});
+  const InspirationBubble({
+    super.key,
+    required this.message,
+    required this.translating,
+    required this.onTranslate,
+    required this.onPlay,
+  });
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final translated = message.translation != null;
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         _CircleAction(
-          onTap: () {},
-          child: Icon(Icons.translate_rounded,
-              size: 20.r, color: AppColors.textGrey),
+          onTap: onTranslate,
+          child: translating
+              ? SizedBox(
+                  width: 18.r,
+                  height: 18.r,
+                  child: CircularProgressIndicator(
+                      strokeWidth: 2, color: AppColors.primary),
+                )
+              : Icon(Icons.translate_rounded,
+                  size: 20.r,
+                  color:
+                      translated ? AppColors.primary : AppColors.textGrey),
+        ),
+        SizedBox(width: 8.w),
+        _CircleAction(
+          onTap: onPlay,
+          child: Icon(Icons.play_arrow_rounded,
+              size: 24.r, color: AppColors.textGrey),
         ),
         SizedBox(width: 10.w),
         Flexible(
@@ -176,6 +233,16 @@ class InspirationBubble extends StatelessWidget {
                 SizedBox(height: 6.h),
                 Text(message.text,
                     style: AppTextStyles.body.copyWith(fontSize: 16.sp)),
+                if (translated) ...[
+                  Padding(
+                    padding: EdgeInsets.symmetric(vertical: 10.h),
+                    child: const Divider(
+                        color: AppColors.divider, thickness: 1, height: 1),
+                  ),
+                  Text(message.translation!,
+                      style: AppTextStyles.body.copyWith(
+                          fontSize: 16.sp, color: AppColors.textGrey)),
+                ],
               ],
             ),
           ),

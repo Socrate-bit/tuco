@@ -6,6 +6,7 @@ import '../../../core/l10n/app_localizations.dart';
 import '../../../core/model/app_language.dart';
 import '../../../core/service/haptics.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../settings/screen/settings_screen.dart';
 import '../cubit/profile_cubit.dart';
 import '../service/reminder_service.dart';
 import '../widget/picker_sheet.dart';
@@ -126,44 +127,17 @@ class ProfileScreen extends StatelessWidget {
                     ),
                   ),
                   GestureDetector(
-                    onTap: () => Haptics.tap(),
+                    onTap: () {
+                      Haptics.tap();
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => const SettingsScreen()));
+                    },
                     child: Icon(Icons.settings_rounded,
-                        color: const Color(0xFF8A8F98), size: 32.r),
+                        color: AppColors.textGrey, size: 32.r),
                   ),
                 ],
-              ),
-            ),
-            SizedBox(height: 24.h),
-
-            // ---- Study in native language toggle ----
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.w),
-              child: Container(
-                padding:
-                    EdgeInsets.symmetric(horizontal: 20.w, vertical: 8.h),
-                decoration: BoxDecoration(
-                  color: AppColors.card,
-                  borderRadius: BorderRadius.circular(20.r),
-                ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Text(l10n.studyInNative,
-                          style: AppTextStyles.itemTitle
-                              .copyWith(fontSize: 19.sp)),
-                    ),
-                    Switch(
-                      value: profile.studyInNativeLanguage,
-                      activeThumbColor: Colors.white,
-                      activeTrackColor: AppColors.primary,
-                      onChanged: (v) {
-                        Haptics.select();
-                        cubit.update(
-                            profile.copyWith(studyInNativeLanguage: v));
-                      },
-                    ),
-                  ],
-                ),
               ),
             ),
             SizedBox(height: 24.h),
@@ -179,7 +153,7 @@ class ProfileScreen extends StatelessWidget {
                     children: [
                       _SettingsRow(
                         emoji: '🎯',
-                        label: l10n.targetLanguage,
+                        label: l10n.learningLanguage,
                         value: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
@@ -200,13 +174,13 @@ class ProfileScreen extends StatelessWidget {
                           final result = await showPickerSheet(
                             context,
                             emoji: '🎯',
-                            title: l10n.targetLanguage,
+                            title: l10n.learningLanguage,
                             options: _languageOptions(AppLanguages.learnable),
                             selected: [profile.targetLanguage],
                           );
                           if (result != null && result.isNotEmpty) {
                             cubit.update(
-                                profile.copyWith(targetLanguage: result.first));
+                                profile.copyWith(nativeLanguage: result.first));
                           }
                         },
                       ),
@@ -245,7 +219,7 @@ class ProfileScreen extends StatelessWidget {
                       _divider(),
                       _SettingsRow(
                         emoji: '👶',
-                        label: l10n.nativeLanguage,
+                        label: l10n.teachingLanguage,
                         value: Text(AppLanguages.labelOf(profile.nativeLanguage),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -255,7 +229,7 @@ class ProfileScreen extends StatelessWidget {
                           final result = await showPickerSheet(
                             context,
                             emoji: '👶',
-                            title: l10n.nativeLanguage,
+                            title: l10n.teachingLanguage,
                             options: _languageOptions(AppLanguages.native),
                             selected: [profile.nativeLanguage],
                           );

@@ -42,6 +42,15 @@ class SttService {
     }
   }
 
+  /// Stop listening and discard the pending result (no final callback).
+  Future<void> cancel() async {
+    try {
+      await _stt.cancel();
+    } catch (e) {
+      debugPrint('[SttService] cancel error: $e');
+    }
+  }
+
   Future<void> stop() async {
     try {
       await _stt.stop();

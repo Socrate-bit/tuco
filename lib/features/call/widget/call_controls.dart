@@ -5,12 +5,14 @@ import '../../../core/l10n/app_localizations.dart';
 import '../../../core/service/haptics.dart';
 import '../../../core/theme/app_theme.dart';
 
-/// Bottom control bar: Type | big mic | Inspiration.
+/// Bottom control bar: Type | big mic | Inspiration (Delete while listening).
 class CallControls extends StatelessWidget {
   final bool listening;
   final VoidCallback onType;
   final VoidCallback onMic;
   final VoidCallback onInspiration;
+  final VoidCallback onClear; // wipe spoken transcript, keep recording
+  final bool inspirationEnabled; // one hint per message round
 
   const CallControls({
     super.key,
@@ -18,6 +20,8 @@ class CallControls extends StatelessWidget {
     required this.onType,
     required this.onMic,
     required this.onInspiration,
+    required this.onClear,
+    this.inspirationEnabled = true,
   });
 
   @override
@@ -62,11 +66,19 @@ class CallControls extends StatelessWidget {
               ),
             ),
           ),
-          _SideControl(
-            icon: Icons.lightbulb_rounded,
-            label: l10n.inspirationButton,
-            onTap: onInspiration,
-          ),
+          if (listening)
+            _SideControl(
+              icon: Icons.backspace_rounded,
+              label: l10n.clearButton,
+              onTap: onClear,
+            )
+          else
+            _SideControl(
+              icon: Icons.lightbulb_rounded,
+              label: l10n.inspirationButton,
+              onTap: onInspiration,
+              enabled: inspirationEnabled,
+            ),
         ],
       ),
     );
@@ -77,35 +89,41 @@ class _SideControl extends StatelessWidget {
   final IconData icon;
   final String label;
   final VoidCallback onTap;
+  final bool enabled;
 
   const _SideControl({
     required this.icon,
     required this.label,
     required this.onTap,
+    this.enabled = true,
   });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
+        if (!enabled) return;
         Haptics.tap();
         onTap();
       },
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: 58.r,
-            height: 58.r,
-            decoration: const BoxDecoration(
-                color: AppColors.primaryLight, shape: BoxShape.circle),
-            child: Icon(icon, color: AppColors.primary, size: 28.r),
-          ),
-          SizedBox(height: 6.h),
-          Text(label,
-              style: AppTextStyles.small
-                  .copyWith(color: AppColors.primary, fontSize: 15.sp)),
-        ],
+      child: Opacity(
+        opacity: enabled ? 1 : 0.4,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 58.r,
+              height: 58.r,
+              decoration: const BoxDecoration(
+                  color: AppColors.primaryLight, shape: BoxShape.circle),
+              child: Icon(icon, color: AppColors.primary, size: 28.r),
+            ),
+            SizedBox(height: 6.h),
+            Text(label,
+                style: AppTextStyles.small
+                    .copyWith(color: AppColors.primary, fontSize: 15.sp)),
+          ],
+        ),
       ),
     );
   }

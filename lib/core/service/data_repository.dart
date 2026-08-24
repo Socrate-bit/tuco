@@ -350,6 +350,54 @@ class DataRepository {
     }
   }
 
+  // ---------------- Account deletion ----------------
+
+  /// Deletes all user data: every subcollection document and the user doc.
+  /// Streams emit empty/default states automatically via Firestore snapshots.
+  Future<void> deleteAllUserData() async {
+    try {
+      if (_useFirestore) {
+        const subcollections = [
+          'calls',
+          'feedback',
+          'vocab',
+          'practiceDays',
+          'sessions',
+          'meta',
+        ];
+        for (final name in subcollections) {
+          final docs = await _userDoc.collection(name).get();
+          final batch = FirebaseFirestore.instance.batch();
+          for (final doc in docs.docs) {
+            batch.delete(doc.reference);
+          }
+          await batch.commit();
+        }
+        await _userDoc.delete();
+      } else {
+        _profile = const UserProfile();
+        _calls.clear();
+        _feedback.clear();
+        _learned.clear();
+        _practiceDays.clear();
+        _completedLessons.clear();
+        _sessions.clear();
+        _game = const GameProfile();
+        _profileCtrl.add(_profile);
+        _callsCtrl.add([]);
+        _feedbackCtrl.add([]);
+        _learnedCtrl.add([]);
+        _daysCtrl.add([]);
+        _completedCtrl.add({});
+        _gameCtrl.add(_game);
+      }
+      debugPrint('[DataRepository] All user data deleted');
+    } catch (e) {
+      debugPrint('[DataRepository] deleteAllUserData error: $e');
+      rethrow;
+    }
+  }
+
   /// Broadcast stream that immediately emits the current value on listen.
   Stream<T> _seeded<T>(StreamController<T> ctrl, T Function() current) async* {
     yield current();

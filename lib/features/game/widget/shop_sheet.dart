@@ -10,7 +10,7 @@ import '../cubit/shop_cubit.dart';
 /// Opens the shop as a half-height modal sheet with no scrim, leaving the pet
 /// and header pills visible. Flags the [ShopCubit] open/closed around its
 /// lifetime so the home header swaps its streak pill for the coin balance.
-/// (Ported from Elevate's shop sheet, restyled for Learna.)
+/// (Ported from Elevate's shop sheet, restyled for Tuco.)
 Future<void> showShopSheet(BuildContext context) async {
   final shop = context.read<ShopCubit>();
   shop.open();

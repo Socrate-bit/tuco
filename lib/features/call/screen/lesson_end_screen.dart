@@ -1,3 +1,6 @@
+import 'dart:math';
+
+import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -9,11 +12,11 @@ import '../../../core/widget/common_widgets.dart';
 import '../../curriculum/model/curriculum_models.dart';
 import '../../home/cubit/path_cubit.dart';
 import '../../streak/screen/streak_win_screen.dart';
-import '../../streak/widget/review_sheet.dart';
+// import '../../streak/widget/review_sheet.dart';
 import 'call_screen.dart';
 
 /// "Cours terminé !" end-of-lesson screen with the 3 stat cards.
-class LessonEndScreen extends StatelessWidget {
+class LessonEndScreen extends StatefulWidget {
   final Lesson lesson;
   final int durationSeconds;
   final int newWordsCount;
@@ -27,9 +30,30 @@ class LessonEndScreen extends StatelessWidget {
     required this.showStreakWin,
   });
 
+  @override
+  State<LessonEndScreen> createState() => _LessonEndScreenState();
+}
+
+class _LessonEndScreenState extends State<LessonEndScreen> {
+  final ConfettiController _confetti =
+      ConfettiController(duration: const Duration(seconds: 2));
+
+  @override
+  void initState() {
+    super.initState();
+    // Celebration confetti burst (the win song is played by CallCubit).
+    _confetti.play();
+  }
+
+  @override
+  void dispose() {
+    _confetti.dispose();
+    super.dispose();
+  }
+
   String get _durationLabel {
-    final m = (durationSeconds ~/ 60).toString().padLeft(2, '0');
-    final s = (durationSeconds % 60).toString().padLeft(2, '0');
+    final m = (widget.durationSeconds ~/ 60).toString().padLeft(2, '0');
+    final s = (widget.durationSeconds % 60).toString().padLeft(2, '0');
     return '$m:$s';
   }
 
@@ -38,48 +62,13 @@ class LessonEndScreen extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     final completedCount =
         context.watch<PathCubit>().state.completedLessons.length;
-    final nextLesson = context.read<PathCubit>().state.lessonAfter(lesson);
+    final nextLesson =
+        context.read<PathCubit>().state.lessonAfter(widget.lesson);
 
     return Scaffold(
       backgroundColor: AppColors.card,
       body: Stack(
         children: [
-          // Blurred robot backdrop fading to white.
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            child: Opacity(
-              opacity: 0.35,
-              child: ImageFiltered(
-                imageFilter: ColorFilter.mode(
-                    Colors.white.withValues(alpha: 0.4), BlendMode.lighten),
-                child: Image.asset(
-                  'assets/images/robot_header.png',
-                  width: 1.sw,
-                  fit: BoxFit.fitWidth,
-                ),
-              ),
-            ),
-          ),
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            height: 420.h,
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.white.withValues(alpha: 0),
-                    Colors.white,
-                  ],
-                ),
-              ),
-            ),
-          ),
           SafeArea(
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 24.w),
@@ -91,7 +80,7 @@ class LessonEndScreen extends StatelessWidget {
                     child: _CloseCircle(onTap: () => _goHome(context)),
                   ),
                   const Spacer(flex: 2),
-                  Image.asset('assets/images/finish_flags.png', height: 120.h),
+                  Image.asset('assets/images/trophy.png', height: 140.h),
                   SizedBox(height: 30.h),
                   Text(
                     l10n.courseDoneBanner,
@@ -111,7 +100,7 @@ class LessonEndScreen extends StatelessWidget {
                         title: l10n.newWordsCard,
                         color: AppColors.primary,
                         icon: Icons.sms_rounded,
-                        value: '$newWordsCount',
+                        value: '${widget.newWordsCount}',
                       ),
                       SizedBox(width: 12.w),
                       _StatCard(
@@ -145,17 +134,37 @@ class LessonEndScreen extends StatelessWidget {
               ),
             ),
           ),
+          // Confetti raining from the top of the screen.
+          Align(
+            alignment: Alignment.topCenter,
+            child: ConfettiWidget(
+              confettiController: _confetti,
+              blastDirection: pi / 2,
+              blastDirectionality: BlastDirectionality.explosive,
+              numberOfParticles: 30,
+              emissionFrequency: 0.05,
+              gravity: 0.25,
+              shouldLoop: false,
+              colors: const [
+                AppColors.primary,
+                AppColors.green,
+                AppColors.purple,
+                AppColors.orangeBanner,
+              ],
+            ),
+          ),
         ],
       ),
     );
   }
 
   Future<void> _afterFlow(BuildContext context) async {
-    if (showStreakWin) {
+    if (widget.showStreakWin) {
       await Navigator.push(context,
           MaterialPageRoute(builder: (_) => const StreakWinScreen()));
     }
-    if (context.mounted) await maybeShowReviewSheet(context);
+    // Review ask disabled for now — re-enable when ready to ask for ratings.
+    // if (context.mounted) await maybeShowReviewSheet(context);
   }
 
   Future<void> _goHome(BuildContext context) async {

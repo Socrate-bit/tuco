@@ -8,7 +8,7 @@ import '../../../core/widget/common_widgets.dart';
 
 bool _reviewShownThisSession = false;
 
-/// Shows the "Merci d'utiliser Learna !" rating sheet once per session.
+/// Shows the "Merci d'utiliser Tuco !" rating sheet once per session.
 Future<void> maybeShowReviewSheet(BuildContext context) async {
   if (_reviewShownThisSession) return;
   _reviewShownThisSession = true;

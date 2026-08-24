@@ -12,7 +12,7 @@ import '../../feedback/screen/grammar_screen.dart';
 import '../../history/screen/history_screen.dart';
 import '../../history/widget/call_card.dart';
 import '../../profile/cubit/profile_cubit.dart';
-import '../../streak/widget/week_fire_row.dart';
+import '../../streak/widget/streak_milestone_card.dart';
 import '../../vocabulary/cubit/vocab_cubit.dart';
 import '../../vocabulary/screen/vocabulary_screen.dart';
 import '../cubit/stats_cubit.dart';
@@ -120,28 +120,9 @@ class ProgressionScreen extends StatelessWidget {
             // ---- Votre série ----
             Text(l10n.yourStreak, style: AppTextStyles.sectionTitle),
             SizedBox(height: 16.h),
-            AppCard(
-              padding: EdgeInsets.all(20.r),
-              child: Column(
-                children: [
-                  _StreakPill(
-                    color: AppColors.streakOrange,
-                    background: const Color(0xFFFFF4E0),
-                    label: l10n.dailyStreak,
-                    value: stats.currentStreak,
-                  ),
-                  SizedBox(height: 12.h),
-                  _StreakPill(
-                    color: AppColors.lessonRed,
-                    background: const Color(0xFFFDEAE6),
-                    label: l10n.longestStreak,
-                    value: stats.longestStreak,
-                  ),
-                  SizedBox(height: 22.h),
-                  const WeekFireRow(),
-                ],
-              ),
-            ),
+            const StreakMilestoneCard(),
+            SizedBox(height: 16.h),
+            _LongestStreakCard(value: stats.longestStreak),
             SizedBox(height: 30.h),
 
             // ---- Temps passé en appel ----
@@ -309,50 +290,24 @@ class _VocabStat extends StatelessWidget {
   }
 }
 
-class _StreakPill extends StatelessWidget {
-  final Color color;
-  final Color background;
-  final String label;
+/// "Série la plus longue" record card: trophy art, value and label.
+class _LongestStreakCard extends StatelessWidget {
   final int value;
 
-  const _StreakPill({
-    required this.color,
-    required this.background,
-    required this.label,
-    required this.value,
-  });
+  const _LongestStreakCard({required this.value});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h),
-      decoration: BoxDecoration(
-        color: background,
-        borderRadius: BorderRadius.circular(30.r),
-      ),
-      child: Row(
+    final l10n = AppLocalizations.of(context)!;
+    return AppCard(
+      padding: EdgeInsets.all(16.r),
+      child: Column(
         children: [
-          Container(
-            width: 40.r,
-            height: 40.r,
-            decoration: const BoxDecoration(
-                color: Colors.white, shape: BoxShape.circle),
-            child: Center(
-                child: Text('🔥', style: TextStyle(fontSize: 20.sp))),
-          ),
-          SizedBox(width: 12.w),
-          Text(label,
-              style: AppTextStyles.itemTitle.copyWith(color: color)),
-          const Spacer(),
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 4.h),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(20.r),
-            ),
-            child: Text('$value',
-                style: AppTextStyles.itemTitle.copyWith(color: color)),
-          ),
+          Image.asset('assets/images/trophy.png', width: 56.r, height: 56.r),
+          SizedBox(height: 4.h),
+          Text('$value',
+              style: AppTextStyles.sectionTitle.copyWith(fontSize: 32.sp)),
+          Text(l10n.longestStreak, style: AppTextStyles.itemSubtitle),
         ],
       ),
     );
@@ -378,20 +333,25 @@ class _TimeStat extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label,
-              style: AppTextStyles.bodyGrey.copyWith(fontSize: 17.sp)),
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(label,
+                maxLines: 1,
+                style: AppTextStyles.bodyGrey.copyWith(fontSize: 15.sp)),
+          ),
           SizedBox(height: 6.h),
           Row(
             children: [
               Icon(Icons.hourglass_bottom_rounded,
-                  color: AppColors.chartBar, size: 20.r),
+                  color: AppColors.chartBar, size: 18.r),
               SizedBox(width: 4.w),
               Flexible(
                 child: FittedBox(
                   fit: BoxFit.scaleDown,
                   child: Text(_label,
+                      maxLines: 1,
                       style: AppTextStyles.sectionTitle
-                          .copyWith(fontSize: 20.sp)),
+                          .copyWith(fontSize: 17.sp)),
                 ),
               ),
             ],
@@ -413,43 +373,61 @@ class _WeekBarChart extends StatelessWidget {
     final days = stats.last7Days;
     final maxSeconds =
         days.fold<int>(0, (max, e) => e.value > max ? e.value : max);
-    final chartHeight = 150.h;
+    final labelHeight = 24.h;
 
     return SizedBox(
-      height: chartHeight + 54.h,
+      height: 200.h,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           for (final entry in days)
             Expanded(
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  if (entry.value > 0) ...[
-                    Text(
-                      '${(entry.value / 60).round()}m',
-                      style: AppTextStyles.small.copyWith(
-                          color: AppColors.chartBar,
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.w800),
+                  // Bar zone: value label + bar sized from available space
+                  // so tall bars can never overflow.
+                  Expanded(
+                    child: LayoutBuilder(
+                      builder: (context, constraints) {
+                        final barMax = constraints.maxHeight - labelHeight;
+                        return Column(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            if (entry.value > 0) ...[
+                              SizedBox(
+                                height: labelHeight,
+                                child: FittedBox(
+                                  fit: BoxFit.scaleDown,
+                                  child: Text(
+                                    '${(entry.value / 60).round()}m',
+                                    style: AppTextStyles.small.copyWith(
+                                        color: AppColors.chartBar,
+                                        fontSize: 16.sp,
+                                        fontWeight: FontWeight.w800),
+                                  ),
+                                ),
+                              ),
+                              Container(
+                                width: 34.w,
+                                height: maxSeconds == 0
+                                    ? 0
+                                    : barMax * (entry.value / maxSeconds),
+                                decoration: BoxDecoration(
+                                  color: AppColors.chartBar,
+                                  borderRadius: BorderRadius.circular(6.r),
+                                ),
+                              ),
+                            ] else
+                              Container(
+                                width: 34.w,
+                                height: 2,
+                                color: AppColors.divider,
+                              ),
+                          ],
+                        );
+                      },
                     ),
-                    SizedBox(height: 4.h),
-                    Container(
-                      width: 34.w,
-                      height: maxSeconds == 0
-                          ? 0
-                          : chartHeight * (entry.value / maxSeconds),
-                      decoration: BoxDecoration(
-                        color: AppColors.chartBar,
-                        borderRadius: BorderRadius.circular(6.r),
-                      ),
-                    ),
-                  ] else
-                    Container(
-                      width: 34.w,
-                      height: 2,
-                      color: AppColors.divider,
-                    ),
+                  ),
                   SizedBox(height: 10.h),
                   Text(
                     _weekdayLabel(context, entry.key),

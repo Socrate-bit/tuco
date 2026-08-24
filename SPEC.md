@@ -1,6 +1,6 @@
-# Learna — Product Spec (inferred from UI Raw screenshots)
+# Tuco — Product Spec (inferred from UI Raw screenshots)
 
-AI language-tutor app ("Learna"). The user learns a target language (e.g. Spanish) by talking to an AI robot tutor in a video-call-like interface. Lessons follow a Duolingo-style path; progress is tracked with streaks, vocabulary, grammar feedback and call-time stats. App UI language is French (l10n, French first); conversation content mixes the user's native language and the target language.
+AI language-tutor app ("Tuco"). The user learns a target language (e.g. Spanish) by talking to an AI robot tutor in a video-call-like interface. Lessons follow a Duolingo-style path; progress is tracked with streaks, vocabulary, grammar feedback and call-time stats. App UI language is French (l10n, French first); conversation content mixes the user's native language and the target language.
 
 ## Confirmed decisions
 - **AI & voice**: Gemini via `firebase_ai` for tutor replies + feedback generation; `speech_to_text` for voice input; **flutter_tts** for the robot's voice (1x pill = TTS speed toggle).
@@ -135,7 +135,7 @@ Header: blue avatar circle with initial + small "+" badge, name + chevron (edit)
 
 ## 14. Review prompt — `ask_review.PNG`
 
-Bottom sheet over call: cat image in warm circle, 5 orange stars, "Merci d'utiliser Learna !", subtitle, blue "C'est parti !" (→ in_app_review), link "Peut-être plus tard".
+Bottom sheet over call: cat image in warm circle, 5 orange stars, "Merci d'utiliser Tuco !", subtitle, blue "C'est parti !" (→ in_app_review), link "Peut-être plus tard".
 
 ---
 

@@ -7,6 +7,7 @@ import 'package:uuid/uuid.dart';
 
 import '../../../core/model/models.dart';
 import '../../../core/service/data_repository.dart';
+import '../../../core/service/sound_service.dart';
 import '../../curriculum/model/curriculum_models.dart';
 import '../service/gemini_service.dart';
 import '../service/stt_service.dart';
@@ -14,10 +15,15 @@ import '../service/tts_service.dart';
 
 enum CallPhase { lesson, practice, free }
 
+/// Pending "are you ready to continue?" confirmation before a transition.
+enum ContinuePrompt { none, practice, end }
+
 class CallState extends Equatable {
   final List<ChatMessage> messages;
   final CallPhase phase;
+  final ContinuePrompt pendingContinue;
   final bool aiThinking;
+  final bool aiSpeaking; // Bubbles still being revealed in sync with audio.
   final bool listening;
   final String partialTranscript;
   final bool typingMode;
@@ -29,7 +35,9 @@ class CallState extends Equatable {
   const CallState({
     this.messages = const [],
     this.phase = CallPhase.lesson,
+    this.pendingContinue = ContinuePrompt.none,
     this.aiThinking = false,
+    this.aiSpeaking = false,
     this.listening = false,
     this.partialTranscript = '',
     this.typingMode = false,
@@ -42,7 +50,9 @@ class CallState extends Equatable {
   CallState copyWith({
     List<ChatMessage>? messages,
     CallPhase? phase,
+    ContinuePrompt? pendingContinue,
     bool? aiThinking,
+    bool? aiSpeaking,
     bool? listening,
     String? partialTranscript,
     bool? typingMode,
@@ -54,7 +64,9 @@ class CallState extends Equatable {
       CallState(
         messages: messages ?? this.messages,
         phase: phase ?? this.phase,
+        pendingContinue: pendingContinue ?? this.pendingContinue,
         aiThinking: aiThinking ?? this.aiThinking,
+        aiSpeaking: aiSpeaking ?? this.aiSpeaking,
         listening: listening ?? this.listening,
         partialTranscript: partialTranscript ?? this.partialTranscript,
         typingMode: typingMode ?? this.typingMode,
@@ -64,11 +76,23 @@ class CallState extends Equatable {
         translatingIndex: translatingIndex ?? this.translatingIndex,
       );
 
+  /// True when a hint was already requested since the last AI message
+  /// (one inspiration allowed per message round).
+  bool get inspirationUsed {
+    for (final m in messages.reversed) {
+      if (m.role == MessageRole.inspiration) return true;
+      if (m.role == MessageRole.ai && m.banner == null) return false;
+    }
+    return false;
+  }
+
   @override
   List<Object?> get props => [
         messages,
         phase,
+        pendingContinue,
         aiThinking,
+        aiSpeaking,
         listening,
         partialTranscript,
         typingMode,
@@ -154,50 +178,109 @@ class CallCubit extends Cubit<CallState> {
       emit(state.copyWith(messages: [...state.messages, m]));
 
   /// Process a tutor reply: strip markers, apply phase transitions, speak.
-  void _handleAiReply(String raw) {
+  Future<void> _handleAiReply(String raw) async {
     var text = raw.trim();
-    final lessonDone = text.contains(kLessonDoneMarker);
-    final practiceDone = text.contains(kPracticeDoneMarker);
+    final win = text.contains(kWinMarker);
+    final fail = text.contains(kFailMarker);
+    // Never switch phase on a reply that corrects a mistake: the model will
+    // re-emit the done marker after the learner's next correct answer.
+    final lessonDone = !fail && text.contains(kLessonDoneMarker);
+    final practiceDone = !fail && text.contains(kPracticeDoneMarker);
     text = text
         .replaceAll(kLessonDoneMarker, '')
         .replaceAll(kPracticeDoneMarker, '')
+        .replaceAll(kWinMarker, '')
+        .replaceAll(kFailMarker, '')
         .trim();
 
+    if (win || fail) _applyVerdict(win ? 'win' : 'fail');
+
     if (text.isNotEmpty) {
-      // Split short instruction sentences like `Say "gracias".` into their own
-      // bubble, matching the reference UI.
-      final sayMatch = RegExp(r'(?:^|\n)(Say "[^"]+"\.)\s*$').firstMatch(text);
-      if (sayMatch != null) {
-        final instruction = sayMatch.group(1)!;
-        final main = text.substring(0, sayMatch.start).trim();
-        if (main.isNotEmpty) {
-          _append(ChatMessage(role: MessageRole.ai, text: main));
-        }
-        _append(ChatMessage(role: MessageRole.ai, text: instruction));
-      } else {
-        _append(ChatMessage(role: MessageRole.ai, text: text));
+      // The model separates ideas with [NEXT]; each part becomes its own
+      // bubble, revealed in sync with its audio (next bubble appears once the
+      // previous one finished speaking), matching the reference UI.
+      final parts = text
+          .split(kSplitMarker)
+          .map((p) => p.trim())
+          .where((p) => p.isNotEmpty)
+          .toList();
+      // Spinner off as soon as the first bubble shows; aiSpeaking keeps
+      // input blocked until the whole reply is revealed.
+      emit(state.copyWith(aiThinking: false, aiSpeaking: true));
+      for (final part in parts) {
+        if (isClosed) return;
+        _append(ChatMessage(role: MessageRole.ai, text: part));
+        await _tts.speakAndWait(part);
       }
-      _tts.speak(text);
+      if (isClosed) return;
+      emit(state.copyWith(aiSpeaking: false));
     }
 
     if (lessonDone) {
       _append(const ChatMessage(
           role: MessageRole.ai, text: '', banner: 'courseDone'));
-      _append(const ChatMessage(
-          role: MessageRole.ai, text: '', banner: 'practice'));
-      emit(state.copyWith(phase: CallPhase.practice));
+      // Wait for the learner to confirm before starting the practice phase.
+      emit(state.copyWith(
+          aiThinking: false, pendingContinue: ContinuePrompt.practice));
+      _persistSession();
+      return;
     }
     if (practiceDone) {
-      _finishLesson();
+      // Wait for the learner to confirm before showing the end screen.
+      emit(state.copyWith(
+          aiThinking: false, pendingContinue: ContinuePrompt.end));
+      _persistSession();
+      return;
     }
     emit(state.copyWith(aiThinking: false));
     _persistSession();
   }
 
+  /// Learner confirmed the "are you ready to continue?" prompt.
+  void confirmContinue() {
+    final prompt = state.pendingContinue;
+    if (prompt == ContinuePrompt.none) return;
+    if (prompt == ContinuePrompt.practice) {
+      _append(const ChatMessage(
+          role: MessageRole.ai, text: '', banner: 'practice'));
+      emit(state.copyWith(
+          phase: CallPhase.practice,
+          aiThinking: true,
+          pendingContinue: ContinuePrompt.none));
+      _persistSession();
+      _startPractice();
+      return;
+    }
+    emit(state.copyWith(pendingContinue: ContinuePrompt.none));
+    _finishLesson();
+  }
+
+  /// Tag the learner's latest message with the exercise result and play the
+  /// matching sound.
+  void _applyVerdict(String verdict) {
+    final index =
+        state.messages.lastIndexWhere((m) => m.role == MessageRole.user);
+    if (index != -1) {
+      final msgs = [...state.messages];
+      msgs[index] = msgs[index].copyWith(verdict: verdict);
+      emit(state.copyWith(messages: msgs));
+    }
+    verdict == 'win' ? SoundService.playWin() : SoundService.playFail();
+    debugPrint('[CallCubit] Exercise verdict: $verdict');
+  }
+
+  /// Opens the practice role-play once the learner confirms.
+  Future<void> _startPractice() async {
+    final reply = await _gemini.send(
+        '(The lesson is finished. Start the practice role-play now.)');
+    if (isClosed) return;
+    _handleAiReply(reply);
+  }
+
   /// Learner sent a message (voice final result or typed text).
   Future<void> sendUserMessage(String text) async {
     final trimmed = text.trim();
-    if (trimmed.isEmpty || state.aiThinking) return;
+    if (trimmed.isEmpty || state.aiThinking || state.aiSpeaking) return;
     _append(ChatMessage(role: MessageRole.user, text: trimmed));
     emit(state.copyWith(
         aiThinking: true, partialTranscript: '', typingMode: false));
@@ -254,18 +337,48 @@ class CallCubit extends Cubit<CallState> {
       return;
     }
     await _tts.stop();
+    _rawTranscript = '';
+    _clearedPrefix = '';
     emit(state.copyWith(listening: true, partialTranscript: ''));
     await _stt.listen(
       languageCode: _profile.targetLanguage,
       onResult: (text, isFinal) {
         if (isClosed) return;
-        emit(state.copyWith(partialTranscript: text));
+        _rawTranscript = text;
+        final visible = _visibleTranscript(text);
+        emit(state.copyWith(partialTranscript: visible));
         if (isFinal) {
           emit(state.copyWith(listening: false));
-          sendUserMessage(text);
+          sendUserMessage(visible);
         }
       },
     );
+  }
+
+  // Recognizer results are cumulative: "deleting" means remembering what was
+  // already spoken and stripping it from subsequent results.
+  String _rawTranscript = '';
+  String _clearedPrefix = '';
+
+  String _visibleTranscript(String raw) => raw.startsWith(_clearedPrefix)
+      ? raw.substring(_clearedPrefix.length).trimLeft()
+      : raw;
+
+  /// Discard the transcript spoken so far while keeping the mic recording.
+  void clearTranscript() {
+    if (!state.listening) return;
+    _clearedPrefix = _rawTranscript;
+    emit(state.copyWith(partialTranscript: ''));
+    debugPrint('[CallCubit] Transcript cleared while listening');
+  }
+
+  /// Switch to typing mode; if listening, cancel recording without sending.
+  Future<void> switchToTyping() async {
+    if (state.listening) {
+      await _stt.cancel();
+      emit(state.copyWith(listening: false, partialTranscript: ''));
+    }
+    emit(state.copyWith(typingMode: true));
   }
 
   void setTypingMode(bool enabled) =>
@@ -292,7 +405,8 @@ class CallCubit extends Cubit<CallState> {
           role: msg.role,
           text: msg.text,
           translation: null,
-          banner: msg.banner);
+          banner: msg.banner,
+          verdict: msg.verdict);
       emit(state.copyWith(messages: msgs));
       return;
     }
@@ -304,9 +418,12 @@ class CallCubit extends Cubit<CallState> {
     emit(state.copyWith(messages: msgs, translatingIndex: -1));
   }
 
-  /// "Inspiration": add an example-sentences bubble.
+  /// "Inspiration": add an example-sentences bubble (one per message round).
   Future<void> requestInspiration() async {
-    if (state.aiThinking) return;
+    if (state.aiThinking || state.aiSpeaking || state.inspirationUsed) {
+      debugPrint('[CallCubit] Inspiration blocked (thinking or already used)');
+      return;
+    }
     final examples = await _gemini.inspiration(state.messages);
     if (isClosed) return;
     _append(ChatMessage(
@@ -317,6 +434,9 @@ class CallCubit extends Cubit<CallState> {
 
   Future<void> _finishLesson() async {
     _timer?.cancel();
+    // Optimistic: open the end screen immediately, persist in the background.
+    SoundService.playLessonWin();
+    emit(state.copyWith(finished: true));
     await _repo.addCall(CallRecord(
       id: const Uuid().v4(),
       type: 'lesson',
@@ -343,7 +463,6 @@ class CallCubit extends Cubit<CallState> {
     await _repo.awardLessonCompletion();
     await _repo.deleteSession(lesson!.id);
     debugPrint('[CallCubit] Lesson ${lesson!.id} completed');
-    emit(state.copyWith(finished: true));
   }
 
   /// User quit mid-call (from the confirmation dialog).

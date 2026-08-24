@@ -12,7 +12,7 @@ import '../../game/widget/shop_sheet.dart';
 import '../../progression/cubit/stats_cubit.dart';
 
 /// Home header: the pet on its meadow, name + hearts top-left, streak pill
-/// top-right (swapped for the coin balance while the shop is open), Échange
+/// top-right (swapped for the coin balance while the shop is open), Appeler
 /// bottom-left and the shop button bottom-right.
 class HomeHeader extends StatelessWidget {
   final VoidCallback onStreakTap;
@@ -31,7 +31,7 @@ class HomeHeader extends StatelessWidget {
     final game = context.watch<GameCubit>().state;
 
     return SizedBox(
-      height: 278.h,
+      height: 320.h,
       child: Stack(
         fit: StackFit.expand,
         children: [
@@ -120,28 +120,40 @@ class HomeHeader extends StatelessWidget {
                   const Spacer(),
                   Row(
                     children: [
-                      // "Échange" free-conversation button (now bottom-left).
+                      // "Appeler" free-conversation call button (bottom-left).
                       GestureDetector(
                         onTap: () {
                           Haptics.impact();
                           onExchangeTap();
                         },
                         child: Container(
-                          height: 52.h,
+                          height: 48.h,
                           padding: EdgeInsets.symmetric(horizontal: 22.w),
+                          // Same "3D" style as PrimaryButton: flat fill with a
+                          // hard darker bottom edge.
                           decoration: BoxDecoration(
                             color: AppColors.primary,
-                            borderRadius: BorderRadius.circular(26.r),
+                            borderRadius: BorderRadius.circular(20.r),
                             boxShadow: [
                               BoxShadow(
-                                  color: AppColors.primaryDark,
-                                  offset: Offset(0, 3.h)),
+                                color: AppColors.primaryDark,
+                                offset: Offset(0, 4.h),
+                              ),
                             ],
                           ),
                           child: Row(
                             children: [
-                              Icon(Icons.videocam_rounded,
-                                  color: Colors.white, size: 24.r),
+                              // White circular badge holding the call glyph.
+                              Container(
+                                width: 24.r,
+                                height: 24.r,
+                                decoration: const BoxDecoration(
+                                  color: Colors.white,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Icon(Icons.call_rounded,
+                                    color: AppColors.primary, size: 16.r),
+                              ),
                               SizedBox(width: 10.w),
                               Text(l10n.exchange, style: AppTextStyles.button),
                             ],
@@ -149,18 +161,18 @@ class HomeHeader extends StatelessWidget {
                         ),
                       ),
                       const Spacer(),
-                      // Shop button (bottom-right, where Échange used to be).
-                      GestureDetector(
-                        onTap: () {
-                          Haptics.tap();
-                          showShopSheet(context);
-                        },
-                        child: Image.asset(
-                          'assets/images/game/shop_icon.png',
-                          width: 52.w,
-                          height: 52.w,
-                        ),
-                      ),
+                      // Shop button (bottom-right, where the call button used to be).
+                      // GestureDetector(
+                      //   onTap: () {
+                      //     Haptics.tap();
+                      //     showShopSheet(context);
+                      //   },
+                      //   child: Image.asset(
+                      //     'assets/images/game/shop_icon.png',
+                      //     width: 52.w,
+                      //     height: 52.w,
+                      //   ),
+                      // ),
                     ],
                   ),
                 ],
