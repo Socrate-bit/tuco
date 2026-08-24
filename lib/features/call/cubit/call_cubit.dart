@@ -6,9 +6,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../core/model/models.dart';
+import '../../../core/service/analytics_service.dart';
 import '../../../core/service/data_repository.dart';
 import '../../../core/service/sound_service.dart';
 import '../../curriculum/model/curriculum_models.dart';
+import '../../pronunciation/model/pronunciation_result.dart';
+import '../../pronunciation/service/audio_recorder_service.dart';
+import '../../pronunciation/service/azure_speech_service.dart';
 import '../service/gemini_service.dart';
 import '../service/stt_service.dart';
 import '../service/tts_service.dart';
@@ -24,7 +28,8 @@ class CallState extends Equatable {
   final ContinuePrompt pendingContinue;
   final bool aiThinking;
   final bool aiSpeaking; // Bubbles still being revealed in sync with audio.
-  final bool listening;
+  final bool listening; // recording the learner's voice
+  final bool assessing; // Azure is recognizing + scoring the recording
   final String partialTranscript;
   final bool typingMode;
   final String ttsSpeedLabel;
@@ -39,6 +44,7 @@ class CallState extends Equatable {
     this.aiThinking = false,
     this.aiSpeaking = false,
     this.listening = false,
+    this.assessing = false,
     this.partialTranscript = '',
     this.typingMode = false,
     this.ttsSpeedLabel = '1x',
@@ -54,6 +60,7 @@ class CallState extends Equatable {
     bool? aiThinking,
     bool? aiSpeaking,
     bool? listening,
+    bool? assessing,
     String? partialTranscript,
     bool? typingMode,
     String? ttsSpeedLabel,
@@ -68,6 +75,7 @@ class CallState extends Equatable {
         aiThinking: aiThinking ?? this.aiThinking,
         aiSpeaking: aiSpeaking ?? this.aiSpeaking,
         listening: listening ?? this.listening,
+        assessing: assessing ?? this.assessing,
         partialTranscript: partialTranscript ?? this.partialTranscript,
         typingMode: typingMode ?? this.typingMode,
         ttsSpeedLabel: ttsSpeedLabel ?? this.ttsSpeedLabel,
@@ -94,6 +102,7 @@ class CallState extends Equatable {
         aiThinking,
         aiSpeaking,
         listening,
+        assessing,
         partialTranscript,
         typingMode,
         ttsSpeedLabel,
@@ -107,24 +116,30 @@ class CallState extends Equatable {
 class CallCubit extends Cubit<CallState> {
   final DataRepository _repo;
   final UserProfile _profile;
+  final AnalyticsService _analytics;
   final Lesson? lesson;
   final SavedSession? _resumeSession;
   final bool _startAtPractice;
 
   late final GeminiService _gemini;
   final TtsService _tts = TtsService();
+  // Kept but unplugged: Azure now handles both recognition and scoring.
   final SttService _stt = SttService();
+  final AudioRecorderService _recorder = AudioRecorderService();
+  final AzureSpeechService _azure = AzureSpeechService();
   Timer? _timer;
   final DateTime _startedAt = DateTime.now();
 
   CallCubit({
     required DataRepository repo,
     required UserProfile profile,
+    required AnalyticsService analytics,
     required this.lesson,
     SavedSession? resumeSession,
     bool startAtPractice = false,
   })  : _repo = repo,
         _profile = profile,
+        _analytics = analytics,
         _resumeSession = resumeSession,
         _startAtPractice = startAtPractice,
         super(CallState(
@@ -277,11 +292,14 @@ class CallCubit extends Cubit<CallState> {
     _handleAiReply(reply);
   }
 
-  /// Learner sent a message (voice final result or typed text).
-  Future<void> sendUserMessage(String text) async {
+  /// Learner sent a message (voice recognition result or typed text).
+  /// [pronunciation] is attached when the message came from a scored recording.
+  Future<void> sendUserMessage(String text,
+      {PronunciationResult? pronunciation}) async {
     final trimmed = text.trim();
     if (trimmed.isEmpty || state.aiThinking || state.aiSpeaking) return;
-    _append(ChatMessage(role: MessageRole.user, text: trimmed));
+    _append(ChatMessage(
+        role: MessageRole.user, text: trimmed, pronunciation: pronunciation));
     emit(state.copyWith(
         aiThinking: true, partialTranscript: '', typingMode: false));
 
@@ -327,55 +345,61 @@ class CallCubit extends Cubit<CallState> {
 
   // ---------------- Voice input ----------------
 
+  /// Push-to-talk: first tap records; second tap stops, then Azure recognizes
+  /// the speech and scores its pronunciation before the turn is sent.
   Future<void> toggleListening() async {
+    if (state.assessing) return; // ignore taps while a recording is scored
+
     if (state.listening) {
-      await _stt.stop();
       emit(state.copyWith(listening: false));
-      if (state.partialTranscript.trim().isNotEmpty) {
-        await sendUserMessage(state.partialTranscript);
+      final file = await _recorder.stop();
+      if (file == null) {
+        debugPrint('[CallCubit] No audio captured');
+        return;
       }
+      emit(state.copyWith(assessing: true));
+      final result = await _azure.assess(
+        audio: file,
+        languageCode: _profile.targetLanguage,
+      );
+      if (isClosed) return;
+      emit(state.copyWith(assessing: false));
+      final text = (result?.recognizedText ?? '').trim();
+      if (text.isEmpty) {
+        debugPrint('[CallCubit] Empty recognition — nothing sent');
+        return;
+      }
+      _analytics.track('pronunciation_assessed', {
+        'score': result!.pronScore.round(),
+        'words': result.words.length,
+        'language': _profile.targetLanguage,
+      });
+      await sendUserMessage(text, pronunciation: result);
       return;
     }
+
     await _tts.stop();
-    _rawTranscript = '';
-    _clearedPrefix = '';
+    final started = await _recorder.start();
+    if (!started) {
+      debugPrint('[CallCubit] Recorder failed to start');
+      return;
+    }
     emit(state.copyWith(listening: true, partialTranscript: ''));
-    await _stt.listen(
-      languageCode: _profile.targetLanguage,
-      onResult: (text, isFinal) {
-        if (isClosed) return;
-        _rawTranscript = text;
-        final visible = _visibleTranscript(text);
-        emit(state.copyWith(partialTranscript: visible));
-        if (isFinal) {
-          emit(state.copyWith(listening: false));
-          sendUserMessage(visible);
-        }
-      },
-    );
   }
 
-  // Recognizer results are cumulative: "deleting" means remembering what was
-  // already spoken and stripping it from subsequent results.
-  String _rawTranscript = '';
-  String _clearedPrefix = '';
-
-  String _visibleTranscript(String raw) => raw.startsWith(_clearedPrefix)
-      ? raw.substring(_clearedPrefix.length).trimLeft()
-      : raw;
-
-  /// Discard the transcript spoken so far while keeping the mic recording.
-  void clearTranscript() {
+  /// Discard the current recording and start a fresh one (clear button).
+  Future<void> clearTranscript() async {
     if (!state.listening) return;
-    _clearedPrefix = _rawTranscript;
-    emit(state.copyWith(partialTranscript: ''));
-    debugPrint('[CallCubit] Transcript cleared while listening');
+    await _recorder.cancel();
+    final started = await _recorder.start();
+    if (!started && !isClosed) emit(state.copyWith(listening: false));
+    debugPrint('[CallCubit] Recording restarted (cleared)');
   }
 
-  /// Switch to typing mode; if listening, cancel recording without sending.
+  /// Switch to typing mode; if recording, cancel it without scoring.
   Future<void> switchToTyping() async {
     if (state.listening) {
-      await _stt.cancel();
+      await _recorder.cancel();
       emit(state.copyWith(listening: false, partialTranscript: ''));
     }
     emit(state.copyWith(typingMode: true));
@@ -470,6 +494,7 @@ class CallCubit extends Cubit<CallState> {
     _timer?.cancel();
     await _tts.stop();
     await _stt.stop();
+    await _recorder.cancel();
     final hasContent =
         state.messages.any((m) => m.role == MessageRole.user);
     if (hasContent) {
@@ -519,6 +544,7 @@ class CallCubit extends Cubit<CallState> {
     _timer?.cancel();
     _tts.dispose();
     _stt.stop();
+    _recorder.dispose();
     return super.close();
   }
 }

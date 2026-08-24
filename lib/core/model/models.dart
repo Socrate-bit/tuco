@@ -1,5 +1,7 @@
 import 'package:equatable/equatable.dart';
 
+import '../../features/pronunciation/model/pronunciation_result.dart';
+
 /// User profile & settings.
 class UserProfile extends Equatable {
   final String name;
@@ -98,6 +100,7 @@ class ChatMessage extends Equatable {
   final String? translation; // lazily fetched translation
   final String? banner; // 'course' | 'courseDone' | 'practice' when banner row
   final String? verdict; // 'win' | 'fail' — exercise result on user messages
+  final PronunciationResult? pronunciation; // Azure speech score on voice turns
 
   const ChatMessage({
     required this.role,
@@ -105,14 +108,21 @@ class ChatMessage extends Equatable {
     this.translation,
     this.banner,
     this.verdict,
+    this.pronunciation,
   });
 
-  ChatMessage copyWith({String? translation, String? verdict}) => ChatMessage(
+  ChatMessage copyWith({
+    String? translation,
+    String? verdict,
+    PronunciationResult? pronunciation,
+  }) =>
+      ChatMessage(
         role: role,
         text: text,
         translation: translation ?? this.translation,
         banner: banner,
         verdict: verdict ?? this.verdict,
+        pronunciation: pronunciation ?? this.pronunciation,
       );
 
   Map<String, dynamic> toMap() => {
@@ -121,6 +131,7 @@ class ChatMessage extends Equatable {
         'translation': translation,
         'banner': banner,
         'verdict': verdict,
+        'pronunciation': pronunciation?.toMap(),
       };
 
   factory ChatMessage.fromMap(Map<String, dynamic> map) => ChatMessage(
@@ -129,10 +140,15 @@ class ChatMessage extends Equatable {
         translation: map['translation'] as String?,
         banner: map['banner'] as String?,
         verdict: map['verdict'] as String?,
+        pronunciation: map['pronunciation'] == null
+            ? null
+            : PronunciationResult.fromMap(
+                Map<String, dynamic>.from(map['pronunciation'] as Map)),
       );
 
   @override
-  List<Object?> get props => [role, text, translation, banner, verdict];
+  List<Object?> get props =>
+      [role, text, translation, banner, verdict, pronunciation];
 }
 
 /// A completed (or aborted) call session.

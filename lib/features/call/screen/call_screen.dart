@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../core/l10n/app_localizations.dart';
 import '../../../core/model/models.dart';
+import '../../../core/service/analytics_service.dart';
 import '../../../core/service/data_repository.dart';
 import '../../../core/service/haptics.dart';
 import '../../../core/theme/app_theme.dart';
@@ -44,6 +45,7 @@ class CallScreen extends StatelessWidget {
       create: (ctx) => CallCubit(
         repo: ctx.read<DataRepository>(),
         profile: ctx.read<ProfileCubit>().state,
+        analytics: ctx.read<AnalyticsService>(),
         lesson: args.lesson,
         resumeSession: args.resumeSession,
         startAtPractice: args.startAtPractice,
@@ -192,7 +194,7 @@ class _CallViewState extends State<_CallView> {
                         };
                       },
                     ),
-                    if (state.aiThinking)
+                    if (state.aiThinking || state.assessing)
                       Positioned(
                         left: 24.w,
                         bottom: 12.h,

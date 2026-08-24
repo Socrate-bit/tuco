@@ -270,5 +270,17 @@
   "onboardingSignInApple": "Sign in with Apple",
   "onboardingSignInGoogle": "Continue with Google",
   "onboardingSignInSkip": "Skip for now",
-  "onboardingSignInFailed": "Sign-in failed. Please try again."
+  "onboardingSignInFailed": "Sign-in failed. Please try again.",
+  "pronunciationSheetTitle": "Pronunciation",
+  "pronunciationTapWordHint": "Tap a word to practice it.",
+  "nativeSpeakerScore": "You sound {score}% like a native speaker!",
+  "@nativeSpeakerScore": {
+    "placeholders": {
+      "score": {
+        "type": "int"
+      }
+    }
+  },
+  "tryAgainButton": "Try again!",
+  "stopRecordingButton": "Stop"
 }
