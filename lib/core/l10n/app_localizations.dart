@@ -632,17 +632,17 @@ abstract class AppLocalizations {
   /// **'Pas d\'erreurs ici ! Vous pouvez appuyer sur le bouton de commentaires dans la leçon pour vérifier vos erreurs.'**
   String get noErrorsHere;
 
-  /// No description provided for @learningLanguage.
+  /// No description provided for @targetLanguage.
   ///
   /// In fr, this message translates to:
-  /// **'Langue d\'apprentissage'**
-  String get learningLanguage;
+  /// **'Langue cible'**
+  String get targetLanguage;
 
-  /// No description provided for @teachingLanguage.
+  /// No description provided for @nativeLanguage.
   ///
   /// In fr, this message translates to:
-  /// **'Langue d\'enseignement'**
-  String get teachingLanguage;
+  /// **'Langue maternelle'**
+  String get nativeLanguage;
 
   /// No description provided for @languageLevel.
   ///

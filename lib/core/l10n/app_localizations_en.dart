@@ -288,10 +288,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'No errors here! You can tap the feedback button in the lesson to check your mistakes.';
 
   @override
-  String get learningLanguage => 'Learning language';
+  String get targetLanguage => 'Target language';
 
   @override
-  String get teachingLanguage => 'Teaching language';
+  String get nativeLanguage => 'Native language';
 
   @override
   String get languageLevel => 'Language level';
