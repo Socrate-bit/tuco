@@ -2,20 +2,27 @@ import 'package:equatable/equatable.dart';
 
 /// Accuracy score of a single phoneme within a word.
 class PhonemeScore extends Equatable {
-  final String phoneme; // IPA symbol, e.g. "ɪ"
-  final double accuracyScore; // 0-100
+  final String phoneme; // IPA symbol ("ɪ"); empty outside en-US / zh-CN
+  final double accuracyScore; // 0-100 — present for every locale
+  final int offset; // audio offset in ticks, used to group under a syllable
 
-  const PhonemeScore({required this.phoneme, required this.accuracyScore});
+  const PhonemeScore({
+    required this.phoneme,
+    required this.accuracyScore,
+    this.offset = 0,
+  });
 
-  Map<String, dynamic> toMap() => {'p': phoneme, 'a': accuracyScore};
+  Map<String, dynamic> toMap() =>
+      {'p': phoneme, 'a': accuracyScore, 'o': offset};
 
   factory PhonemeScore.fromMap(Map<String, dynamic> map) => PhonemeScore(
         phoneme: map['p'] as String? ?? '',
         accuracyScore: (map['a'] as num?)?.toDouble() ?? 0,
+        offset: (map['o'] as num?)?.toInt() ?? 0,
       );
 
   @override
-  List<Object?> get props => [phoneme, accuracyScore];
+  List<Object?> get props => [phoneme, accuracyScore, offset];
 }
 
 /// Accuracy score of a single syllable, labelled by its grapheme (letters).
@@ -23,18 +30,28 @@ class PhonemeScore extends Equatable {
 class SyllableScore extends Equatable {
   final String grapheme; // e.g. "gra", "cias"
   final double accuracyScore; // 0-100
+  final int offset; // audio offset in ticks
+  final int duration; // audio duration in ticks
 
-  const SyllableScore({required this.grapheme, required this.accuracyScore});
+  const SyllableScore({
+    required this.grapheme,
+    required this.accuracyScore,
+    this.offset = 0,
+    this.duration = 0,
+  });
 
-  Map<String, dynamic> toMap() => {'g': grapheme, 'a': accuracyScore};
+  Map<String, dynamic> toMap() =>
+      {'g': grapheme, 'a': accuracyScore, 'o': offset, 'd': duration};
 
   factory SyllableScore.fromMap(Map<String, dynamic> map) => SyllableScore(
         grapheme: map['g'] as String? ?? '',
         accuracyScore: (map['a'] as num?)?.toDouble() ?? 0,
+        offset: (map['o'] as num?)?.toInt() ?? 0,
+        duration: (map['d'] as num?)?.toInt() ?? 0,
       );
 
   @override
-  List<Object?> get props => [grapheme, accuracyScore];
+  List<Object?> get props => [grapheme, accuracyScore, offset, duration];
 }
 
 /// Accuracy score of a single word plus its syllable/phoneme breakdown.
@@ -138,6 +155,8 @@ class PronunciationResult extends Equatable {
           // is empty except en-US / zh-CN.
           grapheme: s['Grapheme'] as String? ?? s['Syllable'] as String? ?? '',
           accuracyScore: scoreOf(s, 'AccuracyScore'),
+          offset: (s['Offset'] as num?)?.toInt() ?? 0,
+          duration: (s['Duration'] as num?)?.toInt() ?? 0,
         ));
       }
       final phonemes = <PhonemeScore>[];
@@ -146,6 +165,7 @@ class PronunciationResult extends Equatable {
         phonemes.add(PhonemeScore(
           phoneme: p['Phoneme'] as String? ?? '',
           accuracyScore: scoreOf(p, 'AccuracyScore'),
+          offset: (p['Offset'] as num?)?.toInt() ?? 0,
         ));
       }
       words.add(WordScore(

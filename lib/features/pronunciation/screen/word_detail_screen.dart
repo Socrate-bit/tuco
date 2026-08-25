@@ -93,8 +93,9 @@ class _WordDetailViewState extends State<_WordDetailView> {
                         ),
                         SizedBox(height: 10.h),
                         // Sound-by-sound breakdown, each colored by its score.
-                        // Prefer syllable graphemes (labelled for all locales);
-                        // fall back to IPA phonemes (en-US / zh-CN only).
+                        // Prefer IPA phonemes (the precise detail); fall back to
+                        // syllable graphemes when Azure omits phoneme symbols
+                        // (locales other than en-US / zh-CN).
                         _BreakdownLine(word: word),
                         SizedBox(height: 20.h),
                         Row(
@@ -137,40 +138,94 @@ class _WordDetailViewState extends State<_WordDetailView> {
   }
 }
 
-/// Sound-by-sound breakdown, each unit tinted by its accuracy score. Uses
-/// syllable graphemes when available (all locales) and otherwise the IPA
-/// phoneme symbols (only returned for en-US / zh-CN).
+/// Precise sound-by-sound breakdown. Each syllable grapheme is shown with the
+/// score of every phoneme inside it (grouped by audio offset). Phoneme symbols
+/// appear when Azure provides them (en-US / zh-CN); otherwise the score alone is
+/// shown — Spanish/French still get per-phoneme scores, just without symbols.
 class _BreakdownLine extends StatelessWidget {
   final WordScore word;
 
   const _BreakdownLine({required this.word});
 
+  List<PhonemeScore> _phonemesIn(SyllableScore s) {
+    final end = s.offset + s.duration;
+    return word.phonemes
+        .where((p) =>
+            p.offset >= s.offset && (s.duration == 0 || p.offset < end))
+        .toList();
+  }
+
   @override
   Widget build(BuildContext context) {
-    // (label, score) pairs to render, in order.
-    final units = <(String, double)>[];
-    if (word.syllables.any((s) => s.grapheme.isNotEmpty)) {
-      for (final s in word.syllables) {
-        units.add((s.grapheme, s.accuracyScore));
-      }
-    } else {
-      for (final p in word.phonemes.where((p) => p.phoneme.isNotEmpty)) {
-        units.add((p.phoneme, p.accuracyScore));
-      }
-    }
-    if (units.isEmpty) return const SizedBox.shrink();
+    final syllables = word.syllables.where((s) => s.grapheme.isNotEmpty).toList();
 
-    return Wrap(
-      spacing: 8.w,
-      runSpacing: 6.h,
-      children: [
-        for (final (label, score) in units)
-          Text(
-            label,
-            style: AppTextStyles.body
-                .copyWith(fontSize: 24.sp, color: pronColor(score)),
-          ),
-      ],
+    // Grouped view: grapheme header + its phoneme scores.
+    if (syllables.isNotEmpty) {
+      return Wrap(
+        spacing: 18.w,
+        runSpacing: 14.h,
+        children: [
+          for (final s in syllables)
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  s.grapheme,
+                  style: AppTextStyles.body.copyWith(
+                      fontSize: 26.sp,
+                      color: pronColor(s.accuracyScore),
+                      fontWeight: FontWeight.w800),
+                ),
+                SizedBox(height: 6.h),
+                Wrap(
+                  spacing: 4.w,
+                  runSpacing: 4.h,
+                  children: [
+                    for (final p in _phonemesIn(s)) _PhonemeChip(phoneme: p),
+                  ],
+                ),
+              ],
+            ),
+        ],
+      );
+    }
+
+    // No graphemes: fall back to a flat row of phoneme score chips.
+    if (word.phonemes.isNotEmpty) {
+      return Wrap(
+        spacing: 6.w,
+        runSpacing: 6.h,
+        children: [
+          for (final p in word.phonemes) _PhonemeChip(phoneme: p),
+        ],
+      );
+    }
+
+    return const SizedBox.shrink();
+  }
+}
+
+/// A small pill showing a phoneme's score, prefixed by its IPA symbol when
+/// available.
+class _PhonemeChip extends StatelessWidget {
+  final PhonemeScore phoneme;
+
+  const _PhonemeChip({required this.phoneme});
+
+  @override
+  Widget build(BuildContext context) {
+    final color = pronColor(phoneme.accuracyScore);
+    final label = phoneme.phoneme.isNotEmpty
+        ? '${phoneme.phoneme} ${phoneme.accuracyScore.round()}'
+        : '${phoneme.accuracyScore.round()}';
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 3.h),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(10.r),
+      ),
+      child: Text(label,
+          style: AppTextStyles.small.copyWith(color: color, fontSize: 14.sp)),
     );
   }
 }

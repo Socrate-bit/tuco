@@ -36,12 +36,16 @@ class AzureSpeechService {
       final uri = Uri.parse('$_host$_path?language=$locale');
 
       // Prosody is en-US only; requesting it elsewhere is harmless.
+      // PhonemeAlphabet=IPA asks for IPA symbols; Azure only labels phonemes
+      // for en-US / zh-CN, so other locales still return scores without names.
       final params = <String, String>{
         'ReferenceText': referenceText ?? '',
         'GradingSystem': 'HundredMark',
         'Granularity': 'Phoneme',
         'Dimension': 'Comprehensive',
         'EnableProsodyAssessment': 'True',
+        'PhonemeAlphabet': 'IPA',
+        'NBestPhonemeCount': '5',
       };
       final pronHeader = base64.encode(utf8.encode(jsonEncode(params)));
 
