@@ -312,5 +312,9 @@
     }
   },
   "tryAgainButton": "Réessayer !",
-  "stopRecordingButton": "Arrêter"
+  "stopRecordingButton": "Arrêter",
+  "pronAccuracy": "Précision",
+  "pronFluency": "Fluidité",
+  "pronProsody": "Prosodie",
+  "pronCompleteness": "Complétude"
 }
