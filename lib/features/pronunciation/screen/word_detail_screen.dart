@@ -92,9 +92,10 @@ class _WordDetailViewState extends State<_WordDetailView> {
                               .copyWith(fontSize: 36.sp, color: color),
                         ),
                         SizedBox(height: 10.h),
-                        // Phoneme breakdown, each colored by its own score.
-                        if (word.phonemes.isNotEmpty)
-                          _PhonemeLine(phonemes: word.phonemes),
+                        // Sound-by-sound breakdown, each colored by its score.
+                        // Prefer syllable graphemes (labelled for all locales);
+                        // fall back to IPA phonemes (en-US / zh-CN only).
+                        _BreakdownLine(word: word),
                         SizedBox(height: 20.h),
                         Row(
                           children: [
@@ -136,27 +137,40 @@ class _WordDetailViewState extends State<_WordDetailView> {
   }
 }
 
-/// Row of IPA phoneme symbols, each tinted by its accuracy score.
-class _PhonemeLine extends StatelessWidget {
-  final List<PhonemeScore> phonemes;
+/// Sound-by-sound breakdown, each unit tinted by its accuracy score. Uses
+/// syllable graphemes when available (all locales) and otherwise the IPA
+/// phoneme symbols (only returned for en-US / zh-CN).
+class _BreakdownLine extends StatelessWidget {
+  final WordScore word;
 
-  const _PhonemeLine({required this.phonemes});
+  const _BreakdownLine({required this.word});
 
   @override
   Widget build(BuildContext context) {
-    return RichText(
-      text: TextSpan(
-        style: AppTextStyles.body.copyWith(fontSize: 22.sp),
-        children: [
-          const TextSpan(text: '/'),
-          for (final p in phonemes)
-            TextSpan(
-              text: '${p.phoneme} ',
-              style: TextStyle(color: pronColor(p.accuracyScore)),
-            ),
-          const TextSpan(text: '/'),
-        ],
-      ),
+    // (label, score) pairs to render, in order.
+    final units = <(String, double)>[];
+    if (word.syllables.any((s) => s.grapheme.isNotEmpty)) {
+      for (final s in word.syllables) {
+        units.add((s.grapheme, s.accuracyScore));
+      }
+    } else {
+      for (final p in word.phonemes.where((p) => p.phoneme.isNotEmpty)) {
+        units.add((p.phoneme, p.accuracyScore));
+      }
+    }
+    if (units.isEmpty) return const SizedBox.shrink();
+
+    return Wrap(
+      spacing: 8.w,
+      runSpacing: 6.h,
+      children: [
+        for (final (label, score) in units)
+          Text(
+            label,
+            style: AppTextStyles.body
+                .copyWith(fontSize: 24.sp, color: pronColor(score)),
+          ),
+      ],
     );
   }
 }
