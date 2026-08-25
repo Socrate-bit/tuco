@@ -18,17 +18,38 @@ class PhonemeScore extends Equatable {
   List<Object?> get props => [phoneme, accuracyScore];
 }
 
-/// Accuracy score of a single word plus its phoneme breakdown.
+/// Accuracy score of a single syllable, labelled by its grapheme (letters).
+/// Graphemes are returned for all locales, unlike phoneme symbols.
+class SyllableScore extends Equatable {
+  final String grapheme; // e.g. "gra", "cias"
+  final double accuracyScore; // 0-100
+
+  const SyllableScore({required this.grapheme, required this.accuracyScore});
+
+  Map<String, dynamic> toMap() => {'g': grapheme, 'a': accuracyScore};
+
+  factory SyllableScore.fromMap(Map<String, dynamic> map) => SyllableScore(
+        grapheme: map['g'] as String? ?? '',
+        accuracyScore: (map['a'] as num?)?.toDouble() ?? 0,
+      );
+
+  @override
+  List<Object?> get props => [grapheme, accuracyScore];
+}
+
+/// Accuracy score of a single word plus its syllable/phoneme breakdown.
 class WordScore extends Equatable {
   final String word;
   final double accuracyScore; // 0-100
   final String errorType; // 'None' | 'Mispronunciation' | 'Omission' | ...
+  final List<SyllableScore> syllables;
   final List<PhonemeScore> phonemes;
 
   const WordScore({
     required this.word,
     required this.accuracyScore,
     this.errorType = 'None',
+    this.syllables = const [],
     this.phonemes = const [],
   });
 
@@ -36,6 +57,7 @@ class WordScore extends Equatable {
         'w': word,
         'a': accuracyScore,
         'e': errorType,
+        'sy': syllables.map((s) => s.toMap()).toList(),
         'ph': phonemes.map((p) => p.toMap()).toList(),
       };
 
@@ -43,6 +65,11 @@ class WordScore extends Equatable {
         word: map['w'] as String? ?? '',
         accuracyScore: (map['a'] as num?)?.toDouble() ?? 0,
         errorType: map['e'] as String? ?? 'None',
+        syllables: (map['sy'] as List?)
+                ?.map(
+                    (s) => SyllableScore.fromMap(Map<String, dynamic>.from(s)))
+                .toList() ??
+            const [],
         phonemes: (map['ph'] as List?)
                 ?.map((p) => PhonemeScore.fromMap(Map<String, dynamic>.from(p)))
                 .toList() ??
@@ -50,7 +77,8 @@ class WordScore extends Equatable {
       );
 
   @override
-  List<Object?> get props => [word, accuracyScore, errorType, phonemes];
+  List<Object?> get props =>
+      [word, accuracyScore, errorType, syllables, phonemes];
 }
 
 /// Result of an Azure Speech pronunciation assessment for one utterance.
@@ -74,32 +102,59 @@ class PronunciationResult extends Equatable {
   });
 
   /// Parse an Azure short-audio pronunciation-assessment JSON response.
+  ///
+  /// Azure serializes scores in two shapes depending on the surface: the REST
+  /// short-audio endpoint puts them flat on each object (e.g. `AccuracyScore`),
+  /// while the SDK's detailed result nests them under `PronunciationAssessment`.
+  /// We read flat first and fall back to the nested object so both work.
+  ///
   /// Returns null when recognition failed or no NBest candidate exists.
   static PronunciationResult? fromAzureJson(Map<String, dynamic> json) {
-    final status = json['RecognitionStatus'] as String?;
+    // RecognitionStatus is a string ("Success") on the REST endpoint but an
+    // int (0) in the SDK JSON — accept both.
+    final status = json['RecognitionStatus'];
+    final ok = status == 'Success' || status == 0;
     final nbest = json['NBest'] as List?;
-    if (status != 'Success' || nbest == null || nbest.isEmpty) return null;
+    if (!ok || nbest == null || nbest.isEmpty) return null;
     final best = Map<String, dynamic>.from(nbest.first as Map);
+
+    // Reads [key] flat on [m], else from a nested "PronunciationAssessment".
+    double scoreOf(Map<String, dynamic> m, String key) {
+      final flat = (m[key] as num?)?.toDouble();
+      if (flat != null) return flat;
+      final nested = m['PronunciationAssessment'] as Map?;
+      return (nested?[key] as num?)?.toDouble() ?? 0;
+    }
 
     final words = <WordScore>[];
     for (final raw in (best['Words'] as List? ?? const [])) {
       final w = Map<String, dynamic>.from(raw as Map);
-      final wpa = Map<String, dynamic>.from(
-          (w['PronunciationAssessment'] as Map?) ?? const {});
+      final nested = w['PronunciationAssessment'] as Map?;
+      final syllables = <SyllableScore>[];
+      for (final rs in (w['Syllables'] as List? ?? const [])) {
+        final s = Map<String, dynamic>.from(rs as Map);
+        syllables.add(SyllableScore(
+          // Grapheme (letters) is present for all locales; Syllable (phonetic)
+          // is empty except en-US / zh-CN.
+          grapheme: s['Grapheme'] as String? ?? s['Syllable'] as String? ?? '',
+          accuracyScore: scoreOf(s, 'AccuracyScore'),
+        ));
+      }
       final phonemes = <PhonemeScore>[];
       for (final rp in (w['Phonemes'] as List? ?? const [])) {
         final p = Map<String, dynamic>.from(rp as Map);
-        final ppa = Map<String, dynamic>.from(
-            (p['PronunciationAssessment'] as Map?) ?? const {});
         phonemes.add(PhonemeScore(
           phoneme: p['Phoneme'] as String? ?? '',
-          accuracyScore: (ppa['AccuracyScore'] as num?)?.toDouble() ?? 0,
+          accuracyScore: scoreOf(p, 'AccuracyScore'),
         ));
       }
       words.add(WordScore(
         word: w['Word'] as String? ?? '',
-        accuracyScore: (wpa['AccuracyScore'] as num?)?.toDouble() ?? 0,
-        errorType: wpa['ErrorType'] as String? ?? 'None',
+        accuracyScore: scoreOf(w, 'AccuracyScore'),
+        errorType: w['ErrorType'] as String? ??
+            nested?['ErrorType'] as String? ??
+            'None',
+        syllables: syllables,
         phonemes: phonemes,
       ));
     }
@@ -107,11 +162,13 @@ class PronunciationResult extends Equatable {
     return PronunciationResult(
       recognizedText:
           json['DisplayText'] as String? ?? best['Display'] as String? ?? '',
-      pronScore: (best['PronScore'] as num?)?.toDouble() ?? 0,
-      accuracyScore: (best['AccuracyScore'] as num?)?.toDouble() ?? 0,
-      fluencyScore: (best['FluencyScore'] as num?)?.toDouble() ?? 0,
-      completenessScore: (best['CompletenessScore'] as num?)?.toDouble() ?? 0,
-      prosodyScore: (best['ProsodyScore'] as num?)?.toDouble(),
+      pronScore: scoreOf(best, 'PronScore'),
+      accuracyScore: scoreOf(best, 'AccuracyScore'),
+      fluencyScore: scoreOf(best, 'FluencyScore'),
+      completenessScore: scoreOf(best, 'CompletenessScore'),
+      prosodyScore: (best['ProsodyScore'] as num?)?.toDouble() ??
+          ((best['PronunciationAssessment'] as Map?)?['ProsodyScore'] as num?)
+              ?.toDouble(),
       words: words,
     );
   }
