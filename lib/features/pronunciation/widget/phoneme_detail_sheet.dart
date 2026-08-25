@@ -99,6 +99,10 @@ class _PhonemeDetailSheetState extends State<_PhonemeDetailSheet> {
                 ),
               ],
             ),
+            SizedBox(height: 20.h),
+            // Sub-scores: the overall ring blends these, so it can sit below
+            // the per-word accuracy tiles even when every word scores high.
+            _SubScores(result: result, l10n: l10n),
             SizedBox(height: 24.h),
             // Words colored by their accuracy score, each tappable.
             Wrap(
@@ -137,6 +141,43 @@ class _PhonemeDetailSheetState extends State<_PhonemeDetailSheet> {
           ],
         ),
       ),
+    );
+  }
+}
+
+/// The four dimensions that make up the overall score, so the user can see
+/// why the sentence ring differs from the per-word accuracy tiles.
+class _SubScores extends StatelessWidget {
+  final PronunciationResult result;
+  final AppLocalizations l10n;
+
+  const _SubScores({required this.result, required this.l10n});
+
+  @override
+  Widget build(BuildContext context) {
+    final items = <(String, double)>[
+      (l10n.pronAccuracy, result.accuracyScore),
+      (l10n.pronFluency, result.fluencyScore),
+      if (result.prosodyScore != null)
+        (l10n.pronProsody, result.prosodyScore!),
+      (l10n.pronCompleteness, result.completenessScore),
+    ];
+    return Row(
+      children: [
+        for (final (label, score) in items)
+          Expanded(
+            child: Column(
+              children: [
+                Text('${score.round()}',
+                    style: AppTextStyles.itemTitle
+                        .copyWith(color: pronColor(score))),
+                SizedBox(height: 2.h),
+                Text(label,
+                    style: AppTextStyles.small, textAlign: TextAlign.center),
+              ],
+            ),
+          ),
+      ],
     );
   }
 }

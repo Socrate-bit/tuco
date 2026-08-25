@@ -1507,6 +1507,30 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Arrêter'**
   String get stopRecordingButton;
+
+  /// No description provided for @pronAccuracy.
+  ///
+  /// In fr, this message translates to:
+  /// **'Précision'**
+  String get pronAccuracy;
+
+  /// No description provided for @pronFluency.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fluidité'**
+  String get pronFluency;
+
+  /// No description provided for @pronProsody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Prosodie'**
+  String get pronProsody;
+
+  /// No description provided for @pronCompleteness.
+  ///
+  /// In fr, this message translates to:
+  /// **'Complétude'**
+  String get pronCompleteness;
 }
 
 class _AppLocalizationsDelegate

@@ -770,4 +770,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get stopRecordingButton => 'Stop';
+
+  @override
+  String get pronAccuracy => 'Accuracy';
+
+  @override
+  String get pronFluency => 'Fluency';
+
+  @override
+  String get pronProsody => 'Prosody';
+
+  @override
+  String get pronCompleteness => 'Completeness';
 }

@@ -781,4 +781,16 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get stopRecordingButton => 'Arrêter';
+
+  @override
+  String get pronAccuracy => 'Précision';
+
+  @override
+  String get pronFluency => 'Fluidité';
+
+  @override
+  String get pronProsody => 'Prosodie';
+
+  @override
+  String get pronCompleteness => 'Complétude';
 }
