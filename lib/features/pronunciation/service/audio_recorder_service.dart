@@ -2,13 +2,13 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:record/record.dart';
+import 'package:uuid/uuid.dart';
 
 /// Captures microphone audio to a 16 kHz mono WAV file — the format Azure's
 /// pronunciation-assessment endpoint expects. `speech_to_text` can't hand us
 /// the raw audio, so recording is done separately here.
 class AudioRecorderService {
   final AudioRecorder _recorder = AudioRecorder();
-  int _fileId = 0;
 
   bool get isRecording => _isRecording;
   bool _isRecording = false;
@@ -23,8 +23,8 @@ class AudioRecorderService {
         debugPrint('[AudioRecorderService] Microphone permission denied');
         return false;
       }
-      final path =
-          '${Directory.systemTemp.path}/pron_${_fileId++ % 4}.wav';
+      // Unique filename so a recording pending upload isn't overwritten.
+      final path = '${Directory.systemTemp.path}/pron_${const Uuid().v4()}.wav';
       await _recorder.start(
         const RecordConfig(
           encoder: AudioEncoder.wav,

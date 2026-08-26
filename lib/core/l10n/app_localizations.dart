@@ -1531,6 +1531,66 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Complétude'**
   String get pronCompleteness;
+
+  /// No description provided for @pronPronunciation.
+  ///
+  /// In fr, this message translates to:
+  /// **'Prononciation'**
+  String get pronPronunciation;
+
+  /// No description provided for @pronRhythm.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rythme'**
+  String get pronRhythm;
+
+  /// No description provided for @pronExampleButton.
+  ///
+  /// In fr, this message translates to:
+  /// **'Exemple'**
+  String get pronExampleButton;
+
+  /// No description provided for @pronListenButton.
+  ///
+  /// In fr, this message translates to:
+  /// **'Écouter'**
+  String get pronListenButton;
+
+  /// No description provided for @pronBandExcellent.
+  ///
+  /// In fr, this message translates to:
+  /// **'Excellent !'**
+  String get pronBandExcellent;
+
+  /// No description provided for @pronBandAlmost.
+  ///
+  /// In fr, this message translates to:
+  /// **'Presque correct'**
+  String get pronBandAlmost;
+
+  /// No description provided for @pronBandIncorrect.
+  ///
+  /// In fr, this message translates to:
+  /// **'Continue à t\'entraîner'**
+  String get pronBandIncorrect;
+
+  /// No description provided for @pronStatusExcellent.
+  ///
+  /// In fr, this message translates to:
+  /// **'Excellent'**
+  String get pronStatusExcellent;
+
+  /// No description provided for @pronStatusAlmost.
+  ///
+  /// In fr, this message translates to:
+  /// **'Presque'**
+  String get pronStatusAlmost;
+
+  /// No description provided for @pronStatusIncorrect.
+  ///
+  /// In fr, this message translates to:
+  /// **'Incorrect'**
+  String get pronStatusIncorrect;
 }
 
 class _AppLocalizationsDelegate

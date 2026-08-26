@@ -10,14 +10,14 @@ import '../service/audio_recorder_service.dart';
 import '../service/azure_speech_service.dart';
 import '../service/recording_storage_service.dart';
 
-class WordPracticeState extends Equatable {
-  final WordScore word; // latest score for the word
-  final String? recordingUrl; // set once the learner has practised
+class PronunciationReviewState extends Equatable {
+  final PronunciationResult result;
+  final String? recordingUrl;
   final bool recording;
   final bool assessing;
 
-  const WordPracticeState({
-    required this.word,
+  const PronunciationReviewState({
+    required this.result,
     this.recordingUrl,
     this.recording = false,
     this.assessing = false,
@@ -25,49 +25,59 @@ class WordPracticeState extends Equatable {
 
   bool get canListen => recordingUrl != null;
 
-  WordPracticeState copyWith({
-    WordScore? word,
+  PronunciationReviewState copyWith({
+    PronunciationResult? result,
     String? recordingUrl,
     bool? recording,
     bool? assessing,
   }) =>
-      WordPracticeState(
-        word: word ?? this.word,
+      PronunciationReviewState(
+        result: result ?? this.result,
         recordingUrl: recordingUrl ?? this.recordingUrl,
         recording: recording ?? this.recording,
         assessing: assessing ?? this.assessing,
       );
 
   @override
-  List<Object?> get props => [word, recordingUrl, recording, assessing];
+  List<Object?> get props => [result, recordingUrl, recording, assessing];
 }
 
-/// Drives single-word pronunciation practice: play a native example, record the
-/// word, score it against itself (scripted), upload the audio and let the
-/// learner listen back.
-class WordPracticeCubit extends Cubit<WordPracticeState> {
-  final AnalyticsService _analytics;
+/// Drives the message pronunciation review: replay the example, listen back to
+/// the recording, and "try again" (scripted re-scoring against the sentence).
+class PronunciationReviewCubit extends Cubit<PronunciationReviewState> {
   final String _languageCode;
+  final String _referenceText;
+  final AnalyticsService _analytics;
+  // Called after a successful re-score so the transcript can be updated.
+  final void Function(PronunciationResult result, String? recordingUrl)?
+      _onUpdated;
+
   final AudioRecorderService _recorder = AudioRecorderService();
   final AzureSpeechService _azure = AzureSpeechService();
   final RecordingStorageService _storage = RecordingStorageService();
   final TtsService _tts = TtsService();
   final AudioPlayer _player = AudioPlayer();
 
-  WordPracticeCubit({
-    required WordScore initial,
+  PronunciationReviewCubit({
+    required PronunciationResult initial,
+    required String? recordingUrl,
     required String languageCode,
+    required String referenceText,
     required AnalyticsService analytics,
+    void Function(PronunciationResult result, String? recordingUrl)? onUpdated,
   })  : _languageCode = languageCode,
+        _referenceText = referenceText,
         _analytics = analytics,
-        super(WordPracticeState(word: initial)) {
+        _onUpdated = onUpdated,
+        super(PronunciationReviewState(
+            result: initial, recordingUrl: recordingUrl)) {
     _tts.init(languageCode);
   }
 
-  /// Play a native example of the word.
-  Future<void> playExample() => _tts.speak(state.word.word);
+  /// Play a native example of the sentence.
+  Future<void> playExample() => _tts.speak(_referenceText);
 
-  /// Listen back to the learner's recording (only after a practice attempt).
+  /// Listen back to the learner's recording.
   Future<void> playRecording() async {
     final url = state.recordingUrl;
     if (url == null) return;
@@ -75,12 +85,12 @@ class WordPracticeCubit extends Cubit<WordPracticeState> {
       await _player.stop();
       await _player.play(UrlSource(url));
     } catch (e) {
-      debugPrint('[WordPracticeCubit] playback error: $e');
+      debugPrint('[PronunciationReviewCubit] playback error: $e');
     }
   }
 
-  /// Push-to-talk for a single word: first tap records, second tap scores it
-  /// (scripted), uploads the audio and enables listen-back.
+  /// Push-to-talk re-scoring: records, then scores against the sentence
+  /// (scripted), uploads the audio and updates the transcript.
   Future<void> toggleRecording() async {
     if (state.assessing) return;
 
@@ -91,21 +101,20 @@ class WordPracticeCubit extends Cubit<WordPracticeState> {
       emit(state.copyWith(assessing: true));
       final result = await _azure.assess(
         audio: file,
-        referenceText: state.word.word,
+        referenceText: _referenceText,
         languageCode: _languageCode,
       );
       final url = await _storage.upload(file);
       if (isClosed) return;
-      if (result != null && result.words.isNotEmpty) {
-        _analytics.track('word_practice', {
-          'word': state.word.word,
-          'score': result.words.first.accuracyScore.round(),
+      if (result != null) {
+        _analytics.track('pronunciation_retry', {
+          'score': result.pronScore.round(),
           'language': _languageCode,
         });
         emit(state.copyWith(
-            word: result.words.first, recordingUrl: url, assessing: false));
+            result: result, recordingUrl: url, assessing: false));
+        _onUpdated?.call(result, url);
       } else {
-        debugPrint('[WordPracticeCubit] No score for "${state.word.word}"');
         emit(state.copyWith(recordingUrl: url, assessing: false));
       }
       return;

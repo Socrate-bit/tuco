@@ -101,6 +101,7 @@ class ChatMessage extends Equatable {
   final String? banner; // 'course' | 'courseDone' | 'practice' when banner row
   final String? verdict; // 'win' | 'fail' — exercise result on user messages
   final PronunciationResult? pronunciation; // Azure speech score on voice turns
+  final String? recordingUrl; // Storage URL of the voice recording (listen back)
 
   const ChatMessage({
     required this.role,
@@ -109,12 +110,14 @@ class ChatMessage extends Equatable {
     this.banner,
     this.verdict,
     this.pronunciation,
+    this.recordingUrl,
   });
 
   ChatMessage copyWith({
     String? translation,
     String? verdict,
     PronunciationResult? pronunciation,
+    String? recordingUrl,
   }) =>
       ChatMessage(
         role: role,
@@ -123,6 +126,7 @@ class ChatMessage extends Equatable {
         banner: banner,
         verdict: verdict ?? this.verdict,
         pronunciation: pronunciation ?? this.pronunciation,
+        recordingUrl: recordingUrl ?? this.recordingUrl,
       );
 
   Map<String, dynamic> toMap() => {
@@ -132,6 +136,7 @@ class ChatMessage extends Equatable {
         'banner': banner,
         'verdict': verdict,
         'pronunciation': pronunciation?.toMap(),
+        'recordingUrl': recordingUrl,
       };
 
   factory ChatMessage.fromMap(Map<String, dynamic> map) => ChatMessage(
@@ -144,11 +149,12 @@ class ChatMessage extends Equatable {
             ? null
             : PronunciationResult.fromMap(
                 Map<String, dynamic>.from(map['pronunciation'] as Map)),
+        recordingUrl: map['recordingUrl'] as String?,
       );
 
   @override
   List<Object?> get props =>
-      [role, text, translation, banner, verdict, pronunciation];
+      [role, text, translation, banner, verdict, pronunciation, recordingUrl];
 }
 
 /// A completed (or aborted) call session.

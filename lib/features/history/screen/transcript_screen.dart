@@ -9,6 +9,7 @@ import '../../call/widget/chat_bubbles.dart';
 import '../../call/widget/feedback_sheet.dart';
 import '../../feedback/cubit/feedback_cubit.dart';
 import '../../profile/cubit/profile_cubit.dart';
+import '../../pronunciation/widget/phoneme_detail_sheet.dart';
 import '../cubit/transcript_cubit.dart';
 
 /// Read-only transcript of a past call, in the call-screen bubble style.
@@ -60,6 +61,18 @@ class TranscriptScreen extends StatelessWidget {
                                 .any((f) => f.originalText == msg.text),
                             onFeedbackTap: () =>
                                 showFeedbackSheet(context, msg.text),
+                            // Read-only in history: review + listen, no writeback.
+                            onTap: msg.pronunciation == null
+                                ? null
+                                : () => showPronunciationReview(
+                                      context,
+                                      result: msg.pronunciation!,
+                                      recordingUrl: msg.recordingUrl,
+                                      languageCode: context
+                                          .read<ProfileCubit>()
+                                          .state
+                                          .targetLanguage,
+                                    ),
                           ),
                         MessageRole.inspiration => InspirationBubble(
                             message: msg,

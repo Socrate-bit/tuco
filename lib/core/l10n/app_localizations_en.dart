@@ -782,4 +782,34 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get pronCompleteness => 'Completeness';
+
+  @override
+  String get pronPronunciation => 'Pronunciation';
+
+  @override
+  String get pronRhythm => 'Rhythm';
+
+  @override
+  String get pronExampleButton => 'Example';
+
+  @override
+  String get pronListenButton => 'Listen';
+
+  @override
+  String get pronBandExcellent => 'Excellent!';
+
+  @override
+  String get pronBandAlmost => 'Almost Correct';
+
+  @override
+  String get pronBandIncorrect => 'Keep practicing';
+
+  @override
+  String get pronStatusExcellent => 'Excellent';
+
+  @override
+  String get pronStatusAlmost => 'Almost';
+
+  @override
+  String get pronStatusIncorrect => 'Incorrect';
 }

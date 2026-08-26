@@ -7,14 +7,13 @@ import '../../../core/service/analytics_service.dart';
 import '../../../core/service/haptics.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widget/common_widgets.dart';
-import '../../call/service/tts_service.dart';
-import '../../feedback/screen/grammar_screen.dart';
 import '../cubit/word_practice_cubit.dart';
+import '../data/phoneme_tips.dart';
 import '../model/pronunciation_result.dart';
-import '../widget/pronunciation_ring.dart';
+import '../widget/pronunciation_review.dart';
 
-/// Detailed practice screen for one word: phoneme breakdown, a large score
-/// ring and a "Try again" button to re-record and re-score the word alone.
+/// Detailed practice screen for one word: score header, colored word + IPA,
+/// example / listen / try-again actions and a per-phoneme detail column.
 class WordDetailScreen extends StatelessWidget {
   final WordScore word;
   final String languageCode;
@@ -33,34 +32,13 @@ class WordDetailScreen extends StatelessWidget {
         languageCode: languageCode,
         analytics: ctx.read<AnalyticsService>(),
       ),
-      child: _WordDetailView(languageCode: languageCode),
+      child: const _WordDetailView(),
     );
   }
 }
 
-class _WordDetailView extends StatefulWidget {
-  final String languageCode;
-
-  const _WordDetailView({required this.languageCode});
-
-  @override
-  State<_WordDetailView> createState() => _WordDetailViewState();
-}
-
-class _WordDetailViewState extends State<_WordDetailView> {
-  final _tts = TtsService();
-
-  @override
-  void initState() {
-    super.initState();
-    _tts.init(widget.languageCode);
-  }
-
-  @override
-  void dispose() {
-    _tts.dispose();
-    super.dispose();
-  }
+class _WordDetailView extends StatelessWidget {
+  const _WordDetailView();
 
   @override
   Widget build(BuildContext context) {
@@ -72,7 +50,6 @@ class _WordDetailViewState extends State<_WordDetailView> {
           builder: (context, state) {
             final cubit = context.read<WordPracticeCubit>();
             final word = state.word;
-            final color = pronColor(word.accuracyScore);
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -86,48 +63,60 @@ class _WordDetailViewState extends State<_WordDetailView> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          word.word,
-                          style: AppTextStyles.display
-                              .copyWith(fontSize: 36.sp, color: color),
+                        PronunciationHeader(score: word.accuracyScore),
+                        Padding(
+                          padding: EdgeInsets.symmetric(vertical: 18.h),
+                          child: const Divider(
+                              color: AppColors.divider,
+                              height: 1,
+                              thickness: 1),
                         ),
-                        SizedBox(height: 10.h),
-                        // Sound-by-sound breakdown, each colored by its score.
-                        // Prefer IPA phonemes (the precise detail); fall back to
-                        // syllable graphemes when Azure omits phoneme symbols
-                        // (locales other than en-US / zh-CN).
-                        _BreakdownLine(word: word),
-                        SizedBox(height: 20.h),
+                        ColoredSentence(words: [word], fontSize: 34),
+                        IpaLine(words: [word]),
+                        SizedBox(height: 24.h),
                         Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                            _CircleIcon(
+                            ReviewActionButton(
                               icon: Icons.volume_up_rounded,
-                              onTap: () => _tts.speak(word.word),
+                              label: l10n.pronExampleButton,
+                              onTap: cubit.playExample,
                             ),
-                            SizedBox(width: 12.w),
-                            _CircleIcon(
-                              icon: Icons.hearing_rounded,
-                              onTap: () => _tts.speak(word.word),
+                            ReviewActionButton(
+                              icon: Icons.graphic_eq_rounded,
+                              label: l10n.pronListenButton,
+                              onTap: state.canListen
+                                  ? cubit.playRecording
+                                  : null,
+                            ),
+                            ReviewActionButton(
+                              icon: state.recording
+                                  ? Icons.stop_rounded
+                                  : Icons.mic_rounded,
+                              label: l10n.tryAgainButton,
+                              onTap: cubit.toggleRecording,
+                              active: state.recording,
+                              busy: state.assessing,
                             ),
                           ],
                         ),
+                        SizedBox(height: 20.h),
+                        const Divider(
+                            color: AppColors.divider, height: 1, thickness: 1),
+                        _PhonemeColumn(word: word, l10n: l10n),
                       ],
                     ),
                   ),
                 ),
-                _ResultCard(
-                  score: word.accuracyScore,
-                  recording: state.recording,
-                  assessing: state.assessing,
-                  onTryAgain: () {
-                    Haptics.impact();
-                    cubit.toggleRecording();
-                  },
-                  onContinue: () {
-                    Haptics.tap();
-                    Navigator.of(context).pop();
-                  },
-                  l10n: l10n,
+                Padding(
+                  padding: EdgeInsets.fromLTRB(24.w, 8.h, 24.w, 8.h),
+                  child: PrimaryButton(
+                    label: l10n.continueButton,
+                    onPressed: () {
+                      Haptics.tap();
+                      Navigator.of(context).pop();
+                    },
+                  ),
                 ),
               ],
             );
@@ -138,223 +127,83 @@ class _WordDetailViewState extends State<_WordDetailView> {
   }
 }
 
-/// Precise sound-by-sound breakdown. Each syllable grapheme is shown with the
-/// score of every phoneme inside it (grouped by audio offset). Phoneme symbols
-/// appear when Azure provides them (en-US / zh-CN); otherwise the score alone is
-/// shown — Spanish/French still get per-phoneme scores, just without symbols.
-class _BreakdownLine extends StatelessWidget {
+/// The per-phoneme detail list: each sound with its status and, when it needs
+/// work, a short articulation tip. Falls back to syllable graphemes when Azure
+/// returns no phoneme symbols (locales other than en-US / zh-CN).
+class _PhonemeColumn extends StatelessWidget {
   final WordScore word;
-
-  const _BreakdownLine({required this.word});
-
-  List<PhonemeScore> _phonemesIn(SyllableScore s) {
-    final end = s.offset + s.duration;
-    return word.phonemes
-        .where((p) =>
-            p.offset >= s.offset && (s.duration == 0 || p.offset < end))
-        .toList();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final syllables = word.syllables.where((s) => s.grapheme.isNotEmpty).toList();
-
-    // Grouped view: grapheme header + its phoneme scores.
-    if (syllables.isNotEmpty) {
-      return Wrap(
-        spacing: 18.w,
-        runSpacing: 14.h,
-        children: [
-          for (final s in syllables)
-            Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  s.grapheme,
-                  style: AppTextStyles.body.copyWith(
-                      fontSize: 26.sp,
-                      color: pronColor(s.accuracyScore),
-                      fontWeight: FontWeight.w800),
-                ),
-                SizedBox(height: 6.h),
-                Wrap(
-                  spacing: 4.w,
-                  runSpacing: 4.h,
-                  children: [
-                    for (final p in _phonemesIn(s)) _PhonemeChip(phoneme: p),
-                  ],
-                ),
-              ],
-            ),
-        ],
-      );
-    }
-
-    // No graphemes: fall back to a flat row of phoneme score chips.
-    if (word.phonemes.isNotEmpty) {
-      return Wrap(
-        spacing: 6.w,
-        runSpacing: 6.h,
-        children: [
-          for (final p in word.phonemes) _PhonemeChip(phoneme: p),
-        ],
-      );
-    }
-
-    return const SizedBox.shrink();
-  }
-}
-
-/// A small pill showing a phoneme's score, prefixed by its IPA symbol when
-/// available.
-class _PhonemeChip extends StatelessWidget {
-  final PhonemeScore phoneme;
-
-  const _PhonemeChip({required this.phoneme});
-
-  @override
-  Widget build(BuildContext context) {
-    final color = pronColor(phoneme.accuracyScore);
-    final label = phoneme.phoneme.isNotEmpty
-        ? '${phoneme.phoneme} ${phoneme.accuracyScore.round()}'
-        : '${phoneme.accuracyScore.round()}';
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 3.h),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(10.r),
-      ),
-      child: Text(label,
-          style: AppTextStyles.small.copyWith(color: color, fontSize: 14.sp)),
-    );
-  }
-}
-
-class _ResultCard extends StatelessWidget {
-  final double score;
-  final bool recording;
-  final bool assessing;
-  final VoidCallback onTryAgain;
-  final VoidCallback onContinue;
   final AppLocalizations l10n;
 
-  const _ResultCard({
-    required this.score,
-    required this.recording,
-    required this.assessing,
-    required this.onTryAgain,
-    required this.onContinue,
-    required this.l10n,
-  });
+  const _PhonemeColumn({required this.word, required this.l10n});
 
-  ({String emoji, String label}) _band() {
-    switch (scoreBandOf(score.round())) {
-      case ScoreBand.excellent:
-        return (emoji: '😃', label: l10n.scoreExcellent);
-      case ScoreBand.canDoBetter:
-        return (emoji: '🙂', label: l10n.scoreCanDoBetter);
-      case ScoreBand.needsImprovement:
-        return (emoji: '😕', label: l10n.scoreNeedsImprovement);
+  ({String label, Color color}) _status(double score) {
+    final color = bandColor(score);
+    switch (pronBandOf(score)) {
+      case PronBand.excellent:
+        return (label: l10n.pronStatusExcellent, color: color);
+      case PronBand.almost:
+        return (label: l10n.pronStatusAlmost, color: color);
+      case PronBand.incorrect:
+        return (label: l10n.pronStatusIncorrect, color: color);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final band = _band();
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.fromLTRB(24.w, 24.h, 24.w, 24.h),
-      decoration: BoxDecoration(
-        color: AppColors.card,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(28.r)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.08),
-            blurRadius: 20.r,
-            offset: Offset(0, -4.h),
-          ),
-        ],
-      ),
-      child: SafeArea(
-        top: false,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Row(
-              children: [
-                Text(band.emoji, style: TextStyle(fontSize: 34.sp)),
-                SizedBox(width: 12.w),
-                Text(band.label,
-                    style: AppTextStyles.modalTitle
-                        .copyWith(color: pronColor(score))),
-              ],
+    // (symbol, score, tip) rows.
+    final rows = <({String symbol, double score, String? tip})>[];
+    final hasSymbols = word.phonemes.any((p) => p.phoneme.isNotEmpty);
+    if (hasSymbols) {
+      for (final p in word.phonemes.where((p) => p.phoneme.isNotEmpty)) {
+        final excellent = pronBandOf(p.accuracyScore) == PronBand.excellent;
+        rows.add((
+          symbol: '/${p.phoneme}/',
+          score: p.accuracyScore,
+          tip: excellent ? null : phonemeTip(p.phoneme),
+        ));
+      }
+    } else {
+      for (final s in word.syllables.where((s) => s.grapheme.isNotEmpty)) {
+        rows.add((symbol: s.grapheme, score: s.accuracyScore, tip: null));
+      }
+    }
+    if (rows.isEmpty) return const SizedBox.shrink();
+
+    return Column(
+      children: [
+        for (final row in rows)
+          Container(
+            decoration: const BoxDecoration(
+              border:
+                  Border(bottom: BorderSide(color: AppColors.divider, width: 1)),
             ),
-            SizedBox(height: 18.h),
-            Row(
+            padding: EdgeInsets.symmetric(vertical: 16.h),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                SizedBox(
+                  width: 72.w,
+                  child: Text(row.symbol,
+                      style: AppTextStyles.body.copyWith(fontSize: 22.sp)),
+                ),
                 Expanded(
-                  child: Text(
-                    l10n.nativeSpeakerScore(score.round()),
-                    style: AppTextStyles.body,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(_status(row.score).label,
+                          style: AppTextStyles.itemTitle
+                              .copyWith(color: _status(row.score).color)),
+                      if (row.tip != null) ...[
+                        SizedBox(height: 4.h),
+                        Text(row.tip!, style: AppTextStyles.bodyGrey),
+                      ],
+                    ],
                   ),
                 ),
-                SizedBox(width: 16.w),
-                PronunciationRing(
-                    score: score, size: 60, stroke: 6, showLabel: true),
               ],
             ),
-            SizedBox(height: 20.h),
-            if (assessing)
-              SizedBox(
-                height: 58.h,
-                child: Center(
-                  child: SizedBox(
-                    width: 28.r,
-                    height: 28.r,
-                    child: const CircularProgressIndicator(
-                        strokeWidth: 2.5, color: AppColors.primary),
-                  ),
-                ),
-              )
-            else
-              PrimaryButton(
-                label: recording
-                    ? l10n.stopRecordingButton
-                    : l10n.tryAgainButton,
-                color: recording ? AppColors.scoreRed : AppColors.primary,
-                shadowColor:
-                    recording ? AppColors.scoreRed : AppColors.primaryDark,
-                onPressed: onTryAgain,
-              ),
-            SizedBox(height: 8.h),
-            TextLinkButton(label: l10n.continueButton, onPressed: onContinue),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _CircleIcon extends StatelessWidget {
-  final IconData icon;
-  final VoidCallback onTap;
-
-  const _CircleIcon({required this.icon, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        Haptics.tap();
-        onTap();
-      },
-      child: Container(
-        width: 54.r,
-        height: 54.r,
-        decoration: const BoxDecoration(
-            color: AppColors.background, shape: BoxShape.circle),
-        child: Icon(icon, color: AppColors.primary, size: 26.r),
-      ),
+          ),
+      ],
     );
   }
 }
