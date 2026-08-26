@@ -12,6 +12,7 @@ import '../../../core/widget/common_widgets.dart';
 import '../../curriculum/model/curriculum_models.dart';
 import '../../profile/cubit/profile_cubit.dart';
 import '../../progression/cubit/stats_cubit.dart';
+import '../../pronunciation/widget/phoneme_detail_sheet.dart';
 import '../cubit/call_cubit.dart';
 import '../widget/call_controls.dart';
 import '../widget/chat_bubbles.dart';
@@ -184,6 +185,20 @@ class _CallViewState extends State<_CallView> {
                                   .any((f) => f.originalText == msg.text),
                               onFeedbackTap: () =>
                                   showFeedbackSheet(context, msg.text),
+                              onTap: msg.pronunciation == null
+                                  ? null
+                                  : () => showPronunciationReview(
+                                        context,
+                                        result: msg.pronunciation!,
+                                        recordingUrl: msg.recordingUrl,
+                                        languageCode: context
+                                            .read<ProfileCubit>()
+                                            .state
+                                            .targetLanguage,
+                                        onUpdated: (r, url) =>
+                                            cubit.updateMessagePronunciation(
+                                                i, r, url),
+                                      ),
                             ),
                           MessageRole.inspiration => InspirationBubble(
                               message: msg,

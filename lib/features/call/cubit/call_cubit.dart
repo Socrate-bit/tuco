@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
@@ -13,6 +14,7 @@ import '../../curriculum/model/curriculum_models.dart';
 import '../../pronunciation/model/pronunciation_result.dart';
 import '../../pronunciation/service/audio_recorder_service.dart';
 import '../../pronunciation/service/azure_speech_service.dart';
+import '../../pronunciation/service/recording_storage_service.dart';
 import '../service/gemini_service.dart';
 import '../service/stt_service.dart';
 import '../service/tts_service.dart';
@@ -127,6 +129,7 @@ class CallCubit extends Cubit<CallState> {
   final SttService _stt = SttService();
   final AudioRecorderService _recorder = AudioRecorderService();
   final AzureSpeechService _azure = AzureSpeechService();
+  final RecordingStorageService _recordingStorage = RecordingStorageService();
   Timer? _timer;
   final DateTime _startedAt = DateTime.now();
 
@@ -284,6 +287,26 @@ class CallCubit extends Cubit<CallState> {
     debugPrint('[CallCubit] Exercise verdict: $verdict');
   }
 
+  /// Upload a recording in the background and attach its URL to the message.
+  Future<void> _uploadRecording(
+      File file, int index, PronunciationResult result) async {
+    final url = await _recordingStorage.upload(file);
+    if (isClosed || url == null) return;
+    updateMessagePronunciation(index, result, url);
+  }
+
+  /// Replace a message's pronunciation score + recording after a "try again".
+  void updateMessagePronunciation(
+      int index, PronunciationResult result, String? recordingUrl) {
+    if (index < 0 || index >= state.messages.length) return;
+    final msgs = [...state.messages];
+    msgs[index] = msgs[index]
+        .copyWith(pronunciation: result, recordingUrl: recordingUrl);
+    emit(state.copyWith(messages: msgs));
+    _persistSession();
+    debugPrint('[CallCubit] Updated pronunciation for message $index');
+  }
+
   /// Opens the practice role-play once the learner confirms.
   Future<void> _startPractice() async {
     final reply = await _gemini.send(
@@ -295,11 +318,14 @@ class CallCubit extends Cubit<CallState> {
   /// Learner sent a message (voice recognition result or typed text).
   /// [pronunciation] is attached when the message came from a scored recording.
   Future<void> sendUserMessage(String text,
-      {PronunciationResult? pronunciation}) async {
+      {PronunciationResult? pronunciation, String? recordingUrl}) async {
     final trimmed = text.trim();
     if (trimmed.isEmpty || state.aiThinking || state.aiSpeaking) return;
     _append(ChatMessage(
-        role: MessageRole.user, text: trimmed, pronunciation: pronunciation));
+        role: MessageRole.user,
+        text: trimmed,
+        pronunciation: pronunciation,
+        recordingUrl: recordingUrl));
     emit(state.copyWith(
         aiThinking: true, partialTranscript: '', typingMode: false));
 
@@ -374,7 +400,12 @@ class CallCubit extends Cubit<CallState> {
         'words': result.words.length,
         'language': _profile.targetLanguage,
       });
-      await sendUserMessage(text, pronunciation: result);
+      // Show the scored message right away; upload the recording in the
+      // background and patch its URL in so "listen back" becomes available.
+      sendUserMessage(text, pronunciation: result);
+      final index =
+          state.messages.lastIndexWhere((m) => m.role == MessageRole.user);
+      if (index != -1) _uploadRecording(file, index, result);
       return;
     }
 

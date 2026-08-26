@@ -316,5 +316,15 @@
   "pronAccuracy": "Précision",
   "pronFluency": "Fluidité",
   "pronProsody": "Prosodie",
-  "pronCompleteness": "Complétude"
+  "pronCompleteness": "Complétude",
+  "pronPronunciation": "Prononciation",
+  "pronRhythm": "Rythme",
+  "pronExampleButton": "Exemple",
+  "pronListenButton": "Écouter",
+  "pronBandExcellent": "Excellent !",
+  "pronBandAlmost": "Presque correct",
+  "pronBandIncorrect": "Continue à t'entraîner",
+  "pronStatusExcellent": "Excellent",
+  "pronStatusAlmost": "Presque",
+  "pronStatusIncorrect": "Incorrect"
 }

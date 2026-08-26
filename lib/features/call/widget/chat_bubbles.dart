@@ -5,7 +5,6 @@ import '../../../core/l10n/app_localizations.dart';
 import '../../../core/model/models.dart';
 import '../../../core/service/haptics.dart';
 import '../../../core/theme/app_theme.dart';
-import '../../pronunciation/widget/phoneme_detail_sheet.dart';
 import '../../pronunciation/widget/pronunciation_ring.dart';
 
 /// Grey AI bubble with translate + play buttons on its right.
@@ -86,6 +85,7 @@ class AiBubble extends StatelessWidget {
 class UserBubble extends StatelessWidget {
   final ChatMessage message;
   final VoidCallback onFeedbackTap;
+  final VoidCallback? onTap; // open the pronunciation review (when scored)
   final bool pending; // partial voice transcript
   final bool hasFeedback; // corrections exist → show notification dot
 
@@ -93,6 +93,7 @@ class UserBubble extends StatelessWidget {
     super.key,
     required this.message,
     required this.onFeedbackTap,
+    this.onTap,
     this.pending = false,
     this.hasFeedback = false,
   });
@@ -132,14 +133,8 @@ class UserBubble extends StatelessWidget {
               clipBehavior: Clip.none,
               children: [
                 GestureDetector(
-                  // Tap a scored message to open its phoneme breakdown.
-                  onTap: message.pronunciation == null
-                      ? null
-                      : () {
-                          Haptics.tap();
-                          showPhonemeDetailSheet(
-                              context, message.pronunciation!);
-                        },
+                  // Tap a scored message to open its pronunciation review.
+                  onTap: onTap,
                   child: Container(
                     constraints: BoxConstraints(maxWidth: 0.64.sw),
                     padding:
