@@ -14,6 +14,7 @@ import '../../curriculum/model/curriculum_models.dart';
 import '../../pronunciation/model/pronunciation_result.dart';
 import '../../pronunciation/service/apple_speech_service.dart';
 import '../../pronunciation/service/audio_recorder_service.dart';
+import '../../pronunciation/service/recording_cache_service.dart';
 import '../../pronunciation/service/recording_storage_service.dart';
 import '../../pronunciation/service/speech_super_service.dart';
 import '../service/gemini_service.dart';
@@ -298,7 +299,11 @@ class CallCubit extends Cubit<CallState> {
   Future<void> _uploadRecording(
       File file, int index, PronunciationResult result) async {
     final url = await _recordingStorage.upload(file);
-    if (isClosed || url == null) return;
+    if (url == null) return;
+    // The uploaded bytes are already on disk — reuse them instead of
+    // downloading the recording back when the learner listens later.
+    RecordingCacheService.register(url, file.path);
+    if (isClosed) return;
     updateMessagePronunciation(index, result, url);
   }
 
@@ -325,14 +330,17 @@ class CallCubit extends Cubit<CallState> {
   /// Learner sent a message (voice recognition result or typed text).
   /// [pronunciation] is attached when the message came from a scored recording.
   Future<void> sendUserMessage(String text,
-      {PronunciationResult? pronunciation, String? recordingUrl}) async {
+      {PronunciationResult? pronunciation,
+      String? recordingUrl,
+      String? localRecordingPath}) async {
     final trimmed = text.trim();
     if (trimmed.isEmpty || state.aiThinking || state.aiSpeaking) return;
     _append(ChatMessage(
         role: MessageRole.user,
         text: trimmed,
         pronunciation: pronunciation,
-        recordingUrl: recordingUrl));
+        recordingUrl: recordingUrl,
+        localRecordingPath: localRecordingPath));
     emit(state.copyWith(
         aiThinking: true, partialTranscript: '', typingMode: false));
 
@@ -420,9 +428,11 @@ class CallCubit extends Cubit<CallState> {
           'language': _profile.targetLanguage,
         });
       }
-      // Show the message right away; if it was scored, upload the recording in
-      // the background and patch its URL in so "listen back" becomes available.
-      sendUserMessage(text, pronunciation: result);
+      // Show the message right away, carrying the temp WAV so "listen back"
+      // works instantly; if it was scored, upload in the background and patch
+      // the URL in once it lands.
+      sendUserMessage(text,
+          pronunciation: result, localRecordingPath: file.path);
       if (result != null) {
         final index =
             state.messages.lastIndexWhere((m) => m.role == MessageRole.user);

@@ -19,6 +19,7 @@ Future<void> showPronunciationReview(
   required PronunciationResult result,
   required String? recordingUrl,
   required String languageCode,
+  String? localRecordingPath,
   void Function(PronunciationResult result, String? recordingUrl)? onUpdated,
 }) {
   Haptics.tap();
@@ -31,6 +32,7 @@ Future<void> showPronunciationReview(
       create: (_) => PronunciationReviewCubit(
         initial: result,
         recordingUrl: recordingUrl,
+        localRecordingPath: localRecordingPath,
         languageCode: languageCode,
         referenceText: result.recognizedText,
         analytics: analytics,

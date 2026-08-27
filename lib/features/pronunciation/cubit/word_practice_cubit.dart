@@ -7,6 +7,7 @@ import '../../../core/service/analytics_service.dart';
 import '../../call/service/tts_service.dart';
 import '../model/pronunciation_result.dart';
 import '../service/audio_recorder_service.dart';
+import '../service/recording_cache_service.dart';
 import '../service/recording_storage_service.dart';
 import '../service/speech_super_service.dart';
 
@@ -109,6 +110,8 @@ class WordPracticeCubit extends Cubit<WordPracticeState> {
         coreType: SpeechSuperCoreType.word,
       );
       final url = await _storage.upload(file);
+      // Reuse the bytes we just uploaded rather than fetching them back.
+      if (url != null) RecordingCacheService.register(url, file.path);
       if (isClosed) return;
       if (result != null && result.words.isNotEmpty) {
         _analytics.track('word_practice', {

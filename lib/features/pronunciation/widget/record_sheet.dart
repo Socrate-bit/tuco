@@ -67,6 +67,7 @@ class _RecordSheetState<C extends StateStreamableSource<S>, S>
       },
       builder: (context, state) {
         return Container(
+          width: double.infinity, // span the full sheet, don't hug the button
           decoration: BoxDecoration(
             color: AppColors.card,
             borderRadius: BorderRadius.vertical(top: Radius.circular(28.r)),

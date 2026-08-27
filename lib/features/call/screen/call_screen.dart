@@ -191,6 +191,8 @@ class _CallViewState extends State<_CallView> {
                                         context,
                                         result: msg.pronunciation!,
                                         recordingUrl: msg.recordingUrl,
+                                        localRecordingPath:
+                                            msg.localRecordingPath,
                                         languageCode: context
                                             .read<ProfileCubit>()
                                             .state
