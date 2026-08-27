@@ -211,17 +211,6 @@ class _CallViewState extends State<_CallView> {
                         };
                       },
                     ),
-                    if (state.aiThinking || state.assessing)
-                      Positioned(
-                        left: 24.w,
-                        bottom: 12.h,
-                        child: SizedBox(
-                          width: 26.r,
-                          height: 26.r,
-                          child: const CircularProgressIndicator(
-                              strokeWidth: 2.5, color: AppColors.primary),
-                        ),
-                      ),
                     if (_showScrollDown)
                       Positioned(
                         right: 20.w,
@@ -271,7 +260,9 @@ class _CallViewState extends State<_CallView> {
                       )
                     : CallControls(
                         listening: state.listening,
-                        assessing: state.assessing,
+                        // Mic shows a spinner for the whole busy window:
+                        // scoring the take and waiting on the AI reply.
+                        assessing: state.assessing || state.aiThinking,
                         onType: cubit.switchToTyping,
                         onMic: cubit.toggleListening,
                         onInspiration: cubit.requestInspiration,
