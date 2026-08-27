@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:audioplayers/audioplayers.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
@@ -7,6 +9,7 @@ import '../../../core/service/analytics_service.dart';
 import '../../call/service/tts_service.dart';
 import '../model/pronunciation_result.dart';
 import '../service/audio_recorder_service.dart';
+import '../service/recording_cache_service.dart';
 import '../service/recording_storage_service.dart';
 import '../service/speech_super_service.dart';
 
@@ -70,35 +73,56 @@ class PronunciationReviewCubit extends Cubit<PronunciationReviewState> {
     required String languageCode,
     required String referenceText,
     required AnalyticsService analytics,
+    String? localRecordingPath,
     void Function(PronunciationResult result, String? recordingUrl)? onUpdated,
   })  : _languageCode = languageCode,
         _referenceText = referenceText,
         _analytics = analytics,
         _onUpdated = onUpdated,
         super(PronunciationReviewState(
-            result: initial, recordingUrl: recordingUrl)) {
+          result: initial,
+          recordingUrl: recordingUrl,
+          // The cache wins: after a re-take the message still points at the
+          // previous take's temp file, while the cache tracks the current URL.
+          localRecordingPath:
+              _localFor(recordingUrl) ?? _existing(localRecordingPath),
+        )) {
     _tts.init(languageCode);
-    // Preload a seeded recording (opened from history) so the first "Listen"
-    // plays without waiting on the network fetch.
-    if (recordingUrl != null) {
-      _player.setSource(UrlSource(recordingUrl)).catchError((e) {
-        debugPrint('[PronunciationReviewCubit] preload error: $e');
-      });
-    }
+    _cacheRecording();
+  }
+
+  /// Local copy of [url] if one is already on disk (just uploaded or fetched).
+  static String? _localFor(String? url) =>
+      url == null ? null : RecordingCacheService.cached(url);
+
+  /// [path] if it still exists — temp files can be reclaimed by the OS.
+  static String? _existing(String? path) =>
+      path != null && File(path).existsSync() ? path : null;
+
+  /// Download the recording as soon as the sheet opens so the first "Listen"
+  /// plays instantly instead of waiting on the network.
+  Future<void> _cacheRecording() async {
+    final url = state.recordingUrl;
+    if (url == null || state.localRecordingPath != null) return;
+    final path = await RecordingCacheService.fetch(url);
+    if (path == null || isClosed) return;
+    emit(state.copyWith(localRecordingPath: path));
   }
 
   /// Play a native example of the sentence.
   Future<void> playExample() => _tts.speak(_referenceText);
 
-  /// Listen back to the learner's recording. Prefers the freshly-captured
-  /// local file (instant) and falls back to the uploaded URL.
+  /// Listen back to the learner's recording. Prefers a local copy (instant)
+  /// and falls back to streaming the uploaded URL.
   Future<void> playRecording() async {
-    final path = state.localRecordingPath;
+    final path =
+        _existing(state.localRecordingPath) ?? _localFor(state.recordingUrl);
     final url = state.recordingUrl;
     if (path == null && url == null) return;
     try {
       await _player.stop();
-      await _player.play(path != null ? DeviceFileSource(path) : UrlSource(url!));
+      await _player
+          .play(path != null ? DeviceFileSource(path) : UrlSource(url!));
     } catch (e) {
       debugPrint('[PronunciationReviewCubit] playback error: $e');
     }
@@ -126,6 +150,8 @@ class PronunciationReviewCubit extends Cubit<PronunciationReviewState> {
         coreType: SpeechSuperCoreType.sentence,
       );
       final url = await _storage.upload(file);
+      // Reuse the bytes we just uploaded rather than fetching them back.
+      if (url != null) RecordingCacheService.register(url, file.path);
       if (isClosed) return;
       if (result != null) {
         _analytics.track('pronunciation_retry', {

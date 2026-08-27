@@ -102,6 +102,9 @@ class ChatMessage extends Equatable {
   final String? verdict; // 'win' | 'fail' — exercise result on user messages
   final PronunciationResult? pronunciation; // Azure speech score on voice turns
   final String? recordingUrl; // Storage URL of the voice recording (listen back)
+  // Temp WAV of the take just recorded, so listen-back works before the upload
+  // finishes. Session-only: not persisted, as temp files don't outlive the app.
+  final String? localRecordingPath;
 
   const ChatMessage({
     required this.role,
@@ -111,6 +114,7 @@ class ChatMessage extends Equatable {
     this.verdict,
     this.pronunciation,
     this.recordingUrl,
+    this.localRecordingPath,
   });
 
   ChatMessage copyWith({
@@ -118,6 +122,7 @@ class ChatMessage extends Equatable {
     String? verdict,
     PronunciationResult? pronunciation,
     String? recordingUrl,
+    String? localRecordingPath,
   }) =>
       ChatMessage(
         role: role,
@@ -127,6 +132,7 @@ class ChatMessage extends Equatable {
         verdict: verdict ?? this.verdict,
         pronunciation: pronunciation ?? this.pronunciation,
         recordingUrl: recordingUrl ?? this.recordingUrl,
+        localRecordingPath: localRecordingPath ?? this.localRecordingPath,
       );
 
   Map<String, dynamic> toMap() => {
@@ -153,8 +159,16 @@ class ChatMessage extends Equatable {
       );
 
   @override
-  List<Object?> get props =>
-      [role, text, translation, banner, verdict, pronunciation, recordingUrl];
+  List<Object?> get props => [
+        role,
+        text,
+        translation,
+        banner,
+        verdict,
+        pronunciation,
+        recordingUrl,
+        localRecordingPath,
+      ];
 }
 
 /// A completed (or aborted) call session.
