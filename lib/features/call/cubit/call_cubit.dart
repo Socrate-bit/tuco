@@ -12,9 +12,10 @@ import '../../../core/service/data_repository.dart';
 import '../../../core/service/sound_service.dart';
 import '../../curriculum/model/curriculum_models.dart';
 import '../../pronunciation/model/pronunciation_result.dart';
+import '../../pronunciation/service/apple_speech_service.dart';
 import '../../pronunciation/service/audio_recorder_service.dart';
-import '../../pronunciation/service/azure_speech_service.dart';
 import '../../pronunciation/service/recording_storage_service.dart';
+import '../../pronunciation/service/speech_super_service.dart';
 import '../service/gemini_service.dart';
 import '../service/stt_service.dart';
 import '../service/tts_service.dart';
@@ -125,10 +126,12 @@ class CallCubit extends Cubit<CallState> {
 
   late final GeminiService _gemini;
   final TtsService _tts = TtsService();
-  // Kept but unplugged: Azure now handles both recognition and scoring.
+  // Kept but unplugged (previously used for live recognition).
   final SttService _stt = SttService();
   final AudioRecorderService _recorder = AudioRecorderService();
-  final AzureSpeechService _azure = AzureSpeechService();
+  // Apple transcribes the recording; SpeechSuper scores it against that text.
+  final AppleSpeechService _apple = AppleSpeechService();
+  final SpeechSuperService _speech = SpeechSuperService();
   final RecordingStorageService _recordingStorage = RecordingStorageService();
   Timer? _timer;
   final DateTime _startedAt = DateTime.now();
@@ -371,8 +374,9 @@ class CallCubit extends Cubit<CallState> {
 
   // ---------------- Voice input ----------------
 
-  /// Push-to-talk: first tap records; second tap stops, then Azure recognizes
-  /// the speech and scores its pronunciation before the turn is sent.
+  /// Push-to-talk: first tap records; second tap stops, then Apple transcribes
+  /// the speech and SpeechSuper scores it against that transcription before the
+  /// turn is sent.
   Future<void> toggleListening() async {
     if (state.assessing) return; // ignore taps while a recording is scored
 
@@ -384,28 +388,42 @@ class CallCubit extends Cubit<CallState> {
         return;
       }
       emit(state.copyWith(assessing: true));
-      final result = await _azure.assess(
-        audio: file,
-        languageCode: _profile.targetLanguage,
+      // 1) Transcribe the recording (SpeechSuper is scripted, so it needs the
+      // spoken text as its reference).
+      final text = await _apple.transcribeFile(
+        file.path,
+        _profile.targetLanguage,
       );
       if (isClosed) return;
-      emit(state.copyWith(assessing: false));
-      final text = (result?.recognizedText ?? '').trim();
-      if (text.isEmpty) {
+      if (text == null || text.isEmpty) {
+        emit(state.copyWith(assessing: false));
         debugPrint('[CallCubit] Empty recognition — nothing sent');
         return;
       }
-      _analytics.track('pronunciation_assessed', {
-        'score': result!.pronScore.round(),
-        'words': result.words.length,
-        'language': _profile.targetLanguage,
-      });
-      // Show the scored message right away; upload the recording in the
-      // background and patch its URL in so "listen back" becomes available.
+      // 2) Score the pronunciation against the transcription.
+      final result = await _speech.assess(
+        audio: file,
+        referenceText: text,
+        languageCode: _profile.targetLanguage,
+        coreType: SpeechSuperCoreType.sentence,
+      );
+      if (isClosed) return;
+      emit(state.copyWith(assessing: false));
+      if (result != null) {
+        _analytics.track('pronunciation_assessed', {
+          'score': result.pronScore.round(),
+          'words': result.words.length,
+          'language': _profile.targetLanguage,
+        });
+      }
+      // Show the message right away; if it was scored, upload the recording in
+      // the background and patch its URL in so "listen back" becomes available.
       sendUserMessage(text, pronunciation: result);
-      final index =
-          state.messages.lastIndexWhere((m) => m.role == MessageRole.user);
-      if (index != -1) _uploadRecording(file, index, result);
+      if (result != null) {
+        final index =
+            state.messages.lastIndexWhere((m) => m.role == MessageRole.user);
+        if (index != -1) _uploadRecording(file, index, result);
+      }
       return;
     }
 
