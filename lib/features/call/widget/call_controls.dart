@@ -41,11 +41,11 @@ class CallControls extends StatelessWidget {
             label: l10n.typeButton,
             onTap: onType,
           ),
-          // Big mic button — starts a take; auto-stops on silence.
+          // Big mic button — tap to record, tap again to stop.
           RecordButton(
             recording: listening,
             assessing: assessing,
-            onStart: onMic,
+            onTap: onMic,
           ),
           if (listening)
             _SideControl(

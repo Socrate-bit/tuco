@@ -73,11 +73,11 @@ class TtsService {
   }
 
   Future<void> speak(String text) async {
-    final id = ++_requestId;
     await stop();
+    final id = ++_requestId;
     try {
       final bytes = await _synthesize(text);
-      // if (id != _requestId) return; // A newer speak/stop superseded this one.
+      if (id != _requestId) return; // A newer speak/stop superseded this one.
       // AVPlayer needs a file with an .mp3 extension; BytesSource writes an
       // extensionless cache file that iOS refuses to play.
       final file =

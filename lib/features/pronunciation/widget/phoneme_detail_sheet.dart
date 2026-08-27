@@ -124,7 +124,7 @@ class _ReviewSheet extends StatelessWidget {
                           cubit: cubit,
                           recording: (s) => s.recording,
                           assessing: (s) => s.assessing,
-                          onStart: (c) => c.startRecording(),
+                          onToggle: (c) => c.toggleRecording(),
                         ),
                       ),
                     ],
