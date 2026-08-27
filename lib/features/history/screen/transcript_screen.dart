@@ -6,10 +6,9 @@ import '../../../core/model/models.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widget/common_widgets.dart';
 import '../../call/widget/chat_bubbles.dart';
-import '../../call/widget/feedback_sheet.dart';
+import '../../call/widget/message_feedback_sheet.dart';
 import '../../feedback/cubit/feedback_cubit.dart';
 import '../../profile/cubit/profile_cubit.dart';
-import '../../pronunciation/widget/phoneme_detail_sheet.dart';
 import '../cubit/transcript_cubit.dart';
 
 /// Read-only transcript of a past call, in the call-screen bubble style.
@@ -55,24 +54,19 @@ class TranscriptScreen extends StatelessWidget {
                         MessageRole.user => UserBubble(
                             message: msg,
                             hasFeedback: context
-                                .watch<FeedbackCubit>()
-                                .state
-                                .items
-                                .any((f) => f.originalText == msg.text),
-                            onFeedbackTap: () =>
-                                showFeedbackSheet(context, msg.text),
-                            // Read-only in history: review + listen, no writeback.
-                            onTap: msg.pronunciation == null
-                                ? null
-                                : () => showPronunciationReview(
-                                      context,
-                                      result: msg.pronunciation!,
-                                      recordingUrl: msg.recordingUrl,
-                                      languageCode: context
-                                          .read<ProfileCubit>()
-                                          .state
-                                          .targetLanguage,
-                                    ),
+                                    .watch<FeedbackCubit>()
+                                    .state
+                                    .needsReview(msg.text) ||
+                                (msg.pronunciation?.pronScore ?? 100) < 90,
+                            // Read-only in history: no pronunciation writeback.
+                            onTap: () => showMessageFeedbackSheet(
+                              context,
+                              message: msg,
+                              languageCode: context
+                                  .read<ProfileCubit>()
+                                  .state
+                                  .targetLanguage,
+                            ),
                           ),
                         MessageRole.inspiration => InspirationBubble(
                             message: msg,

@@ -12,12 +12,11 @@ import '../../../core/widget/common_widgets.dart';
 import '../../curriculum/model/curriculum_models.dart';
 import '../../profile/cubit/profile_cubit.dart';
 import '../../progression/cubit/stats_cubit.dart';
-import '../../pronunciation/widget/phoneme_detail_sheet.dart';
 import '../cubit/call_cubit.dart';
 import '../widget/call_controls.dart';
 import '../widget/chat_bubbles.dart';
 import '../../feedback/cubit/feedback_cubit.dart';
-import '../widget/feedback_sheet.dart';
+import '../widget/message_feedback_sheet.dart';
 import 'lesson_end_screen.dart';
 
 /// Arguments to open a call: lesson (null = free conversation), optional
@@ -161,7 +160,6 @@ class _CallViewState extends State<_CallView> {
                                 text: state.partialTranscript.isEmpty
                                     ? '…'
                                     : state.partialTranscript),
-                            onFeedbackTap: () {},
                             pending: true,
                           );
                         }
@@ -179,28 +177,20 @@ class _CallViewState extends State<_CallView> {
                           MessageRole.user => UserBubble(
                               message: msg,
                               hasFeedback: context
-                                  .watch<FeedbackCubit>()
-                                  .state
-                                  .items
-                                  .any((f) => f.originalText == msg.text),
-                              onFeedbackTap: () =>
-                                  showFeedbackSheet(context, msg.text),
-                              onTap: msg.pronunciation == null
-                                  ? null
-                                  : () => showPronunciationReview(
-                                        context,
-                                        result: msg.pronunciation!,
-                                        recordingUrl: msg.recordingUrl,
-                                        localRecordingPath:
-                                            msg.localRecordingPath,
-                                        languageCode: context
-                                            .read<ProfileCubit>()
-                                            .state
-                                            .targetLanguage,
-                                        onUpdated: (r, url) =>
-                                            cubit.updateMessagePronunciation(
-                                                i, r, url),
-                                      ),
+                                      .watch<FeedbackCubit>()
+                                      .state
+                                      .needsReview(msg.text) ||
+                                  (msg.pronunciation?.pronScore ?? 100) < 90,
+                              onTap: () => showMessageFeedbackSheet(
+                                context,
+                                message: msg,
+                                languageCode: context
+                                    .read<ProfileCubit>()
+                                    .state
+                                    .targetLanguage,
+                                onPronunciationUpdated: (r, url) => cubit
+                                    .updateMessagePronunciation(i, r, url),
+                              ),
                             ),
                           MessageRole.inspiration => InspirationBubble(
                               message: msg,

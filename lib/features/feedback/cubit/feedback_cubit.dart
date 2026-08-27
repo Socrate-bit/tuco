@@ -13,11 +13,26 @@ class FeedbackState extends Equatable {
 
   const FeedbackState({this.items = const []});
 
-  List<FeedbackItem> get grammar =>
-      items.where((i) => i.type == 'grammar').toList();
+  /// Grammar center list: only sentences with actual corrections.
+  List<FeedbackItem> get grammar => items
+      .where((i) => i.type == 'grammar' && i.corrections.isNotEmpty)
+      .toList();
 
   List<FeedbackItem> get alternatives =>
       items.where((i) => i.type == 'alternative').toList();
+
+  /// Latest grammar analysis for one message text (may have zero corrections).
+  FeedbackItem? grammarFor(String text) {
+    final matches =
+        items.where((i) => i.type == 'grammar' && i.originalText == text);
+    return matches.isEmpty ? null : matches.first;
+  }
+
+  /// Whether this message deserves the correction badge: a grammar
+  /// correction or an improvement suggestion exists.
+  bool needsReview(String text) => items.any((i) =>
+      i.originalText == text &&
+      (i.corrections.isNotEmpty || (i.alternative?.isNotEmpty ?? false)));
 
   @override
   List<Object?> get props => [items];

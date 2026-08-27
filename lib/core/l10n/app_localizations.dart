@@ -1591,6 +1591,42 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Incorrect'**
   String get pronStatusIncorrect;
+
+  /// No description provided for @grammarCorrect.
+  ///
+  /// In fr, this message translates to:
+  /// **'Correct'**
+  String get grammarCorrect;
+
+  /// No description provided for @grammarIncorrect.
+  ///
+  /// In fr, this message translates to:
+  /// **'Incorrect'**
+  String get grammarIncorrect;
+
+  /// No description provided for @grammarAllGood.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune erreur, bravo !'**
+  String get grammarAllGood;
+
+  /// No description provided for @grammarNoFeedback.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pas encore de retour de grammaire pour ce message.'**
+  String get grammarNoFeedback;
+
+  /// No description provided for @sayItBetter.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pour aller plus loin'**
+  String get sayItBetter;
+
+  /// No description provided for @pronNoRecording.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pas d\'enregistrement vocal pour ce message. Utilise le micro pour obtenir un score de prononciation.'**
+  String get pronNoRecording;
 }
 
 class _AppLocalizationsDelegate
