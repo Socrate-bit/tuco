@@ -4,10 +4,12 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../core/l10n/app_localizations.dart';
 import '../../../core/service/haptics.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/widget/record_button.dart';
 
 /// Bottom control bar: Type | big mic | Inspiration (Delete while listening).
 class CallControls extends StatelessWidget {
   final bool listening;
+  final bool assessing;
   final VoidCallback onType;
   final VoidCallback onMic;
   final VoidCallback onInspiration;
@@ -17,6 +19,7 @@ class CallControls extends StatelessWidget {
   const CallControls({
     super.key,
     required this.listening,
+    this.assessing = false,
     required this.onType,
     required this.onMic,
     required this.onInspiration,
@@ -38,33 +41,11 @@ class CallControls extends StatelessWidget {
             label: l10n.typeButton,
             onTap: onType,
           ),
-          // Big blue mic button.
-          GestureDetector(
-            onTap: () {
-              Haptics.impact();
-              onMic();
-            },
-            child: Container(
-              width: 92.r,
-              height: 92.r,
-              decoration: BoxDecoration(
-                color: listening ? AppColors.lessonRed : AppColors.primary,
-                shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    color: listening
-                        ? const Color(0xFFC53F27)
-                        : AppColors.primaryDark,
-                    offset: Offset(0, 4.h),
-                  ),
-                ],
-              ),
-              child: Icon(
-                listening ? Icons.stop_rounded : Icons.mic_rounded,
-                color: Colors.white,
-                size: 44.r,
-              ),
-            ),
+          // Big mic button — starts a take; auto-stops on silence.
+          RecordButton(
+            recording: listening,
+            assessing: assessing,
+            onStart: onMic,
           ),
           if (listening)
             _SideControl(

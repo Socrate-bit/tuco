@@ -10,6 +10,7 @@ import '../cubit/pronunciation_review_cubit.dart';
 import '../model/pronunciation_result.dart';
 import '../screen/word_detail_screen.dart';
 import 'pronunciation_review.dart';
+import 'record_sheet.dart';
 
 /// Message pronunciation review sheet: overall score, the colored sentence and
 /// its IPA, example / listen / try-again actions, and the sub-scores.
@@ -115,13 +116,16 @@ class _ReviewSheet extends StatelessWidget {
                         onTap: state.canListen ? cubit.playRecording : null,
                       ),
                       ReviewActionButton(
-                        icon: state.recording
-                            ? Icons.stop_rounded
-                            : Icons.mic_rounded,
+                        icon: Icons.mic_rounded,
                         label: l10n.tryAgainButton,
-                        onTap: cubit.toggleRecording,
-                        active: state.recording,
-                        busy: state.assessing,
+                        onTap: () => showRecordSheet<PronunciationReviewCubit,
+                            PronunciationReviewState>(
+                          context,
+                          cubit: cubit,
+                          recording: (s) => s.recording,
+                          assessing: (s) => s.assessing,
+                          onStart: (c) => c.startRecording(),
+                        ),
                       ),
                     ],
                   ),

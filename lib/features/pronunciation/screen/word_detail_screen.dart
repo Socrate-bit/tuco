@@ -11,6 +11,7 @@ import '../cubit/word_practice_cubit.dart';
 import '../data/phoneme_tips.dart';
 import '../model/pronunciation_result.dart';
 import '../widget/pronunciation_review.dart';
+import '../widget/record_sheet.dart';
 
 /// Detailed practice screen for one word: score header, colored word + IPA,
 /// example / listen / try-again actions and a per-phoneme detail column.
@@ -90,13 +91,16 @@ class _WordDetailView extends StatelessWidget {
                                   : null,
                             ),
                             ReviewActionButton(
-                              icon: state.recording
-                                  ? Icons.stop_rounded
-                                  : Icons.mic_rounded,
+                              icon: Icons.mic_rounded,
                               label: l10n.tryAgainButton,
-                              onTap: cubit.toggleRecording,
-                              active: state.recording,
-                              busy: state.assessing,
+                              onTap: () => showRecordSheet<WordPracticeCubit,
+                                  WordPracticeState>(
+                                context,
+                                cubit: cubit,
+                                recording: (s) => s.recording,
+                                assessing: (s) => s.assessing,
+                                onStart: (c) => c.startRecording(),
+                              ),
                             ),
                           ],
                         ),
