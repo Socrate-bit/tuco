@@ -263,6 +263,8 @@ class FeedbackItem extends Equatable {
   final int score; // 0-100
   final String? level; // estimated CEFR level of the sentence (A1..C2)
   final String? alternative; // more advanced way to phrase the sentence
+  final String? alternativeTranslation; // its translation (native language)
+  final String? alternativeExplanation; // what makes it better (native language)
   final DateTime createdAt;
 
   const FeedbackItem({
@@ -276,6 +278,8 @@ class FeedbackItem extends Equatable {
     required this.score,
     this.level,
     this.alternative,
+    this.alternativeTranslation,
+    this.alternativeExplanation,
     required this.createdAt,
   });
 
@@ -289,6 +293,8 @@ class FeedbackItem extends Equatable {
         'score': score,
         'level': level,
         'alternative': alternative,
+        'alternativeTranslation': alternativeTranslation,
+        'alternativeExplanation': alternativeExplanation,
         'createdAt': createdAt.millisecondsSinceEpoch,
       };
 
@@ -307,13 +313,24 @@ class FeedbackItem extends Equatable {
         score: map['score'] as int? ?? 0,
         level: map['level'] as String?,
         alternative: map['alternative'] as String?,
+        alternativeTranslation: map['alternativeTranslation'] as String?,
+        alternativeExplanation: map['alternativeExplanation'] as String?,
         createdAt:
             DateTime.fromMillisecondsSinceEpoch(map['createdAt'] as int? ?? 0),
       );
 
   @override
-  List<Object?> get props =>
-      [id, type, originalText, score, level, alternative, createdAt];
+  List<Object?> get props => [
+        id,
+        type,
+        originalText,
+        score,
+        level,
+        alternative,
+        alternativeTranslation,
+        alternativeExplanation,
+        createdAt,
+      ];
 }
 
 /// A learned vocabulary word with metadata.
