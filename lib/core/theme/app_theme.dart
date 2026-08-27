@@ -38,10 +38,10 @@ abstract class AppColors {
   static const chartBar = Color(0xFF7B8FE0); // call-time bar chart
 
   // Feedback score colors
-  static const scoreRed = Color(0xFFF87168);
+  static const scoreRed = Color(0xFFFF0000); // changed to #F00
   static const scoreRedBg = Color(0xFFFDE8E8);
-  static const scoreOrange = Color(0xFFF2A93B);
-  static const scoreGreen = Color(0xFF3ED598);
+  static const scoreOrange = Color(0xFFFF7A01); // changed to #FF7A01
+  static const scoreGreen = Color(0xFF0BC150); // changed to #0BC150
   static const scoreGreenBg = Color(0xFF4CD08D);
   static const scoreBlue = Color(0xFF3B82F6); // top pronunciation tier
 

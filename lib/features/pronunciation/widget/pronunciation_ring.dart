@@ -5,13 +5,12 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../core/theme/app_theme.dart';
 
-/// Maps a 0-100 pronunciation score to its tier color (red → yellow → green →
-/// blue). Thresholds are intentionally simple and easy to tweak.
+/// Maps a 0-100 pronunciation score to its tier color (red → yellow → green).
+/// Thresholds are intentionally simple and easy to tweak.
 Color pronColor(double score) {
   if (score < 50) return AppColors.scoreRed;
   if (score < 75) return AppColors.scoreOrange;
-  if (score < 90) return AppColors.scoreGreen;
-  return AppColors.scoreBlue;
+  return AppColors.scoreGreen;
 }
 
 /// A circular progress ring whose sweep and color reflect a pronunciation
@@ -48,7 +47,7 @@ class PronunciationRing extends StatelessWidget {
             ? Center(
                 child: Text(
                   '${score.round()}%',
-                  style: AppTextStyles.itemTitle.copyWith(color: color),
+                  style: AppTextStyles.itemTitle.copyWith(color: color, fontSize: 14.sp),
                 ),
               )
             : null,

@@ -80,7 +80,10 @@ class _ReviewSheet extends StatelessWidget {
                   Padding(
                     padding: EdgeInsets.symmetric(vertical: 18.h),
                     child: const Divider(
-                        color: AppColors.divider, height: 1, thickness: 1),
+                      color: AppColors.divider,
+                      height: 1,
+                      thickness: 1,
+                    ),
                   ),
                   ColoredSentence(
                     words: result.words,
@@ -88,11 +91,15 @@ class _ReviewSheet extends StatelessWidget {
                       context,
                       MaterialPageRoute(
                         builder: (_) => WordDetailScreen(
-                            word: w, languageCode: languageCode),
+                          word: w,
+                          languageCode: languageCode,
+                        ),
                       ),
                     ),
                   ),
                   IpaLine(words: result.words),
+                  SizedBox(height: 24.h),
+                  SubScoresRow(result: result),
                   SizedBox(height: 24.h),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -118,8 +125,6 @@ class _ReviewSheet extends StatelessWidget {
                       ),
                     ],
                   ),
-                  SizedBox(height: 24.h),
-                  SubScoresRow(result: result),
                 ],
               ),
             ),

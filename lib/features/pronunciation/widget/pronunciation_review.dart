@@ -65,14 +65,44 @@ class PronunciationHeader extends StatelessWidget {
                   style: AppTextStyles.itemTitle
                       .copyWith(color: bandColor(score))),
               SizedBox(height: 2.h),
-              Text(l10n.nativeSpeakerScore(score.round()),
-                  style: AppTextStyles.bodyGrey),
+              _NativeSpeakerScore(score: score.round()),
             ],
           ),
         ),
         SizedBox(width: 12.w),
         PronunciationRing(score: score, size: 52, stroke: 5, showLabel: true),
       ],
+    );
+  }
+}
+
+/// "You sound {score}% like a native speaker!" with the number bolded.
+/// Splits the localized string around the number so it works in any locale.
+class _NativeSpeakerScore extends StatelessWidget {
+  final int score;
+
+  const _NativeSpeakerScore({required this.score});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final text = l10n.nativeSpeakerScore(score);
+    final numStr = '$score';
+    final base = AppTextStyles.bodyGrey;
+    final parts = text.split(numStr);
+    // Fallback: number not found in the resolved string.
+    if (parts.length < 2) return Text(text, style: base);
+    return Text.rich(
+      TextSpan(
+        style: base,
+        children: [
+          TextSpan(text: parts.first),
+          TextSpan(
+              text: numStr,
+              style: base.copyWith(fontWeight: FontWeight.w800)),
+          TextSpan(text: parts.sublist(1).join(numStr)),
+        ],
+      ),
     );
   }
 }
@@ -253,7 +283,7 @@ class ReviewActionButton extends StatelessWidget {
                   ? Padding(
                       padding: EdgeInsets.all(16.r),
                       child: const CircularProgressIndicator(
-                          strokeWidth: 2.5, color: AppColors.primary),
+                          strokeWidth: 2.5, color: Colors.black),
                     )
                   : Icon(icon, color: color, size: 26.r),
             ),
