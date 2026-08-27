@@ -7,8 +7,8 @@ import '../../../core/service/analytics_service.dart';
 import '../../call/service/tts_service.dart';
 import '../model/pronunciation_result.dart';
 import '../service/audio_recorder_service.dart';
-import '../service/azure_speech_service.dart';
 import '../service/recording_storage_service.dart';
+import '../service/speech_super_service.dart';
 
 class PronunciationReviewState extends Equatable {
   final PronunciationResult result;
@@ -53,7 +53,7 @@ class PronunciationReviewCubit extends Cubit<PronunciationReviewState> {
       _onUpdated;
 
   final AudioRecorderService _recorder = AudioRecorderService();
-  final AzureSpeechService _azure = AzureSpeechService();
+  final SpeechSuperService _speech = SpeechSuperService();
   final RecordingStorageService _storage = RecordingStorageService();
   final TtsService _tts = TtsService();
   final AudioPlayer _player = AudioPlayer();
@@ -99,10 +99,11 @@ class PronunciationReviewCubit extends Cubit<PronunciationReviewState> {
       final file = await _recorder.stop();
       if (file == null) return;
       emit(state.copyWith(assessing: true));
-      final result = await _azure.assess(
+      final result = await _speech.assess(
         audio: file,
         referenceText: _referenceText,
         languageCode: _languageCode,
+        coreType: SpeechSuperCoreType.sentence,
       );
       final url = await _storage.upload(file);
       if (isClosed) return;

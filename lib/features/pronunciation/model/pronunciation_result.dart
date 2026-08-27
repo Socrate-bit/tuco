@@ -193,6 +193,82 @@ class PronunciationResult extends Equatable {
     );
   }
 
+  /// Parse a SpeechSuper scripted pronunciation-assessment JSON response
+  /// (`word.eval.*` / `sent.eval.*`) into the same model Azure produced, so all
+  /// downstream UI keeps working unchanged.
+  ///
+  /// SpeechSuper is scripted-only: it never returns recognized text, so we set
+  /// [recognizedText] to the [refText] we sent (the known word/sentence, or —
+  /// for free conversation — the Apple transcription used as the reference).
+  ///
+  /// The shape is shared across languages; only the phonetic alphabet differs
+  /// (IPA for es/fr/en, pinyin for zh). Returns null on an error payload or when
+  /// no `result` is present.
+  static PronunciationResult? fromSpeechSuperJson(
+    Map<String, dynamic> json, {
+    required String refText,
+  }) {
+    if (json['error'] != null) return null;
+    final result = json['result'] as Map?;
+    if (result == null) return null;
+    final r = Map<String, dynamic>.from(result);
+
+    double num2d(dynamic v) => (v as num?)?.toDouble() ?? 0;
+
+    final words = <WordScore>[];
+    for (final raw in (r['words'] as List? ?? const [])) {
+      final w = Map<String, dynamic>.from(raw as Map);
+      final scores = w['scores'] as Map?;
+      final accuracy = num2d(scores?['overall'] ?? scores?['pronunciation']);
+      final readType = (w['readType'] as num?)?.toInt() ?? 0;
+
+      final phonemes = <PhonemeScore>[];
+      for (final rp in (w['phonemes'] as List? ?? const [])) {
+        final p = Map<String, dynamic>.from(rp as Map);
+        phonemes.add(PhonemeScore(
+          phoneme: p['phoneme'] as String? ?? '',
+          accuracyScore: num2d(p['pronunciation']),
+          offset: ((p['span'] as Map?)?['start'] as num?)?.toInt() ?? 0,
+        ));
+      }
+
+      // SpeechSuper's "phonics" align phonemes to the letters that spell them —
+      // the closest thing to Azure's per-syllable grapheme scores.
+      final syllables = <SyllableScore>[];
+      for (final rs in (w['phonics'] as List? ?? const [])) {
+        final s = Map<String, dynamic>.from(rs as Map);
+        syllables.add(SyllableScore(
+          grapheme: s['spell'] as String? ?? '',
+          accuracyScore: num2d(s['overall']),
+        ));
+      }
+
+      words.add(WordScore(
+        word: w['word'] as String? ?? '',
+        accuracyScore: accuracy,
+        // SpeechSuper flags skipped/repeated words via readType (3/4); it has no
+        // explicit error label, so derive one from the score for the rest.
+        errorType: readType == 3
+            ? 'Omission'
+            : accuracy < 60
+                ? 'Mispronunciation'
+                : 'None',
+        syllables: syllables,
+        phonemes: phonemes,
+      ));
+    }
+
+    return PronunciationResult(
+      recognizedText: refText,
+      pronScore: num2d(r['overall']),
+      accuracyScore: num2d(r['pronunciation']),
+      fluencyScore: num2d(r['fluency']), // absent for word scoring → 0
+      completenessScore: num2d(r['integrity']), // absent for word scoring → 0
+      prosodyScore: (r['rhythm'] as num?)?.toDouble(), // sentence only; else null
+      words: words,
+    );
+  }
+
   Map<String, dynamic> toMap() => {
         'text': recognizedText,
         'pron': pronScore,
