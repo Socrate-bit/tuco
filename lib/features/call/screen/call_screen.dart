@@ -264,14 +264,14 @@ class _CallViewState extends State<_CallView> {
                         },
                         onMic: () {
                           cubit.setTypingMode(false);
-                          cubit.startListening();
+                          cubit.toggleListening();
                         },
                       )
                     : CallControls(
                         listening: state.listening,
                         assessing: state.assessing,
                         onType: cubit.switchToTyping,
-                        onMic: cubit.startListening,
+                        onMic: cubit.toggleListening,
                         onInspiration: cubit.requestInspiration,
                         onClear: cubit.clearTranscript,
                         inspirationEnabled: !state.inspirationUsed,

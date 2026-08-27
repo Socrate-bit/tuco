@@ -87,49 +87,50 @@ class WordPracticeCubit extends Cubit<WordPracticeState> {
     }
   }
 
-  /// Start a take. Stops any example/listen-back audio, then records; the
-  /// recorder auto-stops on silence and finishes via [_finishRecording].
-  Future<void> startRecording() async {
-    if (state.recording || state.assessing) return;
-    await _tts.stop();
-    await _player.stop();
-    final started = await _recorder.start(onSilence: _finishRecording);
-    if (!started) return;
-    emit(state.copyWith(recording: true));
-  }
+  /// Push-to-talk for a single word: first tap records, second tap scores it
+  /// (scripted), uploads the audio and enables listen-back.
+  Future<void> toggleRecording() async {
+    if (state.assessing) return;
 
-  /// Stop the take, expose it for listen-back immediately, then score it
-  /// (scripted) and upload the audio.
-  Future<void> _finishRecording() async {
-    final file = await _recorder.stop();
-    if (isClosed) return;
-    if (file == null) {
-      emit(state.copyWith(recording: false));
+    if (state.recording) {
+      final file = await _recorder.stop();
+      if (isClosed) return;
+      if (file == null) {
+        emit(state.copyWith(recording: false));
+        return;
+      }
+      // Local file first so listen-back is available before scoring/upload.
+      emit(state.copyWith(
+          recording: false, assessing: true, localRecordingPath: file.path));
+      final result = await _speech.assess(
+        audio: file,
+        referenceText: state.word.word,
+        languageCode: _languageCode,
+        coreType: SpeechSuperCoreType.word,
+      );
+      final url = await _storage.upload(file);
+      if (isClosed) return;
+      if (result != null && result.words.isNotEmpty) {
+        _analytics.track('word_practice', {
+          'word': state.word.word,
+          'score': result.words.first.accuracyScore.round(),
+          'language': _languageCode,
+        });
+        emit(state.copyWith(
+            word: result.words.first, recordingUrl: url, assessing: false));
+      } else {
+        debugPrint('[WordPracticeCubit] No score for "${state.word.word}"');
+        emit(state.copyWith(recordingUrl: url, assessing: false));
+      }
       return;
     }
-    // Local file first so listen-back is available before scoring/upload.
-    emit(state.copyWith(
-        recording: false, assessing: true, localRecordingPath: file.path));
-    final result = await _speech.assess(
-      audio: file,
-      referenceText: state.word.word,
-      languageCode: _languageCode,
-      coreType: SpeechSuperCoreType.word,
-    );
-    final url = await _storage.upload(file);
-    if (isClosed) return;
-    if (result != null && result.words.isNotEmpty) {
-      _analytics.track('word_practice', {
-        'word': state.word.word,
-        'score': result.words.first.accuracyScore.round(),
-        'language': _languageCode,
-      });
-      emit(state.copyWith(
-          word: result.words.first, recordingUrl: url, assessing: false));
-    } else {
-      debugPrint('[WordPracticeCubit] No score for "${state.word.word}"');
-      emit(state.copyWith(recordingUrl: url, assessing: false));
-    }
+
+    // Stop any example / listen-back audio before recording.
+    await _tts.stop();
+    await _player.stop();
+    final started = await _recorder.start();
+    if (!started) return;
+    emit(state.copyWith(recording: true));
   }
 
   @override

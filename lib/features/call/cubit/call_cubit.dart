@@ -134,6 +134,9 @@ class CallCubit extends Cubit<CallState> {
   final SpeechSuperService _speech = SpeechSuperService();
   final RecordingStorageService _recordingStorage = RecordingStorageService();
   Timer? _timer;
+  // Bumped to cancel an in-progress AI speech reveal loop (e.g. when the
+  // learner starts recording over Tuco).
+  int _speechToken = 0;
   final DateTime _startedAt = DateTime.now();
 
   CallCubit({
@@ -228,12 +231,13 @@ class CallCubit extends Cubit<CallState> {
       // Spinner off as soon as the first bubble shows; aiSpeaking keeps
       // input blocked until the whole reply is revealed.
       emit(state.copyWith(aiThinking: false, aiSpeaking: true));
+      final token = ++_speechToken;
       for (final part in parts) {
-        if (isClosed) return;
+        if (isClosed || token != _speechToken) return; // interrupted
         _append(ChatMessage(role: MessageRole.ai, text: part));
         await _tts.speakAndWait(part);
       }
-      if (isClosed) return;
+      if (isClosed || token != _speechToken) return;
       emit(state.copyWith(aiSpeaking: false));
     }
 
@@ -374,13 +378,62 @@ class CallCubit extends Cubit<CallState> {
 
   // ---------------- Voice input ----------------
 
-  /// Start a spoken turn. Stops Tuco's voice, then records; the recorder
-  /// auto-stops on silence and finishes via [_finishListening] (the user can't
-  /// stop it manually).
-  Future<void> startListening() async {
-    if (state.assessing || state.listening) return;
-    await _tts.stop();
-    final started = await _recorder.start(onSilence: _finishListening);
+  /// Push-to-talk: first tap records; second tap stops, then Apple transcribes
+  /// the speech and SpeechSuper scores it against that transcription before the
+  /// turn is sent.
+  Future<void> toggleListening() async {
+    if (state.assessing) return; // ignore taps while a recording is scored
+
+    if (state.listening) {
+      emit(state.copyWith(listening: false));
+      final file = await _recorder.stop();
+      if (file == null) {
+        debugPrint('[CallCubit] No audio captured');
+        return;
+      }
+      emit(state.copyWith(assessing: true));
+      // 1) Transcribe the recording (SpeechSuper is scripted, so it needs the
+      // spoken text as its reference).
+      final text = await _apple.transcribeFile(
+        file.path,
+        _profile.targetLanguage,
+      );
+      if (isClosed) return;
+      if (text == null || text.isEmpty) {
+        emit(state.copyWith(assessing: false));
+        debugPrint('[CallCubit] Empty recognition — nothing sent');
+        return;
+      }
+      // 2) Score the pronunciation against the transcription.
+      final result = await _speech.assess(
+        audio: file,
+        referenceText: text,
+        languageCode: _profile.targetLanguage,
+        coreType: SpeechSuperCoreType.sentence,
+      );
+      if (isClosed) return;
+      emit(state.copyWith(assessing: false));
+      if (result != null) {
+        _analytics.track('pronunciation_assessed', {
+          'score': result.pronScore.round(),
+          'words': result.words.length,
+          'language': _profile.targetLanguage,
+        });
+      }
+      // Show the message right away; if it was scored, upload the recording in
+      // the background and patch its URL in so "listen back" becomes available.
+      sendUserMessage(text, pronunciation: result);
+      if (result != null) {
+        final index =
+            state.messages.lastIndexWhere((m) => m.role == MessageRole.user);
+        if (index != -1) _uploadRecording(file, index, result);
+      }
+      return;
+    }
+
+    // Interrupt any AI speech (stop Tuco + cancel the pending reveal loop).
+    _stopAiSpeech();
+    final started = await _recorder.start();
     if (!started) {
       debugPrint('[CallCubit] Recorder failed to start');
       return;
@@ -388,60 +441,19 @@ class CallCubit extends Cubit<CallState> {
     emit(state.copyWith(listening: true, partialTranscript: ''));
   }
 
-  /// Stop the take, then Apple transcribes the speech and SpeechSuper scores it
-  /// against that transcription before the turn is sent.
-  Future<void> _finishListening() async {
-    final file = await _recorder.stop();
-    if (isClosed) return;
-    if (file == null) {
-      emit(state.copyWith(listening: false));
-      debugPrint('[CallCubit] No audio captured');
-      return;
-    }
-    emit(state.copyWith(listening: false, assessing: true));
-    // 1) Transcribe the recording (SpeechSuper is scripted, so it needs the
-    // spoken text as its reference).
-    final text = await _apple.transcribeFile(
-      file.path,
-      _profile.targetLanguage,
-    );
-    if (isClosed) return;
-    if (text == null || text.isEmpty) {
-      emit(state.copyWith(assessing: false));
-      debugPrint('[CallCubit] Empty recognition — nothing sent');
-      return;
-    }
-    // 2) Score the pronunciation against the transcription.
-    final result = await _speech.assess(
-      audio: file,
-      referenceText: text,
-      languageCode: _profile.targetLanguage,
-      coreType: SpeechSuperCoreType.sentence,
-    );
-    if (isClosed) return;
-    emit(state.copyWith(assessing: false));
-    if (result != null) {
-      _analytics.track('pronunciation_assessed', {
-        'score': result.pronScore.round(),
-        'words': result.words.length,
-        'language': _profile.targetLanguage,
-      });
-    }
-    // Show the message right away; if it was scored, upload the recording in
-    // the background and patch its URL in so "listen back" becomes available.
-    sendUserMessage(text, pronunciation: result);
-    if (result != null) {
-      final index =
-          state.messages.lastIndexWhere((m) => m.role == MessageRole.user);
-      if (index != -1) _uploadRecording(file, index, result);
-    }
+  /// Stop Tuco's voice and cancel any in-progress reveal loop so the remaining
+  /// bubbles don't keep speaking.
+  void _stopAiSpeech() {
+    _speechToken++;
+    _tts.stop();
+    if (state.aiSpeaking) emit(state.copyWith(aiSpeaking: false));
   }
 
   /// Discard the current recording and start a fresh one (clear button).
   Future<void> clearTranscript() async {
     if (!state.listening) return;
     await _recorder.cancel();
-    final started = await _recorder.start(onSilence: _finishListening);
+    final started = await _recorder.start();
     if (!started && !isClosed) emit(state.copyWith(listening: false));
     debugPrint('[CallCubit] Recording restarted (cleared)');
   }

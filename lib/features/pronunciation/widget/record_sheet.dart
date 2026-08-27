@@ -16,7 +16,7 @@ Future<void> showRecordSheet<C extends StateStreamableSource<S>, S>(
   required C cubit,
   required bool Function(S state) recording,
   required bool Function(S state) assessing,
-  required void Function(C cubit) onStart,
+  required void Function(C cubit) onToggle,
 }) {
   return showModalBottomSheet<void>(
     context: context,
@@ -26,7 +26,7 @@ Future<void> showRecordSheet<C extends StateStreamableSource<S>, S>(
       child: _RecordSheet<C, S>(
         recording: recording,
         assessing: assessing,
-        onStart: onStart,
+        onToggle: onToggle,
       ),
     ),
   );
@@ -36,12 +36,12 @@ class _RecordSheet<C extends StateStreamableSource<S>, S>
     extends StatefulWidget {
   final bool Function(S state) recording;
   final bool Function(S state) assessing;
-  final void Function(C cubit) onStart;
+  final void Function(C cubit) onToggle;
 
   const _RecordSheet({
     required this.recording,
     required this.assessing,
-    required this.onStart,
+    required this.onToggle,
   });
 
   @override
@@ -89,7 +89,7 @@ class _RecordSheetState<C extends StateStreamableSource<S>, S>
                 RecordButton(
                   recording: widget.recording(state),
                   assessing: widget.assessing(state),
-                  onStart: () => widget.onStart(context.read<C>()),
+                  onTap: () => widget.onToggle(context.read<C>()),
                 ),
                 SizedBox(height: 24.h),
               ],

@@ -104,47 +104,49 @@ class PronunciationReviewCubit extends Cubit<PronunciationReviewState> {
     }
   }
 
-  /// Start a take. Stops any example/listen-back audio, then records; the
-  /// recorder auto-stops on silence and finishes via [_finishRecording].
-  Future<void> startRecording() async {
-    if (state.recording || state.assessing) return;
-    await _tts.stop();
-    await _player.stop();
-    final started = await _recorder.start(onSilence: _finishRecording);
-    if (!started) return;
-    emit(state.copyWith(recording: true));
-  }
+  /// Push-to-talk re-scoring: first tap records, second tap scores against the
+  /// sentence (scripted), uploads the audio and updates the transcript.
+  Future<void> toggleRecording() async {
+    if (state.assessing) return;
 
-  /// Stop the take, expose it for listen-back immediately, then re-score it
-  /// against the sentence (scripted), upload the audio and update the transcript.
-  Future<void> _finishRecording() async {
-    final file = await _recorder.stop();
-    if (isClosed) return;
-    if (file == null) {
-      emit(state.copyWith(recording: false));
+    if (state.recording) {
+      final file = await _recorder.stop();
+      if (isClosed) return;
+      if (file == null) {
+        emit(state.copyWith(recording: false));
+        return;
+      }
+      // Local file first so listen-back is available before scoring/upload.
+      emit(state.copyWith(
+          recording: false, assessing: true, localRecordingPath: file.path));
+      final result = await _speech.assess(
+        audio: file,
+        referenceText: _referenceText,
+        languageCode: _languageCode,
+        coreType: SpeechSuperCoreType.sentence,
+      );
+      final url = await _storage.upload(file);
+      if (isClosed) return;
+      if (result != null) {
+        _analytics.track('pronunciation_retry', {
+          'score': result.pronScore.round(),
+          'language': _languageCode,
+        });
+        emit(
+            state.copyWith(result: result, recordingUrl: url, assessing: false));
+        _onUpdated?.call(result, url);
+      } else {
+        emit(state.copyWith(recordingUrl: url, assessing: false));
+      }
       return;
     }
-    // Local file first so listen-back is available before scoring/upload.
-    emit(state.copyWith(
-        recording: false, assessing: true, localRecordingPath: file.path));
-    final result = await _speech.assess(
-      audio: file,
-      referenceText: _referenceText,
-      languageCode: _languageCode,
-      coreType: SpeechSuperCoreType.sentence,
-    );
-    final url = await _storage.upload(file);
-    if (isClosed) return;
-    if (result != null) {
-      _analytics.track('pronunciation_retry', {
-        'score': result.pronScore.round(),
-        'language': _languageCode,
-      });
-      emit(state.copyWith(result: result, recordingUrl: url, assessing: false));
-      _onUpdated?.call(result, url);
-    } else {
-      emit(state.copyWith(recordingUrl: url, assessing: false));
-    }
+
+    // Stop any example / listen-back audio before recording.
+    await _tts.stop();
+    await _player.stop();
+    final started = await _recorder.start();
+    if (!started) return;
+    emit(state.copyWith(recording: true));
   }
 
   @override
