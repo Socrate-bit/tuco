@@ -145,19 +145,24 @@ class _HomeScreenState extends State<HomeScreen> {
     final saved = await repo.getSavedSession(lesson.id);
     if (!mounted) return;
     if (saved != null) {
-      final choice = await showResumeLessonSheet(context);
-      if (choice == null || !mounted) return;
-      if (choice == 'restart') await repo.deleteSession(lesson.id);
-      if (!mounted) return;
-      _startCall(CallScreenArgs(
-        lesson: lesson,
-        resumeSession: choice == 'resume' ? saved : null,
-      ));
-      return;
+      final resumeChoice = await showResumeLessonSheet(context);
+      if (resumeChoice == null || !mounted) return;
+      if (resumeChoice == 'resume') {
+        _startCall(CallScreenArgs(lesson: lesson, resumeSession: saved));
+        return;
+      }
+      // Restart: fall through to the lesson detail sheet instead of starting
+      // the call straight away.
     }
 
     final choice = await showLessonStartSheet(context, lesson);
     if (choice == null || !mounted) return;
+    // Discard the in-progress session only once a fresh start is confirmed,
+    // so dismissing the detail sheet keeps the saved progress.
+    if (saved != null) {
+      await repo.deleteSession(lesson.id);
+      if (!mounted) return;
+    }
     _startCall(CallScreenArgs(
       lesson: lesson,
       startAtPractice: choice == 'practice',

@@ -363,8 +363,24 @@ class _GrammarDetail extends StatelessWidget {
               color: AppColors.primaryLight,
               borderRadius: BorderRadius.circular(14.r),
             ),
-            child: Text(alternative!, style: AppTextStyles.body),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(alternative!, style: AppTextStyles.body),
+                if (item!.alternativeTranslation?.isNotEmpty ?? false) ...[
+                  SizedBox(height: 4.h),
+                  Text(item!.alternativeTranslation!,
+                      style: AppTextStyles.bodyGrey
+                          .copyWith(fontStyle: FontStyle.italic)),
+                ],
+              ],
+            ),
           ),
+          if (item!.alternativeExplanation?.isNotEmpty ?? false) ...[
+            SizedBox(height: 10.h),
+            Text(item!.alternativeExplanation!,
+                style: AppTextStyles.bodyGrey),
+          ],
         ],
       ],
     );

@@ -368,6 +368,8 @@ class CallCubit extends Cubit<CallState> {
       score: result.score,
       level: result.level,
       alternative: result.alternative,
+      alternativeTranslation: result.alternativeTranslation,
+      alternativeExplanation: result.alternativeExplanation,
       createdAt: DateTime.now(),
     ));
     if (result.alternative != null && result.alternative!.isNotEmpty) {
@@ -379,7 +381,9 @@ class CallCubit extends Cubit<CallState> {
         originalText: text,
         corrections: [
           Correction(
-              wrong: text, right: result.alternative!, explanation: ''),
+              wrong: text,
+              right: result.alternative!,
+              explanation: result.alternativeExplanation ?? ''),
         ],
         score: result.score,
         createdAt: DateTime.now(),
