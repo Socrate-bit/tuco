@@ -13,33 +13,39 @@ import '../service/speech_super_service.dart';
 class PronunciationReviewState extends Equatable {
   final PronunciationResult result;
   final String? recordingUrl;
+  final String? localRecordingPath; // set the instant a new take is captured
   final bool recording;
   final bool assessing;
 
   const PronunciationReviewState({
     required this.result,
     this.recordingUrl,
+    this.localRecordingPath,
     this.recording = false,
     this.assessing = false,
   });
 
-  bool get canListen => recordingUrl != null;
+  // Listen-back works off the local file immediately, then the uploaded URL.
+  bool get canListen => localRecordingPath != null || recordingUrl != null;
 
   PronunciationReviewState copyWith({
     PronunciationResult? result,
     String? recordingUrl,
+    String? localRecordingPath,
     bool? recording,
     bool? assessing,
   }) =>
       PronunciationReviewState(
         result: result ?? this.result,
         recordingUrl: recordingUrl ?? this.recordingUrl,
+        localRecordingPath: localRecordingPath ?? this.localRecordingPath,
         recording: recording ?? this.recording,
         assessing: assessing ?? this.assessing,
       );
 
   @override
-  List<Object?> get props => [result, recordingUrl, recording, assessing];
+  List<Object?> get props =>
+      [result, recordingUrl, localRecordingPath, recording, assessing];
 }
 
 /// Drives the message pronunciation review: replay the example, listen back to
@@ -72,59 +78,73 @@ class PronunciationReviewCubit extends Cubit<PronunciationReviewState> {
         super(PronunciationReviewState(
             result: initial, recordingUrl: recordingUrl)) {
     _tts.init(languageCode);
+    // Preload a seeded recording (opened from history) so the first "Listen"
+    // plays without waiting on the network fetch.
+    if (recordingUrl != null) {
+      _player.setSource(UrlSource(recordingUrl)).catchError((e) {
+        debugPrint('[PronunciationReviewCubit] preload error: $e');
+      });
+    }
   }
 
   /// Play a native example of the sentence.
   Future<void> playExample() => _tts.speak(_referenceText);
 
-  /// Listen back to the learner's recording.
+  /// Listen back to the learner's recording. Prefers the freshly-captured
+  /// local file (instant) and falls back to the uploaded URL.
   Future<void> playRecording() async {
+    final path = state.localRecordingPath;
     final url = state.recordingUrl;
-    if (url == null) return;
+    if (path == null && url == null) return;
     try {
       await _player.stop();
-      await _player.play(UrlSource(url));
+      await _player.play(path != null ? DeviceFileSource(path) : UrlSource(url!));
     } catch (e) {
       debugPrint('[PronunciationReviewCubit] playback error: $e');
     }
   }
 
-  /// Push-to-talk re-scoring: records, then scores against the sentence
-  /// (scripted), uploads the audio and updates the transcript.
-  Future<void> toggleRecording() async {
-    if (state.assessing) return;
-
-    if (state.recording) {
-      emit(state.copyWith(recording: false));
-      final file = await _recorder.stop();
-      if (file == null) return;
-      emit(state.copyWith(assessing: true));
-      final result = await _speech.assess(
-        audio: file,
-        referenceText: _referenceText,
-        languageCode: _languageCode,
-        coreType: SpeechSuperCoreType.sentence,
-      );
-      final url = await _storage.upload(file);
-      if (isClosed) return;
-      if (result != null) {
-        _analytics.track('pronunciation_retry', {
-          'score': result.pronScore.round(),
-          'language': _languageCode,
-        });
-        emit(state.copyWith(
-            result: result, recordingUrl: url, assessing: false));
-        _onUpdated?.call(result, url);
-      } else {
-        emit(state.copyWith(recordingUrl: url, assessing: false));
-      }
-      return;
-    }
-
+  /// Start a take. Stops any example/listen-back audio, then records; the
+  /// recorder auto-stops on silence and finishes via [_finishRecording].
+  Future<void> startRecording() async {
+    if (state.recording || state.assessing) return;
     await _tts.stop();
-    final started = await _recorder.start();
+    await _player.stop();
+    final started = await _recorder.start(onSilence: _finishRecording);
     if (!started) return;
     emit(state.copyWith(recording: true));
+  }
+
+  /// Stop the take, expose it for listen-back immediately, then re-score it
+  /// against the sentence (scripted), upload the audio and update the transcript.
+  Future<void> _finishRecording() async {
+    final file = await _recorder.stop();
+    if (isClosed) return;
+    if (file == null) {
+      emit(state.copyWith(recording: false));
+      return;
+    }
+    // Local file first so listen-back is available before scoring/upload.
+    emit(state.copyWith(
+        recording: false, assessing: true, localRecordingPath: file.path));
+    final result = await _speech.assess(
+      audio: file,
+      referenceText: _referenceText,
+      languageCode: _languageCode,
+      coreType: SpeechSuperCoreType.sentence,
+    );
+    final url = await _storage.upload(file);
+    if (isClosed) return;
+    if (result != null) {
+      _analytics.track('pronunciation_retry', {
+        'score': result.pronScore.round(),
+        'language': _languageCode,
+      });
+      emit(state.copyWith(result: result, recordingUrl: url, assessing: false));
+      _onUpdated?.call(result, url);
+    } else {
+      emit(state.copyWith(recordingUrl: url, assessing: false));
+    }
   }
 
   @override
