@@ -347,7 +347,8 @@ class CallCubit extends Cubit<CallState> {
     // Fire-and-forget feedback generation.
     _generateFeedback(trimmed);
 
-    final reply = await _gemini.send(trimmed);
+    final reply =
+        await _gemini.send(trimmed, pronScore: pronunciation?.pronScore);
     if (isClosed) return;
     _handleAiReply(reply);
   }
@@ -355,18 +356,20 @@ class CallCubit extends Cubit<CallState> {
   Future<void> _generateFeedback(String text) async {
     final result = await _gemini.feedback(text);
     if (result == null || isClosed) return;
-    if (result.corrections.isNotEmpty) {
-      await _repo.addFeedback(FeedbackItem(
-        id: const Uuid().v4(),
-        type: 'grammar',
-        lessonId: lesson?.id,
-        lessonTitle: lesson?.title,
-        originalText: text,
-        corrections: result.corrections,
-        score: result.score,
-        createdAt: DateTime.now(),
-      ));
-    }
+    // Always saved (even without errors) so the message feedback modal can
+    // show Correct/Incorrect, the estimated level and the alternative.
+    await _repo.addFeedback(FeedbackItem(
+      id: const Uuid().v4(),
+      type: 'grammar',
+      lessonId: lesson?.id,
+      lessonTitle: lesson?.title,
+      originalText: text,
+      corrections: result.corrections,
+      score: result.score,
+      level: result.level,
+      alternative: result.alternative,
+      createdAt: DateTime.now(),
+    ));
     if (result.alternative != null && result.alternative!.isNotEmpty) {
       await _repo.addFeedback(FeedbackItem(
         id: const Uuid().v4(),

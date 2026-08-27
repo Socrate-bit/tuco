@@ -296,5 +296,11 @@
   "pronBandIncorrect": "Keep practicing",
   "pronStatusExcellent": "Excellent",
   "pronStatusAlmost": "Almost",
-  "pronStatusIncorrect": "Incorrect"
+  "pronStatusIncorrect": "Incorrect",
+  "grammarCorrect": "Correct",
+  "grammarIncorrect": "Incorrect",
+  "grammarAllGood": "No mistakes, well done!",
+  "grammarNoFeedback": "No grammar feedback for this message yet.",
+  "sayItBetter": "Take it further",
+  "pronNoRecording": "No voice recording for this message. Use the mic to get a pronunciation score."
 }

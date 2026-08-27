@@ -812,4 +812,23 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get pronStatusIncorrect => 'Incorrect';
+
+  @override
+  String get grammarCorrect => 'Correct';
+
+  @override
+  String get grammarIncorrect => 'Incorrect';
+
+  @override
+  String get grammarAllGood => 'No mistakes, well done!';
+
+  @override
+  String get grammarNoFeedback => 'No grammar feedback for this message yet.';
+
+  @override
+  String get sayItBetter => 'Take it further';
+
+  @override
+  String get pronNoRecording =>
+      'No voice recording for this message. Use the mic to get a pronunciation score.';
 }

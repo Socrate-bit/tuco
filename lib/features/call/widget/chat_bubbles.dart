@@ -5,7 +5,6 @@ import '../../../core/l10n/app_localizations.dart';
 import '../../../core/model/models.dart';
 import '../../../core/service/haptics.dart';
 import '../../../core/theme/app_theme.dart';
-import '../../pronunciation/widget/pronunciation_ring.dart';
 
 /// Grey AI bubble with translate + play buttons on its right.
 class AiBubble extends StatelessWidget {
@@ -81,18 +80,17 @@ class AiBubble extends StatelessWidget {
   }
 }
 
-/// Light-blue user bubble with the feedback button on its left.
+/// Light-blue user bubble with the sms feedback button on its left; tapping
+/// either one opens the message feedback modal.
 class UserBubble extends StatelessWidget {
   final ChatMessage message;
-  final VoidCallback onFeedbackTap;
-  final VoidCallback? onTap; // open the pronunciation review (when scored)
+  final VoidCallback? onTap; // open the grammar + pronunciation feedback modal
   final bool pending; // partial voice transcript
-  final bool hasFeedback; // corrections exist → show notification dot
+  final bool hasFeedback; // correction / suggestion / low score → dot on sms
 
   const UserBubble({
     super.key,
     required this.message,
-    required this.onFeedbackTap,
     this.onTap,
     this.pending = false,
     this.hasFeedback = false,
@@ -104,9 +102,9 @@ class UserBubble extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.end,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        if (!pending) ...[
+        if (!pending && onTap != null) ...[
           _CircleAction(
-            onTap: onFeedbackTap,
+            onTap: onTap!,
             child: Stack(
               children: [
                 Icon(Icons.sms_rounded, size: 20.r, color: AppColors.textGrey),
@@ -133,7 +131,7 @@ class UserBubble extends StatelessWidget {
               clipBehavior: Clip.none,
               children: [
                 GestureDetector(
-                  // Tap a scored message to open its pronunciation review.
+                  // Tap anywhere on the message to open its feedback modal.
                   onTap: onTap,
                   child: Container(
                     constraints: BoxConstraints(maxWidth: 0.64.sw),
@@ -166,22 +164,6 @@ class UserBubble extends StatelessWidget {
                             : Icons.close_rounded,
                         size: 15.r,
                         color: Colors.white,
-                      ),
-                    ),
-                  ),
-                // Progressive pronunciation score ring.
-                if (message.pronunciation != null)
-                  Positioned(
-                    bottom: -6.r,
-                    right: -6.r,
-                    child: Container(
-                      padding: EdgeInsets.all(2.r),
-                      decoration: const BoxDecoration(
-                          color: AppColors.card, shape: BoxShape.circle),
-                      child: PronunciationRing(
-                        score: message.pronunciation!.pronScore,
-                        size: 24,
-                        stroke: 3,
                       ),
                     ),
                   ),

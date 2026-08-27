@@ -326,5 +326,11 @@
   "pronBandIncorrect": "Continue à t'entraîner",
   "pronStatusExcellent": "Excellent",
   "pronStatusAlmost": "Presque",
-  "pronStatusIncorrect": "Incorrect"
+  "pronStatusIncorrect": "Incorrect",
+  "grammarCorrect": "Correct",
+  "grammarIncorrect": "Incorrect",
+  "grammarAllGood": "Aucune erreur, bravo !",
+  "grammarNoFeedback": "Pas encore de retour de grammaire pour ce message.",
+  "sayItBetter": "Pour aller plus loin",
+  "pronNoRecording": "Pas d'enregistrement vocal pour ce message. Utilise le micro pour obtenir un score de prononciation."
 }
