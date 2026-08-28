@@ -189,8 +189,6 @@
   },
   "shopBuyConfirm": "Unlock",
   "shopCancel": "Cancel",
-  "hospitalBanner": "Tuco is at the hospital",
-  "hospitalHeal": "Get him out",
   "hospitalTitle": "Tuco is at the hospital!",
   "hospitalLockedBody": "He ran out of hearts. Lessons and free practice stay locked until he's back home.",
   "hospitalStreakAtRisk": "Your {days}-day streak is at risk.",
@@ -201,7 +199,6 @@
       }
     }
   },
-  "hospitalNotNow": "Not now",
   "hospitalBody": "Pay {fee} coins to bring him home with {hearts} hearts.",
   "@hospitalBody": {
     "placeholders": {

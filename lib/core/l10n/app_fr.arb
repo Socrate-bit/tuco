@@ -189,8 +189,6 @@
   },
   "shopBuyConfirm": "Débloquer",
   "shopCancel": "Annuler",
-  "hospitalBanner": "Tuco est à l'hôpital",
-  "hospitalHeal": "Le faire sortir",
   "hospitalTitle": "Tuco est à l'hôpital !",
   "hospitalLockedBody": "Il n'a plus de cœurs. Les leçons et la pratique libre restent bloquées tant qu'il n'est pas rentré.",
   "hospitalStreakAtRisk": "Ta série de {days} jours est en danger.",
@@ -201,7 +199,6 @@
       }
     }
   },
-  "hospitalNotNow": "Plus tard",
   "hospitalBody": "Paie {fee} pièces pour le ramener avec {hearts} cœurs.",
   "@hospitalBody": {
     "placeholders": {
