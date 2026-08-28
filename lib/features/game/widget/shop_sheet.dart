@@ -54,11 +54,12 @@ class _ShopSheet extends StatelessWidget {
       _ShopTab(icon: '$iconBase/palette.png', cta: l10n.shopCtaColor),
     ];
 
-    // Half the screen height so the pet and header pills stay visible. Its own
-    // ScaffoldMessenger keeps error snack bars in front of the sheet instead of
-    // behind it, on the home Scaffold.
+    // Rises exactly to the bottom of the home header (320.h) so the pet and
+    // header pills stay visible above it. Its own ScaffoldMessenger keeps error
+    // snack bars in front of the sheet instead of behind it, on the home
+    // Scaffold.
     return SizedBox(
-      height: MediaQuery.sizeOf(context).height * 0.55,
+      height: MediaQuery.sizeOf(context).height - 320.h,
       child: ScaffoldMessenger(
         child: Scaffold(
           backgroundColor: Colors.transparent,
@@ -188,6 +189,7 @@ class _BackgroundGrid extends StatelessWidget {
 
     final ok = await cubit.buyBackground(bg);
     if (!ok) {
+      Haptics.impact();
       messenger.showSnackBar(SnackBar(content: Text(l10n.shopNotEnoughCoins)));
       return;
     }
