@@ -175,6 +175,36 @@
   "shopCtaGlass": "Acheter des lunettes",
   "shopCtaScarf": "Acheter une écharpe",
   "shopCtaColor": "Changer la couleur",
+  "shopSelect": "Choisir",
+  "shopSelected": "Sélectionné",
+  "shopNotEnoughCoins": "Pas assez de pièces pour ce décor.",
+  "shopBuyTitle": "Débloquer ce décor ?",
+  "shopBuyBody": "{price} pièces seront déduites de ton solde.",
+  "@shopBuyBody": {
+    "placeholders": {
+      "price": {
+        "type": "int"
+      }
+    }
+  },
+  "shopBuyConfirm": "Débloquer",
+  "shopCancel": "Annuler",
+  "bgForestLake": "Lac forestier",
+  "bgDesertOasis": "Oasis du désert",
+  "bgSweetJungle": "Douce jungle",
+  "bgMeditationGarden": "Jardin zen",
+  "bgCoastalVilla": "Villa côtière",
+  "bgLuxurySpaceship": "Vaisseau de luxe",
+  "coinRewardTitle": "Pièces gagnées !",
+  "coinRewardSubtitle": "Dépense-les dans la boutique pour changer le décor de Tuco.",
+  "coinRewardTotal": "Solde : {total}",
+  "@coinRewardTotal": {
+    "placeholders": {
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "readyToContinue": "Es-tu prêt(e) à continuer ?",
   "continueButton": "Continuer",
   "onboardingContinue": "Continuer",

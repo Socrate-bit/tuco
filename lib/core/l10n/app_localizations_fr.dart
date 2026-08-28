@@ -438,6 +438,59 @@ class AppLocalizationsFr extends AppLocalizations {
   String get shopCtaColor => 'Changer la couleur';
 
   @override
+  String get shopSelect => 'Choisir';
+
+  @override
+  String get shopSelected => 'Sélectionné';
+
+  @override
+  String get shopNotEnoughCoins => 'Pas assez de pièces pour ce décor.';
+
+  @override
+  String get shopBuyTitle => 'Débloquer ce décor ?';
+
+  @override
+  String shopBuyBody(int price) {
+    return '$price pièces seront déduites de ton solde.';
+  }
+
+  @override
+  String get shopBuyConfirm => 'Débloquer';
+
+  @override
+  String get shopCancel => 'Annuler';
+
+  @override
+  String get bgForestLake => 'Lac forestier';
+
+  @override
+  String get bgDesertOasis => 'Oasis du désert';
+
+  @override
+  String get bgSweetJungle => 'Douce jungle';
+
+  @override
+  String get bgMeditationGarden => 'Jardin zen';
+
+  @override
+  String get bgCoastalVilla => 'Villa côtière';
+
+  @override
+  String get bgLuxurySpaceship => 'Vaisseau de luxe';
+
+  @override
+  String get coinRewardTitle => 'Pièces gagnées !';
+
+  @override
+  String get coinRewardSubtitle =>
+      'Dépense-les dans la boutique pour changer le décor de Tuco.';
+
+  @override
+  String coinRewardTotal(int total) {
+    return 'Solde : $total';
+  }
+
+  @override
   String get readyToContinue => 'Es-tu prêt(e) à continuer ?';
 
   @override

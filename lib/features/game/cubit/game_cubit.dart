@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../core/service/data_repository.dart';
+import '../data/backgrounds.dart';
 import '../model/game_profile.dart';
 import '../service/heart_service.dart';
 
@@ -20,6 +21,16 @@ class GameState extends Equatable {
 
   /// Pet animation asset for the current mood.
   String get petAsset => HeartService.petAssetForHearts(hearts);
+
+  /// Backdrop asset behind the pet on the home header.
+  String get backgroundAsset =>
+      backgroundAssetFor(profile.selectedBackground);
+
+  /// True when the backdrop is free or already bought.
+  bool owns(String id) => profile.ownsBackground(id);
+
+  /// True when the balance covers [price].
+  bool canAfford(int price) => coins >= price;
 
   @override
   List<Object?> get props => [profile, hearts];
@@ -57,6 +68,36 @@ class GameCubit extends Cubit<GameState> {
   /// Awards a completed lesson (+coins, hearts restored). Optimistic: the
   /// Firestore stream confirms shortly after.
   Future<void> awardLessonCompletion() => _repo.awardLessonCompletion();
+
+  /// Buys [bg] and selects it. Optimistic: the balance and the header backdrop
+  /// update immediately, and the previous state is restored if the write is
+  /// refused (insufficient coins). Returns false on refusal.
+  Future<bool> buyBackground(PetBackground bg) async {
+    final previous = state;
+    emit(GameState(
+      profile: state.profile.copyWith(
+        coins: state.coins - bg.price,
+        ownedBackgrounds: [...state.profile.ownedBackgrounds, bg.id],
+        selectedBackground: bg.id,
+      ),
+      hearts: state.hearts,
+    ));
+    final ok = await _repo.buyBackground(bg.id, bg.price);
+    if (!ok) {
+      debugPrint('[GameCubit] buy ${bg.id} refused, rolling back');
+      emit(previous);
+    }
+    return ok;
+  }
+
+  /// Switches to an already-owned backdrop. Optimistic.
+  Future<void> selectBackground(String id) async {
+    emit(GameState(
+      profile: state.profile.copyWith(selectedBackground: id),
+      hearts: state.hearts,
+    ));
+    await _repo.selectBackground(id);
+  }
 
   @override
   Future<void> close() {

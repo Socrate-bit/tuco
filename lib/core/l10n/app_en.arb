@@ -175,6 +175,36 @@
   "shopCtaGlass": "Buy new glasses",
   "shopCtaScarf": "Buy new scarf",
   "shopCtaColor": "Change color",
+  "shopSelect": "Select",
+  "shopSelected": "Selected",
+  "shopNotEnoughCoins": "Not enough coins for this background.",
+  "shopBuyTitle": "Unlock this background?",
+  "shopBuyBody": "{price} coins will be deducted from your balance.",
+  "@shopBuyBody": {
+    "placeholders": {
+      "price": {
+        "type": "int"
+      }
+    }
+  },
+  "shopBuyConfirm": "Unlock",
+  "shopCancel": "Cancel",
+  "bgForestLake": "Forest lake",
+  "bgDesertOasis": "Desert oasis",
+  "bgSweetJungle": "Sweet jungle",
+  "bgMeditationGarden": "Meditation garden",
+  "bgCoastalVilla": "Coastal villa",
+  "bgLuxurySpaceship": "Luxury spaceship",
+  "coinRewardTitle": "Coins earned!",
+  "coinRewardSubtitle": "Spend them in the shop to change Tuco's background.",
+  "coinRewardTotal": "Balance: {total}",
+  "@coinRewardTotal": {
+    "placeholders": {
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "readyToContinue": "Are you ready to continue?",
   "continueButton": "Continue",
   "onboardingContinue": "Continue",

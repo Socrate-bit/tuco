@@ -10,6 +10,8 @@ import '../../../core/service/haptics.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widget/common_widgets.dart';
 import '../../curriculum/model/curriculum_models.dart';
+import '../../game/screen/coin_reward_screen.dart';
+import '../../game/service/heart_service.dart';
 import '../../home/cubit/path_cubit.dart';
 import '../../streak/screen/streak_win_screen.dart';
 // import '../../streak/widget/review_sheet.dart';
@@ -159,6 +161,13 @@ class _LessonEndScreenState extends State<LessonEndScreen> {
   }
 
   Future<void> _afterFlow(BuildContext context) async {
+    // Coins earned for this lesson, then the streak win when it's the first
+    // lesson of the day.
+    await Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (_) => const CoinRewardScreen(coins: kCoinsPerLesson)));
+    if (!context.mounted) return;
     if (widget.showStreakWin) {
       await Navigator.push(context,
           MaterialPageRoute(builder: (_) => const StreakWinScreen()));

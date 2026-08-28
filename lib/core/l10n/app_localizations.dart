@@ -902,6 +902,102 @@ abstract class AppLocalizations {
   /// **'Changer la couleur'**
   String get shopCtaColor;
 
+  /// No description provided for @shopSelect.
+  ///
+  /// In fr, this message translates to:
+  /// **'Choisir'**
+  String get shopSelect;
+
+  /// No description provided for @shopSelected.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sélectionné'**
+  String get shopSelected;
+
+  /// No description provided for @shopNotEnoughCoins.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pas assez de pièces pour ce décor.'**
+  String get shopNotEnoughCoins;
+
+  /// No description provided for @shopBuyTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Débloquer ce décor ?'**
+  String get shopBuyTitle;
+
+  /// No description provided for @shopBuyBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'{price} pièces seront déduites de ton solde.'**
+  String shopBuyBody(int price);
+
+  /// No description provided for @shopBuyConfirm.
+  ///
+  /// In fr, this message translates to:
+  /// **'Débloquer'**
+  String get shopBuyConfirm;
+
+  /// No description provided for @shopCancel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Annuler'**
+  String get shopCancel;
+
+  /// No description provided for @bgForestLake.
+  ///
+  /// In fr, this message translates to:
+  /// **'Lac forestier'**
+  String get bgForestLake;
+
+  /// No description provided for @bgDesertOasis.
+  ///
+  /// In fr, this message translates to:
+  /// **'Oasis du désert'**
+  String get bgDesertOasis;
+
+  /// No description provided for @bgSweetJungle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Douce jungle'**
+  String get bgSweetJungle;
+
+  /// No description provided for @bgMeditationGarden.
+  ///
+  /// In fr, this message translates to:
+  /// **'Jardin zen'**
+  String get bgMeditationGarden;
+
+  /// No description provided for @bgCoastalVilla.
+  ///
+  /// In fr, this message translates to:
+  /// **'Villa côtière'**
+  String get bgCoastalVilla;
+
+  /// No description provided for @bgLuxurySpaceship.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vaisseau de luxe'**
+  String get bgLuxurySpaceship;
+
+  /// No description provided for @coinRewardTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pièces gagnées !'**
+  String get coinRewardTitle;
+
+  /// No description provided for @coinRewardSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Dépense-les dans la boutique pour changer le décor de Tuco.'**
+  String get coinRewardSubtitle;
+
+  /// No description provided for @coinRewardTotal.
+  ///
+  /// In fr, this message translates to:
+  /// **'Solde : {total}'**
+  String coinRewardTotal(int total);
+
   /// No description provided for @readyToContinue.
   ///
   /// In fr, this message translates to:

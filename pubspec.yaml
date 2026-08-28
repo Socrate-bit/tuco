@@ -75,6 +75,7 @@ flutter:
   generate: true
   assets:
     - assets/onboarding/
+    - assets/backgrounds/
     - assets/images/
     - assets/images/game/
     - assets/images/game/shop_tab/
