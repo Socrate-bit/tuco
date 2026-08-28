@@ -434,6 +434,59 @@ class AppLocalizationsEn extends AppLocalizations {
   String get shopCtaColor => 'Change color';
 
   @override
+  String get shopSelect => 'Select';
+
+  @override
+  String get shopSelected => 'Selected';
+
+  @override
+  String get shopNotEnoughCoins => 'Not enough coins for this background.';
+
+  @override
+  String get shopBuyTitle => 'Unlock this background?';
+
+  @override
+  String shopBuyBody(int price) {
+    return '$price coins will be deducted from your balance.';
+  }
+
+  @override
+  String get shopBuyConfirm => 'Unlock';
+
+  @override
+  String get shopCancel => 'Cancel';
+
+  @override
+  String get bgForestLake => 'Forest lake';
+
+  @override
+  String get bgDesertOasis => 'Desert oasis';
+
+  @override
+  String get bgSweetJungle => 'Sweet jungle';
+
+  @override
+  String get bgMeditationGarden => 'Meditation garden';
+
+  @override
+  String get bgCoastalVilla => 'Coastal villa';
+
+  @override
+  String get bgLuxurySpaceship => 'Luxury spaceship';
+
+  @override
+  String get coinRewardTitle => 'Coins earned!';
+
+  @override
+  String get coinRewardSubtitle =>
+      'Spend them in the shop to change Tuco\'s background.';
+
+  @override
+  String coinRewardTotal(int total) {
+    return 'Balance: $total';
+  }
+
+  @override
   String get readyToContinue => 'Are you ready to continue?';
 
   @override

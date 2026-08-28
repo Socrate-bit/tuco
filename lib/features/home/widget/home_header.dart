@@ -35,9 +35,9 @@ class HomeHeader extends StatelessWidget {
       child: Stack(
         fit: StackFit.expand,
         children: [
-          // Meadow background, framed on the stump/lake band.
+          // Backdrop chosen in the shop, framed on its stump/platform band.
           Image.asset(
-            'assets/images/game/pet_background.png',
+            game.backgroundAsset,
             fit: BoxFit.cover,
             alignment: const Alignment(0, -0.45),
           ),
@@ -162,17 +162,17 @@ class HomeHeader extends StatelessWidget {
                       ),
                       const Spacer(),
                       // Shop button (bottom-right, where the call button used to be).
-                      // GestureDetector(
-                      //   onTap: () {
-                      //     Haptics.tap();
-                      //     showShopSheet(context);
-                      //   },
-                      //   child: Image.asset(
-                      //     'assets/images/game/shop_icon.png',
-                      //     width: 52.w,
-                      //     height: 52.w,
-                      //   ),
-                      // ),
+                      GestureDetector(
+                        onTap: () {
+                          Haptics.tap();
+                          showShopSheet(context);
+                        },
+                        child: Image.asset(
+                          'assets/images/game/shop_icon.png',
+                          width: 52.w,
+                          height: 52.w,
+                        ),
+                      ),
                     ],
                   ),
                 ],

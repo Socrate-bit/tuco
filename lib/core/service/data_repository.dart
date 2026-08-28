@@ -273,6 +273,76 @@ class DataRepository {
     }
   }
 
+  /// Buys the [id] backdrop for [price] coins and selects it. Returns false
+  /// when the balance is short — re-checked against the stored profile so a
+  /// stale UI or a double tap can never overdraw.
+  Future<bool> buyBackground(String id, int price) async {
+    try {
+      if (_useFirestore) {
+        return await FirebaseFirestore.instance.runTransaction<bool>((tx) async {
+          final snap = await tx.get(_gameDoc);
+          final profile = snap.exists && snap.data() != null
+              ? GameProfile.fromMap(snap.data()!)
+              : const GameProfile();
+          // Already owned: nothing to charge, just switch to it.
+          if (profile.ownsBackground(id)) {
+            tx.set(_gameDoc, profile.copyWith(selectedBackground: id).toMap());
+            return true;
+          }
+          if (profile.coins < price) return false;
+          tx.set(
+              _gameDoc,
+              profile
+                  .copyWith(
+                      coins: profile.coins - price,
+                      ownedBackgrounds: [...profile.ownedBackgrounds, id],
+                      selectedBackground: id)
+                  .toMap());
+          return true;
+        }).then((ok) {
+          debugPrint(ok
+              ? '[DataRepository] Background $id bought for $price coins'
+              : '[DataRepository] Background $id purchase refused: not enough coins');
+          return ok;
+        });
+      }
+      if (_game.ownsBackground(id)) {
+        _game = _game.copyWith(selectedBackground: id);
+        _gameCtrl.add(_game);
+        return true;
+      }
+      if (_game.coins < price) {
+        debugPrint('[DataRepository] Background $id purchase refused: not enough coins');
+        return false;
+      }
+      _game = _game.copyWith(
+          coins: _game.coins - price,
+          ownedBackgrounds: [..._game.ownedBackgrounds, id],
+          selectedBackground: id);
+      _gameCtrl.add(_game);
+      debugPrint('[DataRepository] Background $id bought for $price coins');
+      return true;
+    } catch (e) {
+      debugPrint('[DataRepository] buyBackground error: $e');
+      return false;
+    }
+  }
+
+  /// Switches the home header to the already-owned [id] backdrop.
+  Future<void> selectBackground(String id) async {
+    try {
+      if (_useFirestore) {
+        await _gameDoc.set({'selectedBackground': id}, SetOptions(merge: true));
+      } else {
+        _game = _game.copyWith(selectedBackground: id);
+        _gameCtrl.add(_game);
+      }
+      debugPrint('[DataRepository] Background selected: $id');
+    } catch (e) {
+      debugPrint('[DataRepository] selectBackground error: $e');
+    }
+  }
+
   /// Persists settled heart decay when whole steps have elapsed. Cheap to call
   /// periodically — writes only when the settled value differs.
   Future<void> settleHearts() async {
