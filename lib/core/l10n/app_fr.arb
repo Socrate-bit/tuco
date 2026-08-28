@@ -189,6 +189,40 @@
   },
   "shopBuyConfirm": "Débloquer",
   "shopCancel": "Annuler",
+  "hospitalBanner": "Tuco est à l'hôpital",
+  "hospitalHeal": "Le faire sortir",
+  "hospitalTitle": "Tuco est à l'hôpital !",
+  "hospitalLockedBody": "Il n'a plus de cœurs. Les leçons et la pratique libre restent bloquées tant qu'il n'est pas rentré.",
+  "hospitalStreakAtRisk": "Ta série de {days} jours est en danger.",
+  "@hospitalStreakAtRisk": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "hospitalNotNow": "Plus tard",
+  "hospitalBody": "Paie {fee} pièces pour le ramener avec {hearts} cœurs.",
+  "@hospitalBody": {
+    "placeholders": {
+      "fee": {
+        "type": "int"
+      },
+      "hearts": {
+        "type": "int"
+      }
+    }
+  },
+  "hospitalBodyFree": "Ta bourse est vide, les soins sont donc offerts — il rentre avec {hearts} cœurs.",
+  "@hospitalBodyFree": {
+    "placeholders": {
+      "hearts": {
+        "type": "int"
+      }
+    }
+  },
+  "hospitalConfirm": "Le ramener",
+  "hospitalError": "Impossible de faire sortir Tuco. Réessaie.",
   "bgForestLake": "Lac forestier",
   "bgDesertOasis": "Oasis du désert",
   "bgSweetJungle": "Douce jungle",

@@ -189,6 +189,40 @@
   },
   "shopBuyConfirm": "Unlock",
   "shopCancel": "Cancel",
+  "hospitalBanner": "Tuco is at the hospital",
+  "hospitalHeal": "Get him out",
+  "hospitalTitle": "Tuco is at the hospital!",
+  "hospitalLockedBody": "He ran out of hearts. Lessons and free practice stay locked until he's back home.",
+  "hospitalStreakAtRisk": "Your {days}-day streak is at risk.",
+  "@hospitalStreakAtRisk": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "hospitalNotNow": "Not now",
+  "hospitalBody": "Pay {fee} coins to bring him home with {hearts} hearts.",
+  "@hospitalBody": {
+    "placeholders": {
+      "fee": {
+        "type": "int"
+      },
+      "hearts": {
+        "type": "int"
+      }
+    }
+  },
+  "hospitalBodyFree": "Your purse is empty, so the care is free — he comes home with {hearts} hearts.",
+  "@hospitalBodyFree": {
+    "placeholders": {
+      "hearts": {
+        "type": "int"
+      }
+    }
+  },
+  "hospitalConfirm": "Bring him home",
+  "hospitalError": "Couldn't get Tuco out. Please try again.",
   "bgForestLake": "Forest lake",
   "bgDesertOasis": "Desert oasis",
   "bgSweetJungle": "Sweet jungle",

@@ -457,6 +457,43 @@ class AppLocalizationsEn extends AppLocalizations {
   String get shopCancel => 'Cancel';
 
   @override
+  String get hospitalBanner => 'Tuco is at the hospital';
+
+  @override
+  String get hospitalHeal => 'Get him out';
+
+  @override
+  String get hospitalTitle => 'Tuco is at the hospital!';
+
+  @override
+  String get hospitalLockedBody =>
+      'He ran out of hearts. Lessons and free practice stay locked until he\'s back home.';
+
+  @override
+  String hospitalStreakAtRisk(int days) {
+    return 'Your $days-day streak is at risk.';
+  }
+
+  @override
+  String get hospitalNotNow => 'Not now';
+
+  @override
+  String hospitalBody(int fee, int hearts) {
+    return 'Pay $fee coins to bring him home with $hearts hearts.';
+  }
+
+  @override
+  String hospitalBodyFree(int hearts) {
+    return 'Your purse is empty, so the care is free — he comes home with $hearts hearts.';
+  }
+
+  @override
+  String get hospitalConfirm => 'Bring him home';
+
+  @override
+  String get hospitalError => 'Couldn\'t get Tuco out. Please try again.';
+
+  @override
   String get bgForestLake => 'Forest lake';
 
   @override

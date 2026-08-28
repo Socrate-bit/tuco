@@ -17,6 +17,13 @@ const kHeartRestorePerAction = 2;
 /// Coins earned per completed lesson.
 const kCoinsPerLesson = 10;
 
+/// Share of the coin balance charged to leave the hospital (see
+/// [HeartService.dischargeFee]).
+const kHospitalFeeRate = 0.2;
+
+/// Hearts the pet comes back with after a hospital discharge.
+const kHeartsAfterDischarge = 3;
+
 /// Pet mood animations, keyed by remaining hearts.
 const _petSad = 'assets/images/game/sad_pet.gif';
 const _petBored = 'assets/images/game/bored_pet.gif';
@@ -55,6 +62,20 @@ class HeartService {
         (settled.hearts + kHeartRestorePerAction).clamp(0, kHeartMax);
     return HeartSettle(restored, nowMs);
   }
+
+  /// True when the pet ran out of hearts and sits in the hospital until it is
+  /// discharged (see [discharge]).
+  static bool isHospitalized(int hearts) => hearts <= 0;
+
+  /// Coins charged to leave the hospital: [kHospitalFeeRate] of the balance,
+  /// rounded up so any non-zero balance costs at least one coin. Free at zero.
+  static int dischargeFee(int coins) =>
+      coins <= 0 ? 0 : (coins * kHospitalFeeRate).ceil();
+
+  /// Leaving the hospital: the pet comes back with [kHeartsAfterDischarge]
+  /// hearts and a fresh decay window.
+  static HeartSettle discharge(int nowMs) =>
+      HeartSettle(kHeartsAfterDischarge, nowMs);
 
   /// Pet animation asset for a given heart count.
   static String petAssetForHearts(int hearts) {

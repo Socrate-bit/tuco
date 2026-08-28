@@ -944,6 +944,66 @@ abstract class AppLocalizations {
   /// **'Annuler'**
   String get shopCancel;
 
+  /// No description provided for @hospitalBanner.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tuco est à l\'hôpital'**
+  String get hospitalBanner;
+
+  /// No description provided for @hospitalHeal.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le faire sortir'**
+  String get hospitalHeal;
+
+  /// No description provided for @hospitalTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tuco est à l\'hôpital !'**
+  String get hospitalTitle;
+
+  /// No description provided for @hospitalLockedBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Il n\'a plus de cœurs. Les leçons et la pratique libre restent bloquées tant qu\'il n\'est pas rentré.'**
+  String get hospitalLockedBody;
+
+  /// No description provided for @hospitalStreakAtRisk.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ta série de {days} jours est en danger.'**
+  String hospitalStreakAtRisk(int days);
+
+  /// No description provided for @hospitalNotNow.
+  ///
+  /// In fr, this message translates to:
+  /// **'Plus tard'**
+  String get hospitalNotNow;
+
+  /// No description provided for @hospitalBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Paie {fee} pièces pour le ramener avec {hearts} cœurs.'**
+  String hospitalBody(int fee, int hearts);
+
+  /// No description provided for @hospitalBodyFree.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ta bourse est vide, les soins sont donc offerts — il rentre avec {hearts} cœurs.'**
+  String hospitalBodyFree(int hearts);
+
+  /// No description provided for @hospitalConfirm.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le ramener'**
+  String get hospitalConfirm;
+
+  /// No description provided for @hospitalError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible de faire sortir Tuco. Réessaie.'**
+  String get hospitalError;
+
   /// No description provided for @bgForestLake.
   ///
   /// In fr, this message translates to:
