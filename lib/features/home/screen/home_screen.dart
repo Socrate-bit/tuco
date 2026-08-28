@@ -37,6 +37,29 @@ class _HomeScreenState extends State<HomeScreen> {
       final show = _scrollCtrl.offset > 400.h;
       if (show != _showScrollTop) setState(() => _showScrollTop = show);
     });
+    _jumpToCurrentLesson(context.read<PathCubit>().state);
+  }
+
+  /// Opens the path on the current lesson: learners who declared an
+  /// intermediate/advanced level start below the levels unlocked for review.
+  void _jumpToCurrentLesson(PathState pathState) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || !_scrollCtrl.hasClients) return;
+      _scrollCtrl.jumpTo(_currentLessonOffset(pathState)
+          .clamp(0.0, _scrollCtrl.position.maxScrollExtent));
+    });
+  }
+
+  /// Scroll offset placing the current lesson just under the header.
+  double _currentLessonOffset(PathState pathState) {
+    final current = pathState.currentLesson;
+    var offset = 0.0;
+    for (final level in pathState.levels) {
+      final i = level.lessons.indexWhere((l) => l.id == current.id);
+      if (i >= 0) return offset + LevelSection.lessonOffset(i) - 40.h;
+      offset += LevelSection.sectionHeight(level.lessons.length);
+    }
+    return 0;
   }
 
   @override
@@ -56,62 +79,68 @@ class _HomeScreenState extends State<HomeScreen> {
           _ => l10n.levelAdvanced,
         };
 
-    return Scaffold(
-      backgroundColor: AppColors.card,
-      body: Stack(
-        children: [
-          Column(
-            children: [
-              HomeHeader(
-                onStreakTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (_) => const StreakScreen())),
-                onExchangeTap: _startFreeConversation,
-              ),
-              Expanded(
-                child: ListView(
-                  controller: _scrollCtrl,
-                  padding: EdgeInsets.only(bottom: 130.h),
-                  children: [
-                    for (final level in pathState.levels)
-                      LevelSection(
-                        title: levelTitle(level.id),
-                        lessons: level.lessons,
-                        pathState: pathState,
-                        onLessonTap: (lesson) => _onLessonTap(lesson, pathState),
-                      ),
-                  ],
+    return BlocListener<PathCubit, PathState>(
+      // The profile arriving — or the learner changing level/language — moves
+      // the current lesson: re-open the path on it.
+      listenWhen: (prev, next) =>
+          prev.level != next.level || prev.targetLanguage != next.targetLanguage,
+      listener: (_, state) => _jumpToCurrentLesson(state),
+      child: Scaffold(
+        backgroundColor: AppColors.card,
+        body: Stack(
+          children: [
+            Column(
+              children: [
+                HomeHeader(
+                  onStreakTap: () => Navigator.push(context,
+                      MaterialPageRoute(builder: (_) => const StreakScreen())),
+                  onExchangeTap: _startFreeConversation,
                 ),
-              ),
-            ],
-          ),
-          // Scroll-to-top floating button.
-          if (_showScrollTop)
-            Positioned(
-              right: 20.w,
-              bottom: 120.h,
-              child: GestureDetector(
-                onTap: () {
-                  Haptics.tap();
-                  _scrollCtrl.animateTo(0,
-                      duration: const Duration(milliseconds: 400),
-                      curve: Curves.easeOut);
-                },
-                child: Container(
-                  width: 60.r,
-                  height: 60.r,
-                  decoration: BoxDecoration(
-                    color: AppColors.card,
-                    borderRadius: BorderRadius.circular(18.r),
-                    border: Border.all(color: AppColors.divider, width: 1.5),
+                Expanded(
+                  child: ListView(
+                    controller: _scrollCtrl,
+                    padding: EdgeInsets.only(bottom: 130.h),
+                    children: [
+                      for (final level in pathState.levels)
+                        LevelSection(
+                          title: levelTitle(level.id),
+                          lessons: level.lessons,
+                          pathState: pathState,
+                          onLessonTap: (lesson) =>
+                              _onLessonTap(lesson, pathState),
+                        ),
+                    ],
                   ),
-                  child: Icon(Icons.arrow_upward_rounded,
-                      color: AppColors.primary, size: 30.r),
+                ),
+              ],
+            ),
+            // Scroll-to-top floating button.
+            if (_showScrollTop)
+              Positioned(
+                right: 20.w,
+                bottom: 120.h,
+                child: GestureDetector(
+                  onTap: () {
+                    Haptics.tap();
+                    _scrollCtrl.animateTo(0,
+                        duration: const Duration(milliseconds: 400),
+                        curve: Curves.easeOut);
+                  },
+                  child: Container(
+                    width: 60.r,
+                    height: 60.r,
+                    decoration: BoxDecoration(
+                      color: AppColors.card,
+                      borderRadius: BorderRadius.circular(18.r),
+                      border: Border.all(color: AppColors.divider, width: 1.5),
+                    ),
+                    child: Icon(Icons.arrow_upward_rounded,
+                        color: AppColors.primary, size: 30.r),
+                  ),
                 ),
               ),
-            ),
-        ],
+          ],
+        ),
       ),
     );
   }
