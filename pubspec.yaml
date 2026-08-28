@@ -56,8 +56,8 @@ dependencies:
   flutter_tts: ^4.2.2
   cloud_functions: ^6.1.0
   audioplayers: ^6.1.0
-  record: ^6.2.1 # mic capture (WAV/PCM) for Azure pronunciation assessment
-  http: ^1.6.0 # direct REST calls to Azure Speech (dev only)
+  record: ^6.2.1 # mic capture (WAV/PCM) for pronunciation assessment
+  http: ^1.6.0 # downloading cached recordings from Firebase Storage
   firebase_storage: ^13.0.0 # store voice recordings for listen-back
   google_fonts: ^8.2.1
   liquid_glass_widgets: ^0.30.2

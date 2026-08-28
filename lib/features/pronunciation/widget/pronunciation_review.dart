@@ -168,7 +168,7 @@ class ColoredSentence extends StatelessWidget {
 }
 
 /// The IPA transcription, each phoneme colored by its score. Renders nothing
-/// when Azure returns no phoneme symbols (locales other than en-US / zh-CN).
+/// when the provider returns no phoneme symbols (locales other than en-US / zh-CN).
 class IpaLine extends StatelessWidget {
   final List<WordScore> words;
 
@@ -201,7 +201,7 @@ class IpaLine extends StatelessWidget {
 // ---------------- Sub-scores ----------------
 
 /// Pronunciation / Fluency / Rhythm, each colored by its value. Rhythm is blank
-/// when Azure returns no prosody (available for en-US only).
+/// when the provider returns no prosody (available for en-US only).
 class SubScoresRow extends StatelessWidget {
   final PronunciationResult result;
 

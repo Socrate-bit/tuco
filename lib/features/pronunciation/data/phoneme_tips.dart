@@ -1,5 +1,5 @@
 /// Static articulation tips for common IPA phonemes, shown next to a phoneme
-/// the learner mispronounced. Azure doesn't provide coaching text, so these are
+/// the learner mispronounced. The scoring provider doesn't give coaching text, so these are
 /// hardcoded. English (IPA) focused — other locales fall back to no tip.
 const Map<String, String> kPhonemeTips = {
   // Consonants
