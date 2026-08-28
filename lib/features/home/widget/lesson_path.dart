@@ -25,6 +25,7 @@ class LevelSection extends StatelessWidget {
 
   static double _rowHeight() => 178.h;
   static double _nodeSize() => 92.r;
+  static double _headerHeight() => 84.h;
 
   /// Row index on the grid for lesson [i] (pairs share a row).
   static int _rowOf(int i) => (i ~/ 3) * 2 + (i % 3 == 0 ? 0 : 1);
@@ -32,31 +33,46 @@ class LevelSection extends StatelessWidget {
   /// Horizontal slot: 0 = center, 1 = right, 2 = left.
   static int _slotOf(int i) => i % 3;
 
+  /// Total height of a section holding [lessonCount] lessons.
+  static double sectionHeight(int lessonCount) =>
+      _headerHeight() + _bodyHeight(lessonCount);
+
+  /// Offset of lesson [i] from the top of its section — lets the home screen
+  /// scroll straight to a given node.
+  static double lessonOffset(int i) =>
+      _headerHeight() + _rowOf(i) * _rowHeight();
+
+  static double _bodyHeight(int lessonCount) =>
+      (lessonCount == 0 ? 0 : _rowOf(lessonCount - 1) + 1) * _rowHeight() + 20.h;
+
   @override
   Widget build(BuildContext context) {
-    final rows = lessons.isEmpty ? 0 : _rowOf(lessons.length - 1) + 1;
-    final height = rows * _rowHeight() + 20.h;
+    final height = _bodyHeight(lessons.length);
 
     return Column(
       children: [
-        // "── Débutant ──" divider.
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: 40.w, vertical: 26.h),
-          child: Row(
-            children: [
-              const Expanded(
-                  child: Divider(color: AppColors.levelDivider, thickness: 1)),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 18.w),
-                child: Text(
-                  title,
-                  style: AppTextStyles.pageTitle
-                      .copyWith(color: AppColors.levelDivider, fontSize: 24.sp),
+        // "── Débutant ──" divider (fixed height: the home screen relies on
+        // the section geometry to scroll to the current lesson).
+        SizedBox(
+          height: _headerHeight(),
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 40.w),
+            child: Row(
+              children: [
+                const Expanded(
+                    child: Divider(color: AppColors.levelDivider, thickness: 1)),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 18.w),
+                  child: Text(
+                    title,
+                    style: AppTextStyles.pageTitle.copyWith(
+                        color: AppColors.levelDivider, fontSize: 24.sp),
+                  ),
                 ),
-              ),
-              const Expanded(
-                  child: Divider(color: AppColors.levelDivider, thickness: 1)),
-            ],
+                const Expanded(
+                    child: Divider(color: AppColors.levelDivider, thickness: 1)),
+              ],
+            ),
           ),
         ),
         SizedBox(
