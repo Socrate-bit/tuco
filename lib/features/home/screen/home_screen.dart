@@ -10,6 +10,8 @@ import '../../../core/service/haptics.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../call/screen/call_screen.dart';
 import '../../curriculum/model/curriculum_models.dart';
+import '../../game/cubit/game_cubit.dart';
+import '../../game/screen/hospital_screen.dart';
 import '../../streak/screen/streak_screen.dart';
 import '../cubit/path_cubit.dart';
 import '../widget/home_header.dart';
@@ -114,6 +116,13 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  // Lessons and free practice are locked while the pet has no hearts left: the
+  // hospital gate takes over, and only a paid discharge lets the tap through.
+  Future<bool> _checkHospital() async {
+    if (!context.read<GameCubit>().state.inHospital) return true;
+    return showHospitalScreen(context);
+  }
+
   // Lessons and free practice need the network; blocks with an error when offline.
   bool _checkInternet() {
     if (context.read<ConnectivityCubit>().state.isOnline) return true;
@@ -125,6 +134,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _onLessonTap(Lesson lesson, PathState pathState) async {
+    if (!await _checkHospital() || !mounted) return;
     if (!_checkInternet()) return;
     final status = pathState.statusOf(lesson);
 
@@ -169,7 +179,8 @@ class _HomeScreenState extends State<HomeScreen> {
     ));
   }
 
-  void _startFreeConversation() {
+  Future<void> _startFreeConversation() async {
+    if (!await _checkHospital() || !mounted) return;
     if (!_checkInternet()) return;
     _startCall(const CallScreenArgs(lesson: null));
   }

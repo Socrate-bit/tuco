@@ -22,9 +22,17 @@ class GameState extends Equatable {
   /// Pet animation asset for the current mood.
   String get petAsset => HeartService.petAssetForHearts(hearts);
 
-  /// Backdrop asset behind the pet on the home header.
-  String get backgroundAsset =>
-      backgroundAssetFor(profile.selectedBackground);
+  /// True while the pet is out of hearts and stuck at the hospital.
+  bool get inHospital => HeartService.isHospitalized(hearts);
+
+  /// Coins charged to get the pet out of the hospital (0 with an empty purse).
+  int get dischargeFee => HeartService.dischargeFee(coins);
+
+  /// Backdrop asset behind the pet on the home header — the hospital takes over
+  /// the chosen backdrop until the pet is discharged.
+  String get backgroundAsset => inHospital
+      ? kHospitalBackgroundAsset
+      : backgroundAssetFor(profile.selectedBackground);
 
   /// True when the backdrop is free or already bought.
   bool owns(String id) => profile.ownsBackground(id);
@@ -68,6 +76,30 @@ class GameCubit extends Cubit<GameState> {
   /// Awards a completed lesson (+coins, hearts restored). Optimistic: the
   /// Firestore stream confirms shortly after.
   Future<void> awardLessonCompletion() => _repo.awardLessonCompletion();
+
+  /// Pays the discharge fee to get the pet out of the hospital, back to
+  /// [kHeartsAfterDischarge] hearts. Optimistic: the header leaves the hospital
+  /// immediately, and the previous state is restored if the write is refused.
+  /// Returns false on refusal.
+  Future<bool> leaveHospital() async {
+    if (!state.inHospital) return false;
+    final previous = state;
+    final hs = HeartService.discharge(DateTime.now().millisecondsSinceEpoch);
+    emit(GameState(
+      profile: state.profile.copyWith(
+        coins: state.coins - state.dischargeFee,
+        hearts: hs.hearts,
+        heartsUpdatedAt: hs.anchorMs,
+      ),
+      hearts: hs.hearts,
+    ));
+    final ok = await _repo.leaveHospital();
+    if (!ok) {
+      debugPrint('[GameCubit] discharge refused, rolling back');
+      emit(previous);
+    }
+    return ok;
+  }
 
   /// Buys [bg] and selects it. Optimistic: the balance and the header backdrop
   /// update immediately, and the previous state is restored if the write is

@@ -5,6 +5,10 @@ import '../../../core/l10n/app_localizations.dart';
 /// Id of the free backdrop every user starts with.
 const kDefaultBackgroundId = 'forest_lake';
 
+/// Backdrop forced behind the pet while it is hospitalized (0 hearts). Not sold
+/// in the shop — it is a state, not a purchase.
+const kHospitalBackgroundAsset = 'assets/backgrounds/hospital.png';
+
 /// A home-header backdrop the pet sits on, bought with coins in the shop.
 class PetBackground extends Equatable {
   final String id;

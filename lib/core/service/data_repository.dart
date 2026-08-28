@@ -287,6 +287,59 @@ class DataRepository {
     }
   }
 
+  /// Discharges the hospitalized pet: charges [HeartService.dischargeFee] of
+  /// the stored balance and gives back [kHeartsAfterDischarge] hearts. The fee
+  /// is recomputed from the stored profile so a stale UI can never under- or
+  /// overpay. Returns false when the pet is not (or no longer) hospitalized.
+  Future<bool> leaveHospital() async {
+    final nowMs = DateTime.now().millisecondsSinceEpoch;
+
+    // Settles decay first, then charges and heals. Shared by both backends.
+    GameProfile? discharged(GameProfile profile) {
+      final settled =
+          HeartService.settle(profile.hearts, profile.heartsUpdatedAt, nowMs);
+      if (!HeartService.isHospitalized(settled.hearts)) return null;
+      final hs = HeartService.discharge(nowMs);
+      return profile.copyWith(
+        coins: profile.coins - HeartService.dischargeFee(profile.coins),
+        hearts: hs.hearts,
+        heartsUpdatedAt: hs.anchorMs,
+      );
+    }
+
+    try {
+      if (_useFirestore) {
+        return await FirebaseFirestore.instance.runTransaction<bool>((tx) async {
+          final snap = await tx.get(_gameDoc);
+          final profile = snap.exists && snap.data() != null
+              ? GameProfile.fromMap(snap.data()!)
+              : const GameProfile();
+          final next = discharged(profile);
+          if (next == null) return false;
+          tx.set(_gameDoc, next.toMap());
+          return true;
+        }).then((ok) {
+          debugPrint(ok
+              ? '[DataRepository] Pet discharged from hospital'
+              : '[DataRepository] Discharge refused: pet not hospitalized');
+          return ok;
+        });
+      }
+      final next = discharged(_game);
+      if (next == null) {
+        debugPrint('[DataRepository] Discharge refused: pet not hospitalized');
+        return false;
+      }
+      _game = next;
+      _gameCtrl.add(_game);
+      debugPrint('[DataRepository] Pet discharged from hospital');
+      return true;
+    } catch (e) {
+      debugPrint('[DataRepository] leaveHospital error: $e');
+      return false;
+    }
+  }
+
   /// Buys the [id] backdrop for [price] coins and selects it. Returns false
   /// when the balance is short — re-checked against the stored profile so a
   /// stale UI or a double tap can never overdraw.
