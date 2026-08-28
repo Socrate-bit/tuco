@@ -132,7 +132,7 @@ class _WordDetailView extends StatelessWidget {
 }
 
 /// The per-phoneme detail list: each sound with its status and, when it needs
-/// work, a short articulation tip. Falls back to syllable graphemes when Azure
+/// work, a short articulation tip. Falls back to syllable graphemes when the provider
 /// returns no phoneme symbols (locales other than en-US / zh-CN).
 class _PhonemeColumn extends StatelessWidget {
   final WordScore word;

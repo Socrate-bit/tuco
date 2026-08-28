@@ -100,7 +100,7 @@ class ChatMessage extends Equatable {
   final String? translation; // lazily fetched translation
   final String? banner; // 'course' | 'courseDone' | 'practice' when banner row
   final String? verdict; // 'win' | 'fail' — exercise result on user messages
-  final PronunciationResult? pronunciation; // Azure speech score on voice turns
+  final PronunciationResult? pronunciation; // pronunciation score on voice turns
   final String? recordingUrl; // Storage URL of the voice recording (listen back)
   // Temp WAV of the take just recorded, so listen-back works before the upload
   // finishes. Session-only: not persisted, as temp files don't outlive the app.

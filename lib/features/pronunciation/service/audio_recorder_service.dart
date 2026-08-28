@@ -4,7 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:record/record.dart';
 import 'package:uuid/uuid.dart';
 
-/// Captures microphone audio to a 16 kHz mono WAV file — the format Azure's
+/// Captures microphone audio to a 16 kHz mono WAV file — the format the
 /// pronunciation-assessment endpoint expects. `speech_to_text` can't hand us
 /// the raw audio, so recording is done separately here.
 class AudioRecorderService {

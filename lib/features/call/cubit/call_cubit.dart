@@ -33,7 +33,7 @@ class CallState extends Equatable {
   final bool aiThinking;
   final bool aiSpeaking; // Bubbles still being revealed in sync with audio.
   final bool listening; // recording the learner's voice
-  final bool assessing; // Azure is recognizing + scoring the recording
+  final bool assessing; // transcribing + scoring the recording
   final String partialTranscript;
   final bool typingMode;
   final String ttsSpeedLabel;
