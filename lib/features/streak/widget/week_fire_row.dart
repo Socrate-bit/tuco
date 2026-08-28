@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 
+import '../../../core/service/data_repository.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../progression/cubit/stats_cubit.dart';
 
@@ -13,16 +14,16 @@ class WeekFireRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final stats = context.watch<StatsCubit>().state;
-    final now = DateTime.now();
-    final monday = now.subtract(Duration(days: now.weekday - 1));
+    final today = DataRepository.today();
+    final monday = DataRepository.addDays(today, 1 - today.weekday);
     final dayFormat = DateFormat.E('fr');
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: List.generate(7, (i) {
-        final day = monday.add(Duration(days: i));
+        final day = DataRepository.addDays(monday, i);
         final practiced = stats.practicedOn(day);
-        final isToday = day.day == now.day && day.month == now.month;
+        final isToday = day == today;
         return Column(
           children: [
             Text(

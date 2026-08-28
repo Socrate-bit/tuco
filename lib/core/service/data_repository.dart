@@ -168,6 +168,20 @@ class DataRepository {
   static String dayKey(DateTime d) =>
       '${d.year.toString().padLeft(4, '0')}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
 
+  /// Inverse of [dayKey]. UTC so `difference().inDays` is exact across DST.
+  static DateTime parseDayKey(String key) => DateTime.parse('${key}T00:00:00Z');
+
+  /// Local midnight today — the anchor for every day-based calculation.
+  static DateTime today() {
+    final now = DateTime.now();
+    return DateTime(now.year, now.month, now.day);
+  }
+
+  /// Calendar-day arithmetic. Never use `Duration(days: n)` for this: on a DST
+  /// day a calendar day is 23 or 25 hours, which silently skips or repeats days.
+  static DateTime addDays(DateTime d, int days) =>
+      DateTime(d.year, d.month, d.day + days);
+
   Future<void> recordPractice(
       {required int addSeconds, bool lessonCompleted = false}) async {
     final key = dayKey(DateTime.now());
