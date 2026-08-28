@@ -32,11 +32,13 @@ class CallState extends Equatable {
   final ContinuePrompt pendingContinue;
   final bool aiThinking;
   final bool aiSpeaking; // Bubbles still being revealed in sync with audio.
+  final bool tucoTalking; // Tuco's voice is audible right now (mouth animation)
   final bool listening; // recording the learner's voice
   final bool assessing; // Azure is recognizing + scoring the recording
   final String partialTranscript;
   final bool typingMode;
   final String ttsSpeedLabel;
+  final double ttsSpeed; // Same value as the label, for the mouth cadence.
   final int elapsedSeconds;
   final bool finished;
   final int translatingIndex; // message index being translated (-1 none)
@@ -47,11 +49,13 @@ class CallState extends Equatable {
     this.pendingContinue = ContinuePrompt.none,
     this.aiThinking = false,
     this.aiSpeaking = false,
+    this.tucoTalking = false,
     this.listening = false,
     this.assessing = false,
     this.partialTranscript = '',
     this.typingMode = false,
     this.ttsSpeedLabel = '1x',
+    this.ttsSpeed = 1.0,
     this.elapsedSeconds = 0,
     this.finished = false,
     this.translatingIndex = -1,
@@ -63,11 +67,13 @@ class CallState extends Equatable {
     ContinuePrompt? pendingContinue,
     bool? aiThinking,
     bool? aiSpeaking,
+    bool? tucoTalking,
     bool? listening,
     bool? assessing,
     String? partialTranscript,
     bool? typingMode,
     String? ttsSpeedLabel,
+    double? ttsSpeed,
     int? elapsedSeconds,
     bool? finished,
     int? translatingIndex,
@@ -78,11 +84,13 @@ class CallState extends Equatable {
         pendingContinue: pendingContinue ?? this.pendingContinue,
         aiThinking: aiThinking ?? this.aiThinking,
         aiSpeaking: aiSpeaking ?? this.aiSpeaking,
+        tucoTalking: tucoTalking ?? this.tucoTalking,
         listening: listening ?? this.listening,
         assessing: assessing ?? this.assessing,
         partialTranscript: partialTranscript ?? this.partialTranscript,
         typingMode: typingMode ?? this.typingMode,
         ttsSpeedLabel: ttsSpeedLabel ?? this.ttsSpeedLabel,
+        ttsSpeed: ttsSpeed ?? this.ttsSpeed,
         elapsedSeconds: elapsedSeconds ?? this.elapsedSeconds,
         finished: finished ?? this.finished,
         translatingIndex: translatingIndex ?? this.translatingIndex,
@@ -105,11 +113,13 @@ class CallState extends Equatable {
         pendingContinue,
         aiThinking,
         aiSpeaking,
+        tucoTalking,
         listening,
         assessing,
         partialTranscript,
         typingMode,
         ttsSpeedLabel,
+        ttsSpeed,
         elapsedSeconds,
         finished,
         translatingIndex,
@@ -135,6 +145,7 @@ class CallCubit extends Cubit<CallState> {
   final SpeechSuperService _speech = SpeechSuperService();
   final RecordingStorageService _recordingStorage = RecordingStorageService();
   Timer? _timer;
+  StreamSubscription<bool>? _talkingSub;
   // Bumped to cancel an in-progress AI speech reveal loop (e.g. when the
   // learner starts recording over Tuco).
   int _speechToken = 0;
@@ -171,6 +182,11 @@ class CallCubit extends Cubit<CallState> {
       }
     });
     await _tts.init(_profile.targetLanguage);
+    // Mouth animation follows the actual audio, not the reveal loop: no
+    // flapping while a reply is still being synthesized.
+    _talkingSub = _tts.speaking.listen((talking) {
+      if (!isClosed) emit(state.copyWith(tucoTalking: talking));
+    });
     await _stt.init();
 
     // Resume or fresh start.
@@ -491,7 +507,7 @@ class CallCubit extends Cubit<CallState> {
 
   String toggleTtsSpeed() {
     final label = _tts.cycleSpeed();
-    emit(state.copyWith(ttsSpeedLabel: label));
+    emit(state.copyWith(ttsSpeedLabel: label, ttsSpeed: _tts.speed));
     return label;
   }
 
@@ -621,6 +637,7 @@ class CallCubit extends Cubit<CallState> {
   @override
   Future<void> close() {
     _timer?.cancel();
+    _talkingSub?.cancel();
     _tts.dispose();
     _stt.stop();
     _recorder.dispose();

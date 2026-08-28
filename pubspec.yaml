@@ -74,6 +74,8 @@ flutter:
   uses-material-design: true
   generate: true
   assets:
+    - assets/logo.png # Tuco, mouth closed (talking avatar frame)
+    - assets/open_mouth.png # Tuco, mouth open (talking avatar frame)
     - assets/onboarding/
     - assets/backgrounds/
     - assets/images/
