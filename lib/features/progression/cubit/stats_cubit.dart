@@ -12,27 +12,31 @@ class StatsState extends Equatable {
   final List<CallRecord> calls;
   final List<PracticeDay> practiceDays;
 
-  const StatsState({this.calls = const [], this.practiceDays = const []});
+  StatsState({this.calls = const [], this.practiceDays = const []});
 
-  Map<String, PracticeDay> get _byDate =>
-      {for (final d in practiceDays) d.date: d};
+  /// Practice days indexed by 'yyyy-MM-dd', built once per state.
+  late final Map<String, PracticeDay> _byDate = {
+    for (final d in practiceDays) d.date: d
+  };
+
+  /// A day counts as practiced when the user completed a lesson **or** spent
+  /// any time on a call. Single definition shared by the streak, the calendar
+  /// and the week fire row so they can never disagree.
+  static bool _practiced(PracticeDay? day) =>
+      (day?.lessonsCompleted ?? 0) > 0 || (day?.callSeconds ?? 0) > 0;
 
   bool practicedOn(DateTime day) =>
-      (_byDate[DataRepository.dayKey(day)]?.lessonsCompleted ?? 0) > 0 ||
-      (_byDate[DataRepository.dayKey(day)]?.callSeconds ?? 0) > 0;
+      _practiced(_byDate[DataRepository.dayKey(day)]);
 
-  /// Days with at least one completed lesson count for the streak.
-  bool _streakDay(DateTime day) =>
-      (_byDate[DataRepository.dayKey(day)]?.lessonsCompleted ?? 0) > 0;
-
-  /// Current streak: consecutive lesson-days ending today (or yesterday).
+  /// Current streak: consecutive practice days ending today (or yesterday when
+  /// today has no practice yet).
   int get currentStreak {
-    var day = DateTime.now();
-    if (!_streakDay(day)) day = day.subtract(const Duration(days: 1));
+    var day = DataRepository.today();
+    if (!practicedOn(day)) day = DataRepository.addDays(day, -1);
     var streak = 0;
-    while (_streakDay(day)) {
+    while (practicedOn(day)) {
       streak++;
-      day = day.subtract(const Duration(days: 1));
+      day = DataRepository.addDays(day, -1);
     }
     return streak;
   }
@@ -40,8 +44,8 @@ class StatsState extends Equatable {
   /// Longest streak across all recorded days.
   int get longestStreak {
     final days = practiceDays
-        .where((d) => d.lessonsCompleted > 0)
-        .map((d) => DateTime.parse(d.date))
+        .where(_practiced)
+        .map((d) => DataRepository.parseDayKey(d.date))
         .toList()
       ..sort();
     var longest = 0, run = 0;
@@ -57,7 +61,7 @@ class StatsState extends Equatable {
   /// Lessons completed during [month].
   int trainingsInMonth(DateTime month) => practiceDays
       .where((d) {
-        final date = DateTime.parse(d.date);
+        final date = DataRepository.parseDayKey(d.date);
         return date.year == month.year && date.month == month.month;
       })
       .fold(0, (sum, d) => sum + d.lessonsCompleted);
@@ -70,9 +74,9 @@ class StatsState extends Equatable {
 
   /// Call seconds for each of the last 7 days (oldest first, today last).
   List<MapEntry<DateTime, int>> get last7Days {
-    final now = DateTime.now();
+    final today = DataRepository.today();
     return List.generate(7, (i) {
-      final day = now.subtract(Duration(days: 6 - i));
+      final day = DataRepository.addDays(today, i - 6);
       return MapEntry(day, _byDate[DataRepository.dayKey(day)]?.callSeconds ?? 0);
     });
   }
@@ -87,7 +91,7 @@ class StatsCubit extends Cubit<StatsState> {
   StreamSubscription? _callsSub;
   StreamSubscription? _daysSub;
 
-  StatsCubit(this._repo) : super(const StatsState()) {
+  StatsCubit(this._repo) : super(StatsState()) {
     _callsSub = _repo.callsStream().listen(
       (calls) => emit(StatsState(calls: calls, practiceDays: state.practiceDays)),
       onError: (e) => debugPrint('[StatsCubit] calls stream error: $e'),

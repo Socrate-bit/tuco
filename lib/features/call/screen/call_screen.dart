@@ -69,16 +69,14 @@ class _CallViewState extends State<_CallView> {
   final _textCtrl = TextEditingController();
   bool _showScrollDown = false;
   int _lastMessageCount = 0;
-  late final bool _hadLessonToday;
+  late final bool _practicedTodayBefore;
 
   @override
   void initState() {
     super.initState();
-    // Captured now to decide whether to show the streak-win screen after.
+    // Captured now: the streak-win screen only shows on the day's first practice.
     final stats = context.read<StatsCubit>().state;
-    _hadLessonToday = stats.practiceDays
-        .where((d) => d.date == DataRepository.dayKey(DateTime.now()))
-        .any((d) => d.lessonsCompleted > 0);
+    _practicedTodayBefore = stats.practicedOn(DateTime.now());
     _scrollCtrl.addListener(() {
       final nearBottom = _scrollCtrl.position.extentAfter < 120;
       if (_showScrollDown == nearBottom) {
@@ -123,7 +121,7 @@ class _CallViewState extends State<_CallView> {
               lesson: widget.lesson!,
               durationSeconds: state.elapsedSeconds,
               newWordsCount: widget.lesson!.vocab.length,
-              showStreakWin: !_hadLessonToday,
+              showStreakWin: !_practicedTodayBefore,
             ),
           ));
         }

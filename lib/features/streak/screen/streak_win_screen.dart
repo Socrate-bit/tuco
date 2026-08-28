@@ -8,7 +8,7 @@ import '../../../core/widget/common_widgets.dart';
 import '../../progression/cubit/stats_cubit.dart';
 import '../widget/week_fire_row.dart';
 
-/// Celebration screen after keeping the streak (big 🔥 + week row).
+/// Celebration screen after keeping the streak (big streak icon + week row).
 class StreakWinScreen extends StatelessWidget {
   const StreakWinScreen({super.key});
 
@@ -37,9 +37,10 @@ class StreakWinScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 const Spacer(flex: 3),
-                Text('🔥',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 110.sp)),
+                Center(
+                  child: Image.asset('assets/images/streaks.png',
+                      width: 140.r, height: 140.r),
+                ),
                 SizedBox(height: 30.h),
                 Text(
                   '$streak',
