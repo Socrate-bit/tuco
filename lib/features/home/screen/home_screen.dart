@@ -80,10 +80,12 @@ class _HomeScreenState extends State<HomeScreen> {
         };
 
     return BlocListener<PathCubit, PathState>(
-      // The profile arriving — or the learner changing level/language — moves
-      // the current lesson: re-open the path on it.
+      // Anything moving the current lesson — the profile arriving, the learner
+      // changing level/language, or completion data loading from its own stream
+      // — re-opens the path on it.
       listenWhen: (prev, next) =>
-          prev.level != next.level || prev.targetLanguage != next.targetLanguage,
+          prev.currentLesson.id != next.currentLesson.id ||
+          prev.targetLanguage != next.targetLanguage,
       listener: (_, state) => _jumpToCurrentLesson(state),
       child: Scaffold(
         backgroundColor: AppColors.card,
