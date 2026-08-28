@@ -23,6 +23,15 @@ class TtsService {
   String _languageCode = 'en';
   int _requestId = 0; // Drops stale responses when speak() is called again.
 
+  // Mirrors the player: true only while the voice is actually audible.
+  final StreamController<bool> _speaking = StreamController<bool>.broadcast();
+  StreamSubscription<PlayerState>? _playerSub;
+  bool _isSpeaking = false;
+
+  /// Emits true when Tuco's voice starts and false when it stops — drives the
+  /// talking avatar so the mouth moves exactly while audio plays.
+  Stream<bool> get speaking => _speaking.stream;
+
   static const speeds = [1.0, 1.5, 2.0, 0.5, 0.75];
   int _speedIndex = 0;
 
@@ -37,6 +46,8 @@ class TtsService {
 
   Future<void> init(String languageCode) async {
     _languageCode = languageCode;
+    _playerSub ??= _player.onPlayerStateChanged
+        .listen((s) => _emitSpeaking(s == PlayerState.playing));
     try {
       // Playback category so audio plays through the speaker even with the
       // ring/silent switch on, and coexists with the speech_to_text session.
@@ -123,14 +134,27 @@ class TtsService {
 
   Future<void> _speakFallback(String text) async {
     try {
+      // awaitSpeakCompletion(true) makes this resolve when the voice ends, so
+      // the avatar's mouth tracks the fallback engine too.
+      _emitSpeaking(true);
       await _fallback.speak(text);
     } catch (e) {
       debugPrint('[TtsService] fallback speak error: $e');
+    } finally {
+      _emitSpeaking(false);
     }
+  }
+
+  /// Broadcast a speaking change once, ignoring repeats.
+  void _emitSpeaking(bool value) {
+    if (_isSpeaking == value || _speaking.isClosed) return;
+    _isSpeaking = value;
+    _speaking.add(value);
   }
 
   Future<void> stop() async {
     _requestId++;
+    _emitSpeaking(false);
     try {
       await _player.stop();
       await _fallback.stop();
@@ -141,6 +165,8 @@ class TtsService {
 
   void dispose() {
     stop();
+    _playerSub?.cancel();
+    _speaking.close();
     _player.dispose();
   }
 }

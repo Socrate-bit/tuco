@@ -9,6 +9,7 @@ import '../../../core/service/data_repository.dart';
 import '../../../core/service/haptics.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widget/common_widgets.dart';
+import '../../../core/widget/talking_avatar.dart';
 import '../../curriculum/model/curriculum_models.dart';
 import '../../profile/cubit/profile_cubit.dart';
 import '../../progression/cubit/stats_cubit.dart';
@@ -136,6 +137,8 @@ class _CallViewState extends State<_CallView> {
               _CallHeader(
                 lesson: widget.lesson,
                 phase: state.phase,
+                talking: state.tucoTalking,
+                talkSpeed: state.ttsSpeed,
                 speedLabel: state.ttsSpeedLabel,
                 onClose: () => _confirmQuit(context),
                 onSpeedTap: () => cubit.toggleTtsSpeed(),
@@ -312,10 +315,12 @@ class _CallViewState extends State<_CallView> {
 
 }
 
-/// Dark header: pet animation, close, TTS speed, phase stepper, expand.
+/// Dark header: talking avatar, close, TTS speed, phase stepper, expand.
 class _CallHeader extends StatelessWidget {
   final Lesson? lesson;
   final CallPhase phase;
+  final bool talking;
+  final double talkSpeed;
   final String speedLabel;
   final VoidCallback onClose;
   final VoidCallback onSpeedTap;
@@ -323,6 +328,8 @@ class _CallHeader extends StatelessWidget {
   const _CallHeader({
     required this.lesson,
     required this.phase,
+    required this.talking,
+    required this.talkSpeed,
     required this.speedLabel,
     required this.onClose,
     required this.onSpeedTap,
@@ -345,15 +352,12 @@ class _CallHeader extends StatelessWidget {
               ),
             ),
           ),
-          // Always the happy animation during a call, regardless of hearts.
+          // Always the happy avatar during a call, regardless of hearts; its
+          // mouth flaps while Tuco's voice plays.
           Align(
             alignment: const Alignment(0, 0.9),
-            child: Image.asset(
-              'assets/images/game/pet_rest_animation.gif',
-              width: 0.5.sw,
-              height: 0.5.sw,
-              fit: BoxFit.contain,
-            ),
+            child: TalkingAvatar(
+                speaking: talking, size: 0.5.sw, speed: talkSpeed),
           ),
           SafeArea(
             bottom: false,
