@@ -944,18 +944,6 @@ abstract class AppLocalizations {
   /// **'Annuler'**
   String get shopCancel;
 
-  /// No description provided for @hospitalBanner.
-  ///
-  /// In fr, this message translates to:
-  /// **'Tuco est à l\'hôpital'**
-  String get hospitalBanner;
-
-  /// No description provided for @hospitalHeal.
-  ///
-  /// In fr, this message translates to:
-  /// **'Le faire sortir'**
-  String get hospitalHeal;
-
   /// No description provided for @hospitalTitle.
   ///
   /// In fr, this message translates to:
@@ -973,12 +961,6 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Ta série de {days} jours est en danger.'**
   String hospitalStreakAtRisk(int days);
-
-  /// No description provided for @hospitalNotNow.
-  ///
-  /// In fr, this message translates to:
-  /// **'Plus tard'**
-  String get hospitalNotNow;
 
   /// No description provided for @hospitalBody.
   ///

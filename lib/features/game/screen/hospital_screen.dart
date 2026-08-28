@@ -173,14 +173,6 @@ class _HospitalPanel extends StatelessWidget {
                 label: l10n.hospitalConfirm,
                 onPressed: () => _discharge(context),
               ),
-              SizedBox(height: 6.h),
-              TextLinkButton(
-                label: l10n.hospitalNotNow,
-                onPressed: () {
-                  Haptics.tap();
-                  Navigator.pop(context, false);
-                },
-              ),
             ],
           ),
         ),

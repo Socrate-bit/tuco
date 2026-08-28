@@ -457,12 +457,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get shopCancel => 'Cancel';
 
   @override
-  String get hospitalBanner => 'Tuco is at the hospital';
-
-  @override
-  String get hospitalHeal => 'Get him out';
-
-  @override
   String get hospitalTitle => 'Tuco is at the hospital!';
 
   @override
@@ -473,9 +467,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String hospitalStreakAtRisk(int days) {
     return 'Your $days-day streak is at risk.';
   }
-
-  @override
-  String get hospitalNotNow => 'Not now';
 
   @override
   String hospitalBody(int fee, int hearts) {

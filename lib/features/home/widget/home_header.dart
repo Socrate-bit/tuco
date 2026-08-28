@@ -118,12 +118,6 @@ class HomeHeader extends StatelessWidget {
                       ),
                     ],
                   ),
-                  // Out of hearts: the pet sits at the hospital until the
-                  // discharge fee is paid.
-                  if (game.inHospital) ...[
-                    SizedBox(height: 14.h),
-                    _HospitalBanner(fee: game.dischargeFee),
-                  ],
                   const Spacer(),
                   Row(
                     children: [
@@ -169,10 +163,16 @@ class HomeHeader extends StatelessWidget {
                       ),
                       const Spacer(),
                       // Shop button (bottom-right, where the call button used to be).
+                      // Locked while hospitalized — the pet must be discharged
+                      // first, so the tap opens the hospital gate instead.
                       GestureDetector(
                         onTap: () {
                           Haptics.tap();
-                          showShopSheet(context);
+                          if (game.inHospital) {
+                            showHospitalScreen(context);
+                          } else {
+                            showShopSheet(context);
+                          }
                         },
                         child: Image.asset(
                           'assets/images/game/shop_icon.png',
@@ -182,80 +182,6 @@ class HomeHeader extends StatelessWidget {
                       ),
                     ],
                   ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-/// Hospital call-to-action shown while the pet has no hearts left: what
-/// happened, plus a button opening the discharge dialog with its coin cost
-/// ("Free" when the purse is empty).
-class _HospitalBanner extends StatelessWidget {
-  final int fee;
-
-  const _HospitalBanner({required this.fee});
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 7.h),
-            decoration: BoxDecoration(
-              color: AppColors.whiteTranslucent,
-              borderRadius: BorderRadius.circular(18.r),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.local_hospital_rounded,
-                    size: 18.r, color: AppColors.lessonRed),
-                SizedBox(width: 6.w),
-                Text(
-                  l10n.hospitalBanner,
-                  style: AppTextStyles.button.copyWith(
-                    fontSize: 15.sp,
-                    color: AppColors.titleDark,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          SizedBox(height: 10.h),
-          GestureDetector(
-            onTap: () => showHospitalScreen(context),
-            child: Container(
-              height: 44.h,
-              padding: EdgeInsets.symmetric(horizontal: 18.w),
-              // Same "3D" style as the Appeler button.
-              decoration: BoxDecoration(
-                color: AppColors.primary,
-                borderRadius: BorderRadius.circular(18.r),
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.primaryDark,
-                    offset: Offset(0, 4.h),
-                  ),
-                ],
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(l10n.hospitalHeal, style: AppTextStyles.button),
-                  SizedBox(width: 8.w),
-                  Icon(Icons.monetization_on_rounded,
-                      size: 20.r, color: Colors.white),
-                  SizedBox(width: 4.w),
-                  Text('$fee', style: AppTextStyles.button),
                 ],
               ),
             ),
