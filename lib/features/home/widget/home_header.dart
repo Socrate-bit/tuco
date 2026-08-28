@@ -32,7 +32,7 @@ class HomeHeader extends StatelessWidget {
     final game = context.watch<GameCubit>().state;
 
     return SizedBox(
-      height: 320.h,
+      height: 350.h,
       child: Stack(
         fit: StackFit.expand,
         children: [
@@ -44,7 +44,7 @@ class HomeHeader extends StatelessWidget {
           ),
           // The pet, sitting above its stump — animation follows its mood.
           Align(
-            alignment: const Alignment(0, 0.55),
+            alignment: const Alignment(0, 0.35),
             child: Image.asset(
               game.petAsset,
               width: 0.42.sw,

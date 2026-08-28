@@ -54,12 +54,12 @@ class _ShopSheet extends StatelessWidget {
       _ShopTab(icon: '$iconBase/palette.png', cta: l10n.shopCtaColor),
     ];
 
-    // Rises exactly to the bottom of the home header (320.h) so the pet and
+    // Rises exactly to the bottom of the home header (350.h) so the pet and
     // header pills stay visible above it. Its own ScaffoldMessenger keeps error
     // snack bars in front of the sheet instead of behind it, on the home
     // Scaffold.
     return SizedBox(
-      height: MediaQuery.sizeOf(context).height - 320.h,
+      height: MediaQuery.sizeOf(context).height - 350.h,
       child: ScaffoldMessenger(
         child: Scaffold(
           backgroundColor: Colors.transparent,
