@@ -62,7 +62,7 @@ class _TalkingAvatarState extends State<TalkingAvatar>
 
   /// Toggle the mouth, then queue the next toggle after a randomised delay.
   void _scheduleFlap() {
-    final range = _mouthOpen ? _closedMs : _openMs;
+    final range = _mouthOpen ? _openMs : _closedMs;
     final ms = (range[0] + _random.nextInt(range[1])) / max(widget.speed, 0.25);
     _flap?.cancel();
     _flap = Timer(
