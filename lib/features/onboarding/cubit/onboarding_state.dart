@@ -1,5 +1,8 @@
 import 'package:equatable/equatable.dart';
 
+/// Client-side validation state of the promo code entered in the funnel.
+enum PromoStatus { none, checking, valid, invalid, exhausted }
+
 /// All answers collected during the onboarding funnel.
 /// Flat immutable model — the screen owns page navigation, not this state.
 class OnboardingState extends Equatable {
@@ -11,6 +14,8 @@ class OnboardingState extends Equatable {
   final int dailyMinutes; // practice goal per day (5-60)
   final String? practiceTime; // 'HH:mm' preferred practice time
   final bool notificationsAsked;
+  final String promoCode;
+  final PromoStatus promoStatus;
   final bool isComplete;
 
   const OnboardingState({
@@ -22,6 +27,8 @@ class OnboardingState extends Equatable {
     this.dailyMinutes = 15,
     this.practiceTime,
     this.notificationsAsked = false,
+    this.promoCode = '',
+    this.promoStatus = PromoStatus.none,
     this.isComplete = false,
   });
 
@@ -34,6 +41,8 @@ class OnboardingState extends Equatable {
     int? dailyMinutes,
     String? practiceTime,
     bool? notificationsAsked,
+    String? promoCode,
+    PromoStatus? promoStatus,
     bool? isComplete,
   }) =>
       OnboardingState(
@@ -45,6 +54,8 @@ class OnboardingState extends Equatable {
         dailyMinutes: dailyMinutes ?? this.dailyMinutes,
         practiceTime: practiceTime ?? this.practiceTime,
         notificationsAsked: notificationsAsked ?? this.notificationsAsked,
+        promoCode: promoCode ?? this.promoCode,
+        promoStatus: promoStatus ?? this.promoStatus,
         isComplete: isComplete ?? this.isComplete,
       );
 
@@ -58,6 +69,8 @@ class OnboardingState extends Equatable {
         dailyMinutes,
         practiceTime,
         notificationsAsked,
+        promoCode,
+        promoStatus,
         isComplete,
       ];
 }

@@ -16,6 +16,7 @@ import '../widget/info_step.dart';
 import '../widget/loading_step.dart';
 import '../widget/notification_step.dart';
 import '../widget/plan_ready_step.dart';
+import '../widget/promo_code_step.dart';
 import '../widget/progress_chart.dart';
 import '../widget/rating_step.dart';
 import '../widget/sign_in_step.dart';
@@ -253,16 +254,36 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           },
           build: (context, state, cubit) => const RatingStep(),
         ),
-        // 13: Making your plan (auto-advances)
+        // 13: Promo code (optional) — validated before advancing
+        _OnboardingStep(
+          canContinue: (s) =>
+              s.promoStatus != PromoStatus.checking &&
+              s.promoStatus != PromoStatus.invalid &&
+              s.promoStatus != PromoStatus.exhausted,
+          onContinue: (context) async {
+            final cubit = context.read<OnboardingCubit>();
+            FocusScope.of(context).unfocus();
+            if (cubit.state.promoCode.trim().isEmpty ||
+                cubit.state.promoStatus == PromoStatus.valid) {
+              return;
+            }
+            await cubit.submitPromoCode();
+          },
+          build: (context, state, cubit) => PromoCodeStep(
+            status: state.promoStatus,
+            onCodeChanged: cubit.setPromoCode,
+          ),
+        ),
+        // 14: Making your plan (auto-advances)
         _OnboardingStep(
           ownNavigation: true,
           build: (context, state, cubit) => LoadingStep(onDone: _next),
         ),
-        // 14: Your custom plan is ready
+        // 15: Your custom plan is ready
         _OnboardingStep(
           build: (context, state, cubit) => PlanReadyStep(state: state),
         ),
-        // 15: We want you to try for free → Superwall paywall
+        // 16: We want you to try for free → Superwall paywall
         _OnboardingStep(
           onContinue: (context) async {
             await context
@@ -271,12 +292,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           },
           build: (context, state, cubit) => const FreeTrialStep(),
         ),
-        // 16: Let's finish your set-up
+        // 17: Let's finish your set-up
         _OnboardingStep(
           ownNavigation: true,
           build: (context, state, cubit) => SignInStep(
             onFinish: () async {
-              await cubit.completeOnboarding();
+              await cubit
+                  .completeOnboarding(context.read<SubscriptionCubit>());
             },
           ),
         ),
@@ -334,7 +356,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   /// Pages where going back makes no sense (loading and after it).
-  bool get _backHidden => _page == 0 || _page >= 13;
+  bool get _backHidden => _page == 0 || _page >= 14;
 
   @override
   Widget build(BuildContext context) {
@@ -376,7 +398,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           label: l10n.onboardingContinue,
                           onPressed: () async {
                             await step.onContinue?.call(context);
-                            _next();
+                            if (!context.mounted) return;
+                            // A step's side effect can invalidate its own gate
+                            // (promo validation) — re-check before advancing.
+                            final gate = steps[_page].canContinue;
+                            if (gate?.call(cubit.state) ?? true) _next();
                           },
                         ),
                       ),

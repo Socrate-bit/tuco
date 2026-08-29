@@ -6,9 +6,10 @@ import '../../../core/theme/app_theme.dart';
 import '../cubit/subscription_cubit.dart';
 import '../cubit/subscription_state.dart';
 
-/// Subscription gate around the main app: shows a spinner until Superwall
-/// reports a status, then either the app or the app under a locked overlay
-/// that re-fires the `app_start` paywall on every tap.
+/// Subscription gate around the main app: shows a spinner until the user type
+/// and Superwall status are known, then either the app or the app under a
+/// locked overlay that re-fires the paywall on every tap.
+/// Promo-code tiers (admin / ugc / apple) are never gated.
 class AppGateWrapper extends StatelessWidget {
   const AppGateWrapper({super.key});
 

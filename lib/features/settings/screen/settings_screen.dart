@@ -10,6 +10,9 @@ import '../../../core/service/haptics.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widget/common_widgets.dart';
 import '../../onboarding/cubit/onboarding_cubit.dart';
+import '../../subscription/cubit/subscription_cubit.dart';
+import '../../subscription/cubit/subscription_state.dart';
+import '../widget/promo_code_dialog.dart';
 import 'privacy_policy_screen.dart';
 import 'terms_conditions_screen.dart';
 
@@ -29,6 +32,36 @@ class SettingsScreen extends StatelessWidget {
 
   void _push(BuildContext context, Widget screen) =>
       Navigator.push(context, MaterialPageRoute(builder: (_) => screen));
+
+  // Promo code entry — the dialog needs the cubit from this subtree.
+  void _openPromoDialog(BuildContext context) => showDialog(
+        context: context,
+        builder: (_) => BlocProvider.value(
+          value: context.read<SubscriptionCubit>(),
+          child: const PromoCodeDialog(),
+        ),
+      );
+
+  // Human label for the promo tier granted by a code.
+  String _userTypeLabel(AppLocalizations l10n, UserType type) =>
+      switch (type) {
+        UserType.admin => l10n.settingsUserTypeAdmin,
+        UserType.ugc => l10n.settingsUserTypeUgc,
+        UserType.apple => l10n.settingsUserTypeApple,
+        UserType.normal => l10n.settingsUserTypeFree,
+      };
+
+  // Admin-only: clears the local onboarding flag and drops the user back into
+  // the funnel. Deletes nothing — the profile is overwritten only if the
+  // funnel is completed again.
+  Future<void> _replayOnboarding(BuildContext context) async {
+    final onboarding = context.read<OnboardingCubit>();
+    final navigator = Navigator.of(context);
+    await onboarding.reset();
+    // Reveal the gate underneath, which now renders the onboarding funnel.
+    navigator.popUntil((route) => route.isFirst);
+    debugPrint('[SettingsScreen] Onboarding replay requested');
+  }
 
   // Confirms then deletes all user data (account reset).
   Future<void> _deleteAccount(BuildContext context) async {
@@ -108,20 +141,29 @@ class SettingsScreen extends StatelessWidget {
               Text(l10n.settingsTitle, style: AppTextStyles.pageTitle),
               SizedBox(height: 24.h),
               _SectionTitle(title: l10n.settingsAccount),
-              _SettingsCard(children: [
-                _LinkRow(
-                  icon: Icons.card_membership_outlined,
-                  label: l10n.settingsUserType,
-                  value: l10n.settingsUserTypeFree,
-                  onTap: () {},
-                ),
-                const _RowDivider(),
-                _LinkRow(
-                  icon: Icons.copy_outlined,
-                  label: l10n.settingsCopyUserId,
-                  onTap: () => _copyUserId(context),
-                ),
-              ]),
+              BlocBuilder<SubscriptionCubit, SubscriptionState>(
+                buildWhen: (prev, curr) => prev.userType != curr.userType,
+                builder: (context, sub) => _SettingsCard(children: [
+                  _LinkRow(
+                    icon: Icons.card_membership_outlined,
+                    label: l10n.settingsUserType,
+                    value: _userTypeLabel(l10n, sub.userType),
+                    onTap: () {},
+                  ),
+                  const _RowDivider(),
+                  _LinkRow(
+                    icon: Icons.redeem_outlined,
+                    label: l10n.settingsPromoCode,
+                    onTap: () => _openPromoDialog(context),
+                  ),
+                  const _RowDivider(),
+                  _LinkRow(
+                    icon: Icons.copy_outlined,
+                    label: l10n.settingsCopyUserId,
+                    onTap: () => _copyUserId(context),
+                  ),
+                ]),
+              ),
               SizedBox(height: 24.h),
               _SectionTitle(title: l10n.settingsAbout),
               _SettingsCard(children: [
@@ -147,6 +189,29 @@ class SettingsScreen extends StatelessWidget {
                   onTap: () => _deleteAccount(context),
                 ),
               ]),
+              // Admin tools — hidden for every other user type.
+              BlocBuilder<SubscriptionCubit, SubscriptionState>(
+                buildWhen: (prev, curr) => prev.userType != curr.userType,
+                builder: (context, sub) {
+                  if (sub.userType != UserType.admin) {
+                    return const SizedBox.shrink();
+                  }
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(height: 24.h),
+                      _SectionTitle(title: l10n.settingsAdmin),
+                      _SettingsCard(children: [
+                        _LinkRow(
+                          icon: Icons.replay_outlined,
+                          label: l10n.settingsReplayOnboarding,
+                          onTap: () => _replayOnboarding(context),
+                        ),
+                      ]),
+                    ],
+                  );
+                },
+              ),
             ],
           ),
         ),

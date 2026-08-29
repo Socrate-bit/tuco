@@ -912,4 +912,61 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get pronNoRecording =>
       'No voice recording for this message. Use the mic to get a pronunciation score.';
+
+  @override
+  String get settingsUserTypeAdmin => 'Admin';
+
+  @override
+  String get settingsUserTypeUgc => 'Creator';
+
+  @override
+  String get settingsUserTypeApple => 'Apple';
+
+  @override
+  String get settingsPromoCode => 'Enter promo code';
+
+  @override
+  String get promoTitle => 'Enter promo code';
+
+  @override
+  String get promoCodeLabel => 'Promo code';
+
+  @override
+  String get promoInvalid => 'Invalid promo code';
+
+  @override
+  String get promoUsageLimit => 'This code has reached its usage limit';
+
+  @override
+  String get promoError => 'Something went wrong, please try again';
+
+  @override
+  String get promoCancel => 'Cancel';
+
+  @override
+  String get promoSubmit => 'Submit';
+
+  @override
+  String get onboardingPromoTitle => 'Got a promo code?';
+
+  @override
+  String get onboardingPromoSubtitle => 'You can skip this step';
+
+  @override
+  String get onboardingPromoLabel => 'Promo code';
+
+  @override
+  String get onboardingPromoApplied => 'Promo code applied!';
+
+  @override
+  String get onboardingPromoInvalid => 'Invalid promo code';
+
+  @override
+  String get onboardingPromoLimit => 'This code has reached its usage limit';
+
+  @override
+  String get settingsAdmin => 'ADMIN';
+
+  @override
+  String get settingsReplayOnboarding => 'Replay onboarding';
 }

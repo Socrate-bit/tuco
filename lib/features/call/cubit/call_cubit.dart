@@ -150,6 +150,10 @@ class CallCubit extends Cubit<CallState> {
   // learner starts recording over Tuco).
   int _speechToken = 0;
   final DateTime _startedAt = DateTime.now();
+  // The exact phrase the tutor last asked the learner to say (from an [EXPECT:]
+  // marker), used as the SpeechSuper reference so pronunciation is scored
+  // against what was asked, not a mis-heard transcription. Null for open turns.
+  String? _expectedPhrase;
 
   CallCubit({
     required DataRepository repo,
@@ -227,11 +231,16 @@ class CallCubit extends Cubit<CallState> {
     // re-emit the done marker after the learner's next correct answer.
     final lessonDone = !fail && text.contains(kLessonDoneMarker);
     final practiceDone = !fail && text.contains(kPracticeDoneMarker);
+    // Capture the phrase the tutor wants said next (if any) so the learner's
+    // recording is scored against it; reset it each reply so a stale phrase
+    // never leaks into an open turn.
+    _expectedPhrase = kExpectPattern.firstMatch(text)?.group(1)?.trim();
     text = text
         .replaceAll(kLessonDoneMarker, '')
         .replaceAll(kPracticeDoneMarker, '')
         .replaceAll(kWinMarker, '')
         .replaceAll(kFailMarker, '')
+        .replaceAll(kExpectPattern, '')
         .trim();
 
     if (win || fail) _applyVerdict(win ? 'win' : 'fail');
@@ -360,17 +369,21 @@ class CallCubit extends Cubit<CallState> {
     emit(state.copyWith(
         aiThinking: true, partialTranscript: '', typingMode: false));
 
-    // Fire-and-forget feedback generation.
-    _generateFeedback(trimmed);
+    // Fire-and-forget feedback generation. Pass the tutor's last instruction so
+    // repetition exercises ("Say ... out loud") aren't flagged for grammar.
+    final tutorPrompt = state.messages
+        .lastWhere((m) => m.role == MessageRole.ai && m.banner == null,
+            orElse: () => const ChatMessage(role: MessageRole.ai, text: ''))
+        .text;
+    _generateFeedback(trimmed, tutorPrompt: tutorPrompt);
 
-    final reply =
-        await _gemini.send(trimmed, pronScore: pronunciation?.pronScore);
+    final reply = await _gemini.send(trimmed, pron: pronunciation);
     if (isClosed) return;
     _handleAiReply(reply);
   }
 
-  Future<void> _generateFeedback(String text) async {
-    final result = await _gemini.feedback(text);
+  Future<void> _generateFeedback(String text, {String? tutorPrompt}) async {
+    final result = await _gemini.feedback(text, tutorPrompt: tutorPrompt);
     if (result == null || isClosed) return;
     // Always saved (even without errors) so the message feedback modal can
     // show Correct/Incorrect, the estimated level and the alternative.
@@ -435,10 +448,15 @@ class CallCubit extends Cubit<CallState> {
         debugPrint('[CallCubit] Empty recognition — nothing sent');
         return;
       }
-      // 2) Score the pronunciation against the transcription.
+      // 2) Score the pronunciation. When the tutor asked for one exact phrase,
+      // score against that phrase (so a mispronunciation mis-heard by Apple as
+      // other words is still caught); otherwise score against the transcription.
+      final reference = (_expectedPhrase != null && _expectedPhrase!.isNotEmpty)
+          ? _expectedPhrase!
+          : text;
       final result = await _speech.assess(
         audio: file,
-        referenceText: text,
+        referenceText: reference,
         languageCode: _profile.targetLanguage,
         coreType: SpeechSuperCoreType.sentence,
       );

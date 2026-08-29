@@ -6,6 +6,8 @@ import '../../../core/model/models.dart';
 import '../../../core/service/analytics_service.dart';
 import '../../../core/service/data_repository.dart';
 import '../../profile/service/reminder_service.dart';
+import '../../subscription/cubit/subscription_cubit.dart';
+import '../../subscription/service/promo_service.dart';
 import 'onboarding_state.dart';
 
 /// Holds the onboarding answers and persists them on completion.
@@ -93,6 +95,26 @@ class OnboardingCubit extends Cubit<OnboardingState> {
     _step('practice_time', {'time': hhmm});
   }
 
+  void setPromoCode(String code) =>
+      emit(state.copyWith(promoCode: code, promoStatus: PromoStatus.none));
+
+  /// Client-side validation only — the code is redeemed in
+  /// [completeOnboarding], once the user's final uid is known.
+  Future<void> submitPromoCode() async {
+    final code = state.promoCode.trim();
+    if (code.isEmpty) return;
+    emit(state.copyWith(promoStatus: PromoStatus.checking));
+    final result = await PromoService.validateCode(code);
+    emit(state.copyWith(
+      promoStatus: switch (result) {
+        null => PromoStatus.invalid,
+        PromoService.exhausted => PromoStatus.exhausted,
+        _ => PromoStatus.valid,
+      },
+    ));
+    _step('promo_code', {'status': state.promoStatus.name});
+  }
+
   /// Fires the iOS notification prompt; called by the notification step.
   Future<void> requestNotifications() async {
     final granted = await ReminderService.requestPermission();
@@ -107,8 +129,23 @@ class OnboardingCubit extends Cubit<OnboardingState> {
         _ => 'advanced',
       };
 
-  /// Persists all answers into the user profile and marks onboarding done.
-  Future<void> completeOnboarding() async {
+  /// Redeems the validated promo code onto the now-final uid. Failures are
+  /// logged only — a bad code must never trap the user in the funnel.
+  Future<void> _redeemPromoCode(SubscriptionCubit subscription) async {
+    if (state.promoStatus != PromoStatus.valid) return;
+    try {
+      final userType = await PromoService.redeemCode(state.promoCode.trim());
+      _analytics.track('promo_redeem_success', {'user_type': userType});
+    } catch (e) {
+      debugPrint('[OnboardingCubit] promo redeem error: $e');
+      _analytics.track('promo_redeem_failed', {'reason': 'error'});
+    }
+    await subscription.refreshUserType();
+  }
+
+  /// Persists all answers into the user profile, redeems any validated promo
+  /// code and marks onboarding done.
+  Future<void> completeOnboarding(SubscriptionCubit subscription) async {
     if (_isCompleting) return;
     _isCompleting = true;
     try {
@@ -121,6 +158,7 @@ class OnboardingCubit extends Cubit<OnboardingState> {
         reminderTime: state.practiceTime,
       );
       await _repository.saveProfile(profile);
+      await _redeemPromoCode(subscription);
       final prefs = await SharedPreferences.getInstance();
       await prefs.setBool(_prefsKey, true);
       emit(state.copyWith(isComplete: true));

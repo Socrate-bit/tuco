@@ -1765,6 +1765,120 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Pas d\'enregistrement vocal pour ce message. Utilise le micro pour obtenir un score de prononciation.'**
   String get pronNoRecording;
+
+  /// No description provided for @settingsUserTypeAdmin.
+  ///
+  /// In fr, this message translates to:
+  /// **'Admin'**
+  String get settingsUserTypeAdmin;
+
+  /// No description provided for @settingsUserTypeUgc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Créateur'**
+  String get settingsUserTypeUgc;
+
+  /// No description provided for @settingsUserTypeApple.
+  ///
+  /// In fr, this message translates to:
+  /// **'Apple'**
+  String get settingsUserTypeApple;
+
+  /// No description provided for @settingsPromoCode.
+  ///
+  /// In fr, this message translates to:
+  /// **'Entrer un code promo'**
+  String get settingsPromoCode;
+
+  /// No description provided for @promoTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Entrer un code promo'**
+  String get promoTitle;
+
+  /// No description provided for @promoCodeLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Code promo'**
+  String get promoCodeLabel;
+
+  /// No description provided for @promoInvalid.
+  ///
+  /// In fr, this message translates to:
+  /// **'Code promo invalide'**
+  String get promoInvalid;
+
+  /// No description provided for @promoUsageLimit.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ce code a atteint sa limite d\'utilisation'**
+  String get promoUsageLimit;
+
+  /// No description provided for @promoError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Une erreur est survenue, réessaie'**
+  String get promoError;
+
+  /// No description provided for @promoCancel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Annuler'**
+  String get promoCancel;
+
+  /// No description provided for @promoSubmit.
+  ///
+  /// In fr, this message translates to:
+  /// **'Valider'**
+  String get promoSubmit;
+
+  /// No description provided for @onboardingPromoTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tu as un code promo ?'**
+  String get onboardingPromoTitle;
+
+  /// No description provided for @onboardingPromoSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tu peux passer cette étape'**
+  String get onboardingPromoSubtitle;
+
+  /// No description provided for @onboardingPromoLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Code promo'**
+  String get onboardingPromoLabel;
+
+  /// No description provided for @onboardingPromoApplied.
+  ///
+  /// In fr, this message translates to:
+  /// **'Code promo appliqué !'**
+  String get onboardingPromoApplied;
+
+  /// No description provided for @onboardingPromoInvalid.
+  ///
+  /// In fr, this message translates to:
+  /// **'Code promo invalide'**
+  String get onboardingPromoInvalid;
+
+  /// No description provided for @onboardingPromoLimit.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ce code a atteint sa limite d\'utilisation'**
+  String get onboardingPromoLimit;
+
+  /// No description provided for @settingsAdmin.
+  ///
+  /// In fr, this message translates to:
+  /// **'ADMIN'**
+  String get settingsAdmin;
+
+  /// No description provided for @settingsReplayOnboarding.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rejouer l\'onboarding'**
+  String get settingsReplayOnboarding;
 }
 
 class _AppLocalizationsDelegate

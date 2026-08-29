@@ -1,6 +1,11 @@
 const { onCall, HttpsError } = require("firebase-functions/v2/https");
 const { defineSecret } = require("firebase-functions/params");
+const { initializeApp } = require("firebase-admin/app");
+const { getFirestore, FieldValue } = require("firebase-admin/firestore");
 const crypto = require("crypto");
+
+initializeApp();
+const db = getFirestore();
 
 // External AI provider credentials. Stored in Cloud Secret Manager and only
 // ever read inside these functions — never shipped in the app binary.
@@ -186,3 +191,59 @@ exports.assessPronunciation = onCall(
     return { assessment: body };
   }
 );
+
+// ------------------------------------------------------------ Promo codes
+
+// Atomically redeems a promo code:
+// 1. Validates the code exists with the required fields (type, num_use, max_use)
+// 2. Checks the code is not exhausted (num_use < max_use)
+// 3. Checks the caller hasn't already used this code
+// 4. Increments num_use and appends the uid to usedBy
+// 5. Sets user_type on the user document
+// Expects { code } and returns { user_type }.
+exports.redeemPromoCode = onCall({ region: REGION }, async (request) => {
+  const uid = requireAuth(request);
+  const code = request.data?.code;
+  if (typeof code !== "string" || code.trim().length === 0) {
+    throw new HttpsError("invalid-argument", "A promo code is required.");
+  }
+
+  const codeRef = db.collection("promoCodes").doc(code.trim());
+  const userRef = db.collection("users").doc(uid);
+
+  const userType = await db.runTransaction(async (tx) => {
+    const codeSnap = await tx.get(codeRef);
+    if (!codeSnap.exists) {
+      throw new HttpsError("not-found", "Promo code does not exist.");
+    }
+    const data = codeSnap.data();
+    const type = data.type;
+    const numUse = data.num_use;
+    const maxUse = data.max_use;
+
+    if (type === undefined || numUse === undefined || maxUse === undefined) {
+      throw new HttpsError("failed-precondition", "Invalid promo code.");
+    }
+    if (numUse >= maxUse) {
+      throw new HttpsError(
+        "resource-exhausted",
+        "This code has reached its usage limit."
+      );
+    }
+    const usedBy = data.usedBy || [];
+    if (usedBy.includes(uid)) {
+      throw new HttpsError("already-exists", "You have already used this code.");
+    }
+
+    tx.update(codeRef, {
+      num_use: FieldValue.increment(1),
+      usedBy: FieldValue.arrayUnion(uid),
+    });
+    tx.set(userRef, { user_type: type }, { merge: true });
+
+    return type;
+  });
+
+  console.log(`[redeemPromoCode] ${uid} redeemed "${code.trim()}" → ${userType}`);
+  return { user_type: userType };
+});
