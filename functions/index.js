@@ -9,7 +9,7 @@ const db = getFirestore();
 
 // External AI provider credentials. Stored in Cloud Secret Manager and only
 // ever read inside these functions — never shipped in the app binary.
-const elevenLabsKey = defineSecret("ELEVENLABS_API_KEY");
+const azureSpeechKey = defineSecret("AZURE_SPEECH_KEY");
 const speechSuperAppKey = defineSecret("SPEECHSUPER_APP_KEY");
 const speechSuperSecretKey = defineSecret("SPEECHSUPER_SECRET_KEY");
 
@@ -23,44 +23,73 @@ function requireAuth(request) {
   return request.auth.uid;
 }
 
-// ---------------------------------------------------------------- ElevenLabs
+// --------------------------------------------------------- Azure AI Speech
 
-const VOICE_ID = "ihKwLOjVUMG4lgUI6meZ";
-const MODEL_ID = "eleven_flash_v2_5";
+// Dragon HD Omni preview voice. The region is part of the endpoint host and
+// must be one where Omni is available (eastus/westeurope/swedencentral/
+// southeastasia).
+const AZURE_REGION = "eastus";
+const AZURE_VOICE = "en-us-jelly:DragonHDOmniLatestNeural";
+const AZURE_OUTPUT_FORMAT = "audio-24khz-96kbitrate-mono-mp3";
 
-// Proxies ElevenLabs TTS so the API key stays server-side.
+// App language code → BCP-47 tag for the SSML <lang> element. Omni does
+// auto-detect the language, but it guesses English for short Spanish inputs
+// ("murciélago" comes out as "Mercia Lago"), so the language is always stated
+// explicitly. Mapped here rather than taken from the client so nothing
+// caller-controlled reaches the SSML. Adding a language is one row.
+const SPEECH_LOCALES = {
+  es: "es-ES",
+  fr: "fr-FR",
+  zh: "zh-CN",
+  en: "en-US",
+};
+
+// The text comes from Gemini and goes inside an SSML document, so any XML
+// metacharacter would break the request.
+function escapeXml(text) {
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&apos;");
+}
+
+// Proxies Azure AI Speech synthesis so the API key stays server-side.
 // Expects { text, languageCode } and returns { audio } (base64 MP3).
 exports.tts = onCall(
-  { secrets: [elevenLabsKey], region: REGION },
+  { secrets: [azureSpeechKey], region: REGION, timeoutSeconds: 30 },
   async (request) => {
     requireAuth(request);
     const text = request.data?.text;
     if (typeof text !== "string" || !text.trim() || text.length > 2000) {
       throw new HttpsError("invalid-argument", "text is required (max 2000 chars).");
     }
-    // Always enforce a language so short inputs (single words) aren't left to
-    // the model's auto-detection, which mispronounces them with the voice's
-    // native accent. Falls back to English when the client omits it.
-    const languageCode = request.data?.languageCode || "en";
+    const locale =
+      SPEECH_LOCALES[request.data?.languageCode] || SPEECH_LOCALES.en;
+
+    const ssml =
+      '<speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" ' +
+      `xml:lang="${locale}"><voice name="${AZURE_VOICE}">` +
+      `<lang xml:lang="${locale}">${escapeXml(text)}</lang>` +
+      "</voice></speak>";
 
     const response = await fetch(
-      `https://api.elevenlabs.io/v1/text-to-speech/${VOICE_ID}?output_format=mp3_44100_128`,
+      `https://${AZURE_REGION}.tts.speech.microsoft.com/cognitiveservices/v1`,
       {
         method: "POST",
         headers: {
-          "xi-api-key": elevenLabsKey.value(),
-          "Content-Type": "application/json",
+          "Ocp-Apim-Subscription-Key": azureSpeechKey.value(),
+          "Content-Type": "application/ssml+xml",
+          "X-Microsoft-OutputFormat": AZURE_OUTPUT_FORMAT,
+          "User-Agent": "tuco",
         },
-        body: JSON.stringify({
-          text,
-          model_id: MODEL_ID,
-          language_code: languageCode,
-        }),
+        body: ssml,
       }
     );
     if (!response.ok) {
       const body = await response.text();
-      console.error(`[tts] ElevenLabs error ${response.status}: ${body}`);
+      console.error(`[tts] Azure Speech error ${response.status}: ${body}`);
       throw new HttpsError("internal", "TTS synthesis failed.");
     }
     const audio = Buffer.from(await response.arrayBuffer()).toString("base64");

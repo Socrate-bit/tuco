@@ -9,9 +9,10 @@ import 'package:flutter_tts/flutter_tts.dart';
 
 import '../../../core/model/app_language.dart';
 
-/// Character voice. Speaks via the `tts` Cloud Function (ElevenLabs proxy,
-/// key stays server-side) and falls back to on-device flutter_tts when the
-/// call fails. Keeps the cycling speed control (1x → 1.5x → 2x → 0.5x → 0.75x).
+/// Character voice. Speaks via the `tts` Cloud Function (Azure AI Speech
+/// proxy, key stays server-side) and falls back to on-device flutter_tts when
+/// the call fails. Keeps the cycling speed control (1x → 1.5x → 2x → 0.5x →
+/// 0.75x).
 class TtsService {
   final HttpsCallable _tts = FirebaseFunctions.instanceFor(
           region: 'europe-west1')
@@ -125,7 +126,9 @@ class TtsService {
     }
   }
 
-  /// Fetch MP3 audio for [text] via the `tts` Cloud Function.
+  /// Fetch MP3 audio for [text] via the `tts` Cloud Function. The language is
+  /// always sent: the voice auto-detects, but guesses English for short
+  /// Spanish inputs.
   Future<Uint8List> _synthesize(String text) async {
     final result = await _tts
         .call<Map<String, dynamic>>({'text': text, 'languageCode': _languageCode});
