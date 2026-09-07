@@ -293,7 +293,7 @@ class _GrammarDetail extends StatelessWidget {
       );
     }
     final corrections = item!.corrections;
-    final alternative = item!.alternative;
+    // final alternative = item!.alternative;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -341,47 +341,48 @@ class _GrammarDetail extends StatelessWidget {
             ],
             SizedBox(height: 16.h),
           ],
-        if (alternative?.isNotEmpty ?? false) ...[
-          Padding(
-            padding: EdgeInsets.symmetric(vertical: 14.h),
-            child: const Divider(
-                color: AppColors.divider, thickness: 1, height: 1),
-          ),
-          Row(
-            children: [
-              Icon(Icons.lightbulb_rounded,
-                  color: AppColors.streakOrange, size: 22.r),
-              SizedBox(width: 8.w),
-              Text(l10n.sayItBetter, style: AppTextStyles.itemTitle),
-            ],
-          ),
-          SizedBox(height: 10.h),
-          Container(
-            width: double.infinity,
-            padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
-            decoration: BoxDecoration(
-              color: AppColors.primaryLight,
-              borderRadius: BorderRadius.circular(14.r),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(alternative!, style: AppTextStyles.body),
-                if (item!.alternativeTranslation?.isNotEmpty ?? false) ...[
-                  SizedBox(height: 4.h),
-                  Text(item!.alternativeTranslation!,
-                      style: AppTextStyles.bodyGrey
-                          .copyWith(fontStyle: FontStyle.italic)),
-                ],
-              ],
-            ),
-          ),
-          if (item!.alternativeExplanation?.isNotEmpty ?? false) ...[
-            SizedBox(height: 10.h),
-            Text(item!.alternativeExplanation!,
-                style: AppTextStyles.bodyGrey),
-          ],
-        ],
+        // "Take it further" (alternative phrasing) section — hidden for now.
+        // if (alternative?.isNotEmpty ?? false) ...[
+        //   Padding(
+        //     padding: EdgeInsets.symmetric(vertical: 14.h),
+        //     child: const Divider(
+        //         color: AppColors.divider, thickness: 1, height: 1),
+        //   ),
+        //   Row(
+        //     children: [
+        //       Icon(Icons.lightbulb_rounded,
+        //           color: AppColors.streakOrange, size: 22.r),
+        //       SizedBox(width: 8.w),
+        //       Text(l10n.sayItBetter, style: AppTextStyles.itemTitle),
+        //     ],
+        //   ),
+        //   SizedBox(height: 10.h),
+        //   Container(
+        //     width: double.infinity,
+        //     padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
+        //     decoration: BoxDecoration(
+        //       color: AppColors.primaryLight,
+        //       borderRadius: BorderRadius.circular(14.r),
+        //     ),
+        //     child: Column(
+        //       crossAxisAlignment: CrossAxisAlignment.start,
+        //       children: [
+        //         Text(alternative!, style: AppTextStyles.body),
+        //         if (item!.alternativeTranslation?.isNotEmpty ?? false) ...[
+        //           SizedBox(height: 4.h),
+        //           Text(item!.alternativeTranslation!,
+        //               style: AppTextStyles.bodyGrey
+        //                   .copyWith(fontStyle: FontStyle.italic)),
+        //         ],
+        //       ],
+        //     ),
+        //   ),
+        //   if (item!.alternativeExplanation?.isNotEmpty ?? false) ...[
+        //     SizedBox(height: 10.h),
+        //     Text(item!.alternativeExplanation!,
+        //         style: AppTextStyles.bodyGrey),
+        //   ],
+        // ],
       ],
     );
   }

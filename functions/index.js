@@ -1,7 +1,10 @@
-const { onCall, HttpsError } = require("firebase-functions/v2/https");
+const { onCall, onRequest, HttpsError } = require("firebase-functions/v2/https");
 const { defineSecret } = require("firebase-functions/params");
 const { initializeApp } = require("firebase-admin/app");
+const { getAuth } = require("firebase-admin/auth");
 const { getFirestore, FieldValue } = require("firebase-admin/firestore");
+const { Readable } = require("stream");
+const { pipeline } = require("stream/promises");
 const crypto = require("crypto");
 
 initializeApp();
@@ -9,7 +12,7 @@ const db = getFirestore();
 
 // External AI provider credentials. Stored in Cloud Secret Manager and only
 // ever read inside these functions — never shipped in the app binary.
-const elevenLabsKey = defineSecret("ELEVENLABS_API_KEY");
+const azureSpeechKey = defineSecret("AZURE_SPEECH_KEY");
 const speechSuperAppKey = defineSecret("SPEECHSUPER_APP_KEY");
 const speechSuperSecretKey = defineSecret("SPEECHSUPER_SECRET_KEY");
 
@@ -23,48 +26,140 @@ function requireAuth(request) {
   return request.auth.uid;
 }
 
-// ---------------------------------------------------------------- ElevenLabs
+// --------------------------------------------------------- Azure AI Speech
 
-const VOICE_ID = "ihKwLOjVUMG4lgUI6meZ";
-const MODEL_ID = "eleven_flash_v2_5";
+// Dragon HD Omni preview voice. The region is part of the endpoint host and
+// must be one where Omni is available (eastus/westeurope/swedencentral/
+// southeastasia).
+const AZURE_REGION = "eastus";
+const AZURE_VOICE = "en-us-jelly:DragonHDOmniLatestNeural";
+const AZURE_OUTPUT_FORMAT = "audio-24khz-96kbitrate-mono-mp3";
 
-// Proxies ElevenLabs TTS so the API key stays server-side.
+// App language code → BCP-47 tag for the SSML <lang> element. Omni does
+// auto-detect the language, but it guesses English for short Spanish inputs
+// ("murciélago" comes out as "Mercia Lago"), so the language is always stated
+// explicitly. Mapped here rather than taken from the client so nothing
+// caller-controlled reaches the SSML. Adding a language is one row.
+const SPEECH_LOCALES = {
+  es: "es-ES",
+  fr: "fr-FR",
+  zh: "zh-CN",
+  en: "en-US",
+};
+
+// The text comes from Gemini and goes inside an SSML document, so any XML
+// metacharacter would break the request.
+function escapeXml(text) {
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&apos;");
+}
+
+const MAX_TTS_CHARS = 2000;
+
+// Asks Azure to synthesize [text] and returns the raw fetch Response, whose
+// body streams the MP3 as it is generated. Callers either buffer it or pipe
+// it straight through.
+async function synthesize(text, languageCode) {
+  const locale = SPEECH_LOCALES[languageCode] || SPEECH_LOCALES.en;
+  const ssml =
+    '<speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" ' +
+    `xml:lang="${locale}"><voice name="${AZURE_VOICE}">` +
+    `<lang xml:lang="${locale}">${escapeXml(text)}</lang>` +
+    "</voice></speak>";
+
+  return fetch(
+    `https://${AZURE_REGION}.tts.speech.microsoft.com/cognitiveservices/v1`,
+    {
+      method: "POST",
+      headers: {
+        "Ocp-Apim-Subscription-Key": azureSpeechKey.value(),
+        "Content-Type": "application/ssml+xml",
+        "X-Microsoft-OutputFormat": AZURE_OUTPUT_FORMAT,
+        "User-Agent": "tuco",
+      },
+      body: ssml,
+    }
+  );
+}
+
+// True when [text] is a usable synthesis input.
+function isSpeakable(text) {
+  return typeof text === "string" && !!text.trim() && text.length <= MAX_TTS_CHARS;
+}
+
+// Proxies Azure AI Speech synthesis so the API key stays server-side.
 // Expects { text, languageCode } and returns { audio } (base64 MP3).
+//
+// Buffers the whole clip, so the caller waits for the full synthesis before
+// any sound. Used to pre-fetch upcoming bubbles while the current one plays,
+// where that wait is hidden; `ttsStream` is the low-latency path.
 exports.tts = onCall(
-  { secrets: [elevenLabsKey], region: REGION },
+  { secrets: [azureSpeechKey], region: REGION, timeoutSeconds: 30 },
   async (request) => {
     requireAuth(request);
     const text = request.data?.text;
-    if (typeof text !== "string" || !text.trim() || text.length > 2000) {
+    if (!isSpeakable(text)) {
       throw new HttpsError("invalid-argument", "text is required (max 2000 chars).");
     }
-    // Always enforce a language so short inputs (single words) aren't left to
-    // the model's auto-detection, which mispronounces them with the voice's
-    // native accent. Falls back to English when the client omits it.
-    const languageCode = request.data?.languageCode || "en";
 
-    const response = await fetch(
-      `https://api.elevenlabs.io/v1/text-to-speech/${VOICE_ID}?output_format=mp3_44100_128`,
-      {
-        method: "POST",
-        headers: {
-          "xi-api-key": elevenLabsKey.value(),
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          text,
-          model_id: MODEL_ID,
-          language_code: languageCode,
-        }),
-      }
-    );
+    const response = await synthesize(text, request.data?.languageCode);
     if (!response.ok) {
       const body = await response.text();
-      console.error(`[tts] ElevenLabs error ${response.status}: ${body}`);
+      console.error(`[tts] Azure Speech error ${response.status}: ${body}`);
       throw new HttpsError("internal", "TTS synthesis failed.");
     }
     const audio = Buffer.from(await response.arrayBuffer()).toString("base64");
     return { audio };
+  }
+);
+
+// Streams the MP3 through as Azure produces it, so playback can start at the
+// first byte (~0.6s) instead of after the whole clip (~1.4s).
+//
+// GET with query parameters rather than a callable: media players fetch a URL
+// and cannot set request headers, which is also why the Firebase ID token
+// travels as `token` instead of an Authorization header. The token is
+// verified here, so an unauthenticated caller gets nothing.
+exports.ttsStream = onRequest(
+  { secrets: [azureSpeechKey], region: REGION, timeoutSeconds: 30 },
+  async (req, res) => {
+    try {
+      await getAuth().verifyIdToken(String(req.query.token || ""));
+    } catch (e) {
+      console.warn(`[ttsStream] Rejected unauthenticated request: ${e.code}`);
+      res.status(401).send("Sign-in required.");
+      return;
+    }
+
+    const text = req.query.text;
+    if (!isSpeakable(text)) {
+      res.status(400).send("text is required (max 2000 chars).");
+      return;
+    }
+
+    const response = await synthesize(text, req.query.lang);
+    if (!response.ok) {
+      const body = await response.text();
+      console.error(`[ttsStream] Azure Speech error ${response.status}: ${body}`);
+      res.status(500).send("TTS synthesis failed.");
+      return;
+    }
+
+    // Chunked audio/mpeg: no Content-Length, and no compression — a gzipped
+    // body would stop the player from decoding it progressively.
+    res.set("Content-Type", "audio/mpeg");
+    res.set("Content-Encoding", "identity");
+    res.set("Cache-Control", "no-store");
+    try {
+      await pipeline(Readable.fromWeb(response.body), res);
+    } catch (e) {
+      // Normal when the app stops playback mid-clip and drops the connection.
+      console.warn(`[ttsStream] Stream ended early: ${e.message}`);
+    }
   }
 );
 

@@ -258,10 +258,13 @@ class CallCubit extends Cubit<CallState> {
       // input blocked until the whole reply is revealed.
       emit(state.copyWith(aiThinking: false, aiSpeaking: true));
       final token = ++_speechToken;
-      for (final part in parts) {
+      for (var i = 0; i < parts.length; i++) {
         if (isClosed || token != _speechToken) return; // interrupted
-        _append(ChatMessage(role: MessageRole.ai, text: part));
-        await _tts.speakAndWait(part);
+        _append(ChatMessage(role: MessageRole.ai, text: parts[i]));
+        // Fetch the following bubble while this one plays, so only the first
+        // one ever waits on synthesis.
+        await _tts.speakAndWait(parts[i],
+            prefetchNext: i + 1 < parts.length ? parts[i + 1] : null);
       }
       if (isClosed || token != _speechToken) return;
       emit(state.copyWith(aiSpeaking: false));
