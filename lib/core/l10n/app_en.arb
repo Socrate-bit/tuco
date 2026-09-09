@@ -418,5 +418,6 @@
   "settingsPrivacy": "PRIVACY",
   "settingsAiConsent": "AI data processing",
   "settingsAiConsentGranted": "Allowed",
-  "settingsAiConsentDenied": "Not allowed"
+  "settingsAiConsentDenied": "Not allowed",
+  "legalLinkError": "Could not open the page. Check your connection and try again."
 }

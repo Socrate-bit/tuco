@@ -1088,4 +1088,8 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsAiConsentDenied => 'Not allowed';
+
+  @override
+  String get legalLinkError =>
+      'Could not open the page. Check your connection and try again.';
 }
