@@ -448,5 +448,6 @@
   "settingsPrivacy": "CONFIDENTIALITÉ",
   "settingsAiConsent": "Traitement par IA",
   "settingsAiConsentGranted": "Autorisé",
-  "settingsAiConsentDenied": "Non autorisé"
+  "settingsAiConsentDenied": "Non autorisé",
+  "legalLinkError": "Impossible d'ouvrir la page. Vérifie ta connexion et réessaie."
 }

@@ -7,6 +7,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../core/l10n/app_localizations.dart';
 import '../../../core/service/data_repository.dart';
 import '../../../core/service/haptics.dart';
+import '../../../core/service/legal_links.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widget/common_widgets.dart';
 import '../../consent/cubit/ai_consent_cubit.dart';
@@ -16,8 +17,6 @@ import '../../onboarding/cubit/onboarding_cubit.dart';
 import '../../subscription/cubit/subscription_cubit.dart';
 import '../../subscription/cubit/subscription_state.dart';
 import '../widget/promo_code_dialog.dart';
-import 'privacy_policy_screen.dart';
-import 'terms_conditions_screen.dart';
 
 /// Settings page: account info (user type, user id) and legal pages.
 class SettingsScreen extends StatelessWidget {
@@ -189,16 +188,19 @@ class SettingsScreen extends StatelessWidget {
               SizedBox(height: 24.h),
               _SectionTitle(title: l10n.settingsAbout),
               _SettingsCard(children: [
+                // Both documents are hosted online so they can be updated
+                // without an app release; they open in the browser.
                 _LinkRow(
                   icon: Icons.privacy_tip_outlined,
                   label: l10n.settingsPrivacyPolicy,
-                  onTap: () => _push(context, const PrivacyPolicyScreen()),
+                  onTap: () =>
+                      openLegalLink(context, LegalLinks.privacyPolicy),
                 ),
                 const _RowDivider(),
                 _LinkRow(
                   icon: Icons.description_outlined,
                   label: l10n.settingsTermsOfService,
-                  onTap: () => _push(context, const TermsConditionsScreen()),
+                  onTap: () => openLegalLink(context, LegalLinks.terms),
                 ),
               ]),
               SizedBox(height: 24.h),
