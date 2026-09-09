@@ -94,25 +94,35 @@ class GeminiService {
     if (lesson == null) return _freeConversationPrompt(explainLang);
 
     final l = lesson!;
-    final vocabList =
+    final items =
         l.vocab.map((w) => '"${w.word}" = "${w.translation}"').join('; ');
-    final grammar = l.grammarPoints.map((g) => '"$g"').join(', ');
     final review = _reviewVocab;
     final known = review.isEmpty
         ? 'Previously learned vocabulary: none yet (this is the first lesson).'
         : 'Previously learned vocabulary (reuse it in exercises and in the role-play): $review';
+    // A lesson teaches either a small family of words or one grammar rule,
+    // never both: this block tells the tutor which of the two it is.
+    final material = l.type == LessonType.grammar
+        ? '''
+# TODAY'S MATERIAL: A GRAMMAR LESSON
+Lesson: "${l.title}" — ${l.description}
+Rule to teach: ${l.grammarPoints.map((g) => '"$g"').join(', ')}
+Forms to drill (${l.vocab.length} items): $items
+Teach the rule itself, not new vocabulary: state it plainly in $explainLang, go through the forms as one set so the learner sees the pattern, then drill them before building sentences. Use no words beyond these forms and the previously learned vocabulary.
+$known'''
+        : '''
+# TODAY'S MATERIAL: A VOCABULARY LESSON
+Lesson: "${l.title}" — ${l.description}
+Words to teach (${l.vocab.length} items): $items
+Teach these words only, no new grammar: present them one by one, then put them into sentences with the grammar the learner already knows.
+$known''';
 
     final sections = <String>[
       _roleSection,
       _speakingSection(explainLang),
       _readingSection,
       _markersSection(explainLang),
-      '''
-# TODAY'S MATERIAL
-Lesson: "${l.title}" — ${l.description}
-Vocabulary (${l.vocab.length} items): $vocabList
-Grammar focus: $grammar
-$known''',
+      material,
       if (!startAtPractice) _lessonPhaseSection(explainLang),
       _practicePhaseSection(explainLang),
       _correctionSection,
@@ -186,28 +196,40 @@ Markers are read by the app, never by the learner: never mention, explain or rea
 - $kLessonDoneMarker: at the very end of the reply that closes Step 3. $kPracticeDoneMarker: at the very end of the reply that closes Step 5. Each exactly once, only after a correct or accepted answer, never in a reply that corrects a mistake.''';
 
   /// Steps 1-3: introduction, presentation of the material, anchoring drills.
-  String _lessonPhaseSection(String explainLang) => '''
+  /// A lesson is either vocabulary or grammar, so Steps 1 and 2 change shape.
+  String _lessonPhaseSection(String explainLang) {
+    final isGrammar = lesson?.type == LessonType.grammar;
+    final intro = isGrammar
+        ? 'announce the rule you are going to teach, in $explainLang, and preview two of its forms (in quotes)'
+        : 'announce today\'s topic and preview two or three of the words they will learn (in quotes)';
+    final presentation = isGrammar
+        ? '''Goal: the learner understands the rule and produces every one of its forms once. Order: the rule first, then its forms one by one, with sentences along the way.
+- The rule: state it plainly in $explainLang and say when it is used (To say who you are or where you're from, use "ser"). Give the forms as one set so the pattern is visible, then take them one at a time.
+- Each form: one per reply, in quotes with its meaning. "yo soy" = "I am". Say "yo soy" out loud. Praise briefly, next form.
+- Sentences: as soon as a form combines with vocabulary the learner already knows, build a real sentence and have them say it: Now let's put it together. Say "Soy de España" out loud. Do this several times during the presentation, not only at the end.'''
+        : '''Goal: the learner hears and produces every word of the material once. No new grammar: reuse what they already know to frame the words.
+- Each word: one per reply, in quotes with its meaning. "la cuenta" = "the bill". Say "la cuenta" out loud. Praise briefly, next word. If a phrase contains words not learned yet, break it down: "de" = "from" / "dónde" = "where".
+- Sentences: as soon as two or three words fit into grammar the learner already knows, build a real sentence and have them say it: Now let's put it together. Say "Soy de España" out loud. Do this several times during the presentation, not only at the end.''';
+    return '''
 # THE CALL, PHASE 1: LESSON (Steps 1-3)
 
 ## Step 1 — Introduction (your first message)
-Greet ${profile.name} by name, say you are Tuco, and announce today's topic. Preview two or three of the phrases they will learn (in quotes) and the grammar focus. End with: Are you ready?
+Greet ${profile.name} by name, say you are Tuco, and $intro. End with: Are you ready?
 
 ## Step 2 — Presentation (one item at a time)
-Goal: the learner hears and produces every item of the material once. Order: grammar structures first, then vocabulary words, with combinations along the way.
-- Grammar: give each structure in quotes with its meaning and when it is used (To ask what someone wants, use "¿Qué quieres?" = "What do you want?"). If it contains words not learned yet, break it down: "de" = "from" / "dónde" = "where" / "eres" = "are you". Then: Say "¿De dónde eres?" out loud.
-- Vocabulary: one word per reply. "la cuenta" = "the bill". Say "la cuenta" out loud. Praise briefly, next word.
-- Combinations: as soon as two or three items form a real sentence, build it and have the learner say it: Now let's put it all together. Say "Soy de España" out loud. Do this several times during the presentation, not only at the end.
+$presentation
 - No exercises in this step. A wrong repetition is handled with the CORRECTION RULES (coach, ask again).
 
 ## Step 3 — Anchoring (exercises)
 When every item has been presented, announce: Now let's anchor everything with some exercises. Then give ONE exercise per reply.
-- Coverage: every vocabulary item and every grammar point appears in at least 2 exercises, spread out — bring earlier items back later rather than drilling one item twice in a row. Combine two or more items in one exercise whenever possible. Plan 5 to 10 exercises depending on how much you can combine. Also reuse previously learned vocabulary.
+- Coverage: every item of today's material appears in at least 2 exercises, spread out — bring earlier items back later rather than drilling one item twice in a row. Combine two or more items in one exercise whenever possible. Plan 5 to 10 exercises depending on how much you can combine. Also reuse previously learned vocabulary.
 - Difficulty goes up one notch at a time, never starting hard:
   1. Recognition: true or false ("¿Quieres café?" means "Do you want coffee?" True or false?), or choose the option (a) "…" b) "…" — say the correct one out loud).
   2. Recall: complete the sentence (Complete this: "Soy de ____". Say your answer out loud.), then translate a sentence from $explainLang to $_targetName.
   3. Production: answer a question in $_targetName, or build a sentence combining at least two items ("¿Qué quieres?" — imagine you want a tea).
 - Give extra exercises on the items the learner got wrong earlier.
 - When everything is anchored: congratulate them, then: Let's move on to the speaking practice. Are you ready? $kLessonDoneMarker''';
+  }
 
   /// Steps 4-5: role-play conversation and the closing wrap-up.
   String _practicePhaseSection(String explainLang) => '''
@@ -223,8 +245,7 @@ When every item has been presented, announce: Now let's anchor everything with s
 
 ## Step 5 — Wrap-up (right after the goodbye)
 A short bullet list:
-• the new words learned (in quotes)
-• the grammar covered
+• what was learned today: the new words in quotes, or the rule and its forms
 • one improvement tip based on a mistake they actually made, with an example (Next time, try the full phrase "No, soy de Lille")
 • a word of encouragement
 Then: Are you ready to continue? $kPracticeDoneMarker''';
@@ -247,7 +268,7 @@ You only help with language learning. If the learner brings up anything sexual, 
   /// sessions. The languages are Spanish / English; the model adapts them.
   String get _workedExample => '''
 # WORKED EXAMPLE
-Spanish for an English speaker; adapt the languages, keep the pattern (bubble rhythm, quotes, short praise, marker placement).
+Spanish for an English speaker; adapt the languages, keep the pattern (bubble rhythm, quotes, short praise, marker placement). This example presents structures and words together for brevity — your lesson covers only one of the two, as TODAY'S MATERIAL says.
 
 Tutor: Hi Lucas! I'm Tuco. Today we're going to learn simple introductions: how to say your name and where you're from. $kSplitMarker Our grammar focus is "Me llamo…", "Soy de…" and "¿De dónde eres?". $kSplitMarker Are you ready?
 Learner: yes
@@ -410,10 +431,13 @@ Tutor: $kWinMarker "Adiós, Lucas." $kSplitMarker • New words: "Soy de", "Me l
       final knownVocab = review.isNotEmpty
           ? 'Vocabulary the learner already knows from past lessons: $review. '
           : '';
+      final grammar = lesson == null || lesson!.grammarPoints.isEmpty
+          ? ''
+          : 'Grammar: ${lesson!.grammarPoints.join('; ')}. ';
       final vocabConstraint = lesson != null
-          ? 'Use ONLY this lesson vocabulary and grammar (plus basic words the learner already knows): '
+          ? 'Use ONLY this lesson material (plus basic words the learner already knows): '
               '${lesson!.vocab.map((w) => w.word).join(', ')}. '
-              'Grammar: ${lesson!.grammarPoints.join('; ')}. '
+              '$grammar'
               '$knownVocab'
           : knownVocab;
       final resp = await _model(json: true).generateContent([
@@ -562,7 +586,10 @@ Tutor: $kWinMarker "Adiós, Lucas." $kSplitMarker • New words: "Soy de", "Me l
       return '$kWinMarker Almost there! Challenge 3: make your own full sentence in $_targetName using "${w1.word}" and "${w2.word}".';
     }
     if (challengeStep == 3) {
-      return '$kWinMarker Excellent work! Our grammar focus is: ${l.grammarPoints.join(', ')}. '
+      final grammar = l.grammarPoints.isEmpty
+          ? ''
+          : 'Our grammar focus is: ${l.grammarPoints.join(', ')}. ';
+      return '$kWinMarker Excellent work! $grammar'
           'You now know all the material of this lesson! $kLessonDoneMarker';
     }
     if (challengeStep == 4) {
