@@ -54,10 +54,9 @@ class TranscriptScreen extends StatelessWidget {
                         MessageRole.user => UserBubble(
                             message: msg,
                             hasFeedback: context
-                                    .watch<FeedbackCubit>()
-                                    .state
-                                    .needsReview(msg.text) ||
-                                (msg.pronunciation?.pronScore ?? 100) < 90,
+                                .watch<FeedbackCubit>()
+                                .state
+                                .needsReview(msg),
                             // Read-only in history: no pronunciation writeback.
                             onTap: () => showMessageFeedbackSheet(
                               context,
