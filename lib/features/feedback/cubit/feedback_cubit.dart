@@ -28,11 +28,23 @@ class FeedbackState extends Equatable {
     return matches.isEmpty ? null : matches.first;
   }
 
-  /// Whether this message deserves the correction badge: a grammar
-  /// correction or an improvement suggestion exists.
-  bool needsReview(String text) => items.any((i) =>
-      i.originalText == text &&
-      (i.corrections.isNotEmpty || (i.alternative?.isNotEmpty ?? false)));
+  /// Whether this message deserves the correction badge: a real grammar
+  /// correction, or a pronunciation the learner should look at.
+  ///
+  /// Only grammar items count. An improvement suggestion is not a mistake, and
+  /// its 'alternative' item is stored with a synthetic correction (the original
+  /// vs. the better phrasing), so matching every type would badge a sentence
+  /// the model found nothing wrong with.
+  bool needsReview(ChatMessage message) =>
+      items.any((i) =>
+          i.type == 'grammar' &&
+          i.originalText == message.text &&
+          i.corrections.isNotEmpty) ||
+      (message.pronunciation?.pronScore ?? 100) < _pronBadgeThreshold;
+
+  /// Below this pronunciation score the badge appears even with perfect
+  /// grammar; at or above it, a clean sentence stays unmarked.
+  static const _pronBadgeThreshold = 80;
 
   @override
   List<Object?> get props => [items];

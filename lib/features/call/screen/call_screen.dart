@@ -178,10 +178,9 @@ class _CallViewState extends State<_CallView> {
                           MessageRole.user => UserBubble(
                               message: msg,
                               hasFeedback: context
-                                      .watch<FeedbackCubit>()
-                                      .state
-                                      .needsReview(msg.text) ||
-                                  (msg.pronunciation?.pronScore ?? 100) < 90,
+                                  .watch<FeedbackCubit>()
+                                  .state
+                                  .needsReview(msg),
                               onTap: () => showMessageFeedbackSheet(
                                 context,
                                 message: msg,
