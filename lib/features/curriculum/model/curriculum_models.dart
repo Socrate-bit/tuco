@@ -11,22 +11,17 @@ class VocabWord extends Equatable {
   List<Object?> get props => [word, translation];
 }
 
-/// What a lesson teaches: a small set of closely related words, or one grammar
-/// rule (a conjugation, an agreement…). Never both, to keep the mental load low.
-enum LessonType { vocabulary, grammar }
-
-/// A single lesson on the path.
+/// A single lesson on the path: one everyday situation the learner walks out
+/// able to handle (greeting someone, ordering a drink…).
 class Lesson extends Equatable {
   final String id;
   final String title; // target-language title, e.g. "¡Hola Y Adiós!"
-  final String description; // short native-language description
+  final String description; // the situation, in the native language
   final String icon; // material icon key (see LessonIcons)
   final int color; // ARGB hex for the node/sheet color
-  final LessonType type;
-  // Vocabulary lesson: the 4-6 words taught. Grammar lesson: the forms of the
-  // rule to drill (e.g. "yo soy", "tú eres", …).
+  // The 4-6 words and phrases the situation needs, nothing else.
   final List<VocabWord> vocab;
-  // Grammar lesson: the rule, spelled out. Empty on a vocabulary lesson.
+  // How to use them in that situation, e.g. 'Order with "quiero" + the drink'.
   final List<String> grammarPoints;
 
   const Lesson({
@@ -37,7 +32,6 @@ class Lesson extends Equatable {
     required this.color,
     required this.vocab,
     required this.grammarPoints,
-    this.type = LessonType.vocabulary,
   });
 
   @override
