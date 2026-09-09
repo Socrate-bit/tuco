@@ -52,7 +52,7 @@ class Level extends Equatable {
 /// A full course for one target language: the lesson path plus the extra
 /// vocabulary bank feeding the "upcoming words" queue.
 class Curriculum extends Equatable {
-  final String language; // target language code: 'es', 'fr', 'zh', 'en'
+  final String language; // target language code: 'es', 'fr', 'pt', 'zh', 'en'
   final List<Level> levels;
   final List<VocabWord> extraVocabulary;
 

@@ -120,6 +120,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   id: 'fr',
                   label: l10n.onboardingLanguageFr,
                   icon: Text('🇫🇷', style: TextStyle(fontSize: 24.sp))),
+              SurveyOption(
+                  id: 'pt',
+                  label: l10n.onboardingLanguagePt,
+                  icon: Text('🇧🇷', style: TextStyle(fontSize: 24.sp))),
             ],
             selected: {state.targetLanguage},
             onTap: cubit.setTargetLanguage,

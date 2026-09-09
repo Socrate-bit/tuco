@@ -251,6 +251,7 @@
   "onboardingLanguageEs": "Spanish",
   "onboardingLanguageEn": "English",
   "onboardingLanguageFr": "French",
+  "onboardingLanguagePt": "Portuguese",
   "onboardingLevelTitle": "What is your {language} level?",
   "onboardingLevelSubtitle": "We'll use this to tailor the experience to you.",
   "onboardingLevelNew": "I'm new to {language}",

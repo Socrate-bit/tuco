@@ -2,6 +2,7 @@ import '../model/curriculum_models.dart';
 import 'curriculum_en.dart';
 import 'curriculum_es.dart';
 import 'curriculum_fr.dart';
+import 'curriculum_pt.dart';
 import 'curriculum_zh.dart';
 
 /// Registry of the bundled curricula — one per learnable target language.
@@ -11,6 +12,7 @@ abstract class CurriculumData {
   static const Map<String, Curriculum> byLanguage = {
     'es': spanishCurriculum,
     'fr': frenchCurriculum,
+    'pt': portugueseCurriculum,
     'zh': mandarinCurriculum,
     'en': englishCurriculum,
   };

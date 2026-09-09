@@ -251,6 +251,7 @@
   "onboardingLanguageEs": "Espagnol",
   "onboardingLanguageEn": "Anglais",
   "onboardingLanguageFr": "Français",
+  "onboardingLanguagePt": "Portugais",
   "onboardingLevelTitle": "Quel est ton niveau en {language} ?",
   "@onboardingLevelTitle": {
     "placeholders": {

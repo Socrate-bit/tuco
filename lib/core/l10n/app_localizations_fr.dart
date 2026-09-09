@@ -567,6 +567,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get onboardingLanguageFr => 'Français';
 
   @override
+  String get onboardingLanguagePt => 'Portugais';
+
+  @override
   String onboardingLevelTitle(String language) {
     return 'Quel est ton niveau en $language ?';
   }
