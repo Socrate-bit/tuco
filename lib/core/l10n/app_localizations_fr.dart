@@ -528,7 +528,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get onboardingContinue => 'Continuer';
 
   @override
-  String get onboardingWelcomeTitle => 'Apprends l\'espagnol en parlant';
+  String get onboardingWelcomeTitle => 'Apprendre les langues en parlant';
 
   @override
   String get onboardingWelcomeSubtitle =>

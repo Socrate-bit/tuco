@@ -524,7 +524,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get onboardingContinue => 'Continue';
 
   @override
-  String get onboardingWelcomeTitle => 'Learn Spanish by talking';
+  String get onboardingWelcomeTitle => 'Learning Languages by talking';
 
   @override
   String get onboardingWelcomeSubtitle =>

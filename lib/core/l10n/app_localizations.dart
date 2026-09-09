@@ -1061,7 +1061,7 @@ abstract class AppLocalizations {
   /// No description provided for @onboardingWelcomeTitle.
   ///
   /// In fr, this message translates to:
-  /// **'Apprends l\'espagnol en parlant'**
+  /// **'Apprendre les langues en parlant'**
   String get onboardingWelcomeTitle;
 
   /// No description provided for @onboardingWelcomeSubtitle.
