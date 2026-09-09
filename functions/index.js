@@ -43,6 +43,7 @@ const AZURE_OUTPUT_FORMAT = "audio-24khz-96kbitrate-mono-mp3";
 const SPEECH_LOCALES = {
   es: "es-ES",
   fr: "fr-FR",
+  pt: "pt-BR",
   zh: "zh-CN",
   en: "en-US",
 };
@@ -173,6 +174,10 @@ const SPEECHSUPER_HOST = "https://api.speechsuper.com";
 const CORE_TYPES = {
   es: ["word.eval.sp", "sent.eval.sp"],
   fr: ["word.eval.fr", "sent.eval.fr"],
+  // Portuguese follows SpeechSuper's naming pattern but is UNVERIFIED against
+  // the account: confirm the coreType before relying on pt pronunciation
+  // scores, or the assessment silently falls back to English.
+  pt: ["word.eval.pt", "sent.eval.pt"],
   zh: ["word.eval.cn", "sent.eval.cn"],
   en: ["word.eval.promax", "sent.eval.promax"],
 };

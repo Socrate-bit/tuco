@@ -56,6 +56,16 @@ abstract class AppLanguages {
       ttsLocale: 'en-US',
       sttLocale: 'en_US',
     ),
+    // Brazilian Portuguese: the curriculum, the voice and the speech locales
+    // all follow pt-BR rather than European Portuguese.
+    'pt': AppLanguage(
+      code: 'pt',
+      label: 'Português',
+      flag: '🇧🇷',
+      englishName: 'Brazilian Portuguese',
+      ttsLocale: 'pt-BR',
+      sttLocale: 'pt_BR',
+    ),
     'ar': AppLanguage(
       code: 'ar',
       label: 'العربية',
@@ -75,7 +85,7 @@ abstract class AppLanguages {
   };
 
   /// Languages the learner can study — one bundled curriculum each.
-  static const learnable = ['es', 'fr', 'zh', 'en'];
+  static const learnable = ['es', 'fr', 'pt', 'zh', 'en'];
 
   /// Languages selectable as the learner's native language.
   static const native = ['fr', 'en', 'es', 'zh', 'ar', 'tr'];

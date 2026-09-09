@@ -30,7 +30,7 @@ class SpeechSuperService {
   /// Assess the pronunciation of the WAV [audio] against [referenceText].
   ///
   /// [coreType] picks word- vs sentence-level scoring; [languageCode] is the
-  /// app language ('es', 'fr', 'zh', 'en'). Returns null on any failure.
+  /// app language ('es', 'fr', 'pt', 'zh', 'en'). Returns null on any failure.
   Future<PronunciationResult?> assess({
     required File audio,
     required String referenceText,

@@ -17,7 +17,7 @@ class AppleSpeechService {
   static const _channel = MethodChannel('app/apple_speech');
 
   /// Transcribe the audio file at [path] in the target [languageCode]
-  /// ('es', 'fr', 'zh', 'en'). Returns the recognized text, or null when
+  /// ('es', 'fr', 'pt', 'zh', 'en'). Returns the recognized text, or null when
   /// nothing was recognized / recognition failed.
   Future<String?> transcribeFile(String path, String languageCode) async {
     // Recognition runs on-device whenever the locale supports it, but iOS falls

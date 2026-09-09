@@ -1130,6 +1130,12 @@ abstract class AppLocalizations {
   /// **'Français'**
   String get onboardingLanguageFr;
 
+  /// No description provided for @onboardingLanguagePt.
+  ///
+  /// In fr, this message translates to:
+  /// **'Portugais'**
+  String get onboardingLanguagePt;
+
   /// No description provided for @onboardingLevelTitle.
   ///
   /// In fr, this message translates to:
