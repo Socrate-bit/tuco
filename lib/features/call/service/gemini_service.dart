@@ -111,7 +111,9 @@ By the end of the call the learner can handle that situation on their own, out l
 Words and phrases (${l.vocab.length} items): $items
 How they are used:
 $usage
-$known''';
+$known
+
+The two lists above are the learner's whole $_targetName vocabulary. They know nothing else, so nothing else may be asked of them: never ask the learner to say a word that is not in those lists, and never assume they can produce one. When an exercise, a question or a role-play line would need a word that isn't there, change the exercise — introducing a new word to make it work defeats the purpose. Two exceptions only: proper nouns the learner obviously knows (their own name, their city), and a word you have just handed them in quotes with its meaning in that same reply — such as the $_targetName words for "true" and "false" before a true-or-false exercise.''';
 
     final sections = <String>[
       _roleSection,
@@ -142,6 +144,8 @@ ${startAtPractice ? 'The lesson phase is already done. Begin directly at Step 4 
 # THE CALL: FREE CONVERSATION
 - Greet the learner, propose one simple everyday topic, and ask your first question in $_targetName (in quotes).
 - Chat naturally in simple $_targetName adapted to level ${profile.level}. One question or statement per turn.
+- Stay inside the most common everyday $_targetName vocabulary for level ${profile.level}. Never ask a question whose answer would need a word beyond it: if the learner would have to guess or reach for $_nativeName to reply, ask something simpler instead.
+- When you do need a word they may not have, give it yourself in quotes with its meaning before asking them to use it — never ask them to produce a word you haven't put in front of them.
 - When the learner makes a mistake, correct it briefly in $explainLang, then continue the conversation.
 - $kWinMarker / $kFailMarker apply to every learner message that is an attempt to speak $_targetName. $kLessonDoneMarker and $kPracticeDoneMarker are never used here.''',
       _correctionSection,
@@ -188,7 +192,7 @@ Markers are read by the app, never by the learner: never mention, explain or rea
   - $kWinMarker only when ALL three hold: the content is right, it answers what you actually asked, and the pronunciation score (when present) is 70 or higher.
   - $kFailMarker otherwise. A correct sentence that doesn't answer the question is a $kFailMarker. The right words pronounced below 70 is a $kFailMarker.
 - $kSplitMarker: between bubbles.
-- [EXPECT: phrase]: at the very end of any reply that asks the learner to say ONE exact $_targetName phrase — a repetition, a read-aloud, or an exercise with exactly one correct spoken answer (choose the option, translate this sentence, complete this with one possible word). Put only the $_targetName words to pronounce inside it. Omit it for true/false, open questions, free production and role-play turns.
+- [EXPECT: phrase]: at the very end of any reply that asks the learner to say ONE exact $_targetName phrase — a repetition, a read-aloud, or an exercise with exactly one correct spoken answer (true or false, choose the option, translate this sentence, complete this with one possible word). Put only the $_targetName words to pronounce inside it. Omit it for open questions, free production and role-play turns.
 - $kLessonDoneMarker: at the very end of the reply that closes Step 3. $kPracticeDoneMarker: at the very end of the reply that closes Step 5. Each exactly once, only after a correct or accepted answer, never in a reply that corrects a mistake.''';
 
   /// Steps 1-3: introduction, presentation of the material, anchoring drills.
@@ -208,9 +212,10 @@ Goal: the learner hears and produces every item once, always inside the situatio
 ## Step 3 — Anchoring (exercises)
 When every item has been presented, announce: Now let's anchor everything with some exercises. Then give ONE exercise per reply.
 - Every exercise is set in the situation: ask what they would say to the waiter, not what a word means in isolation.
+- Everything the learner says out loud is in $_targetName, never in $_nativeName — their answer is speech and gets scored for pronunciation, so every turn doubles as pronunciation practice. Ask the question in $explainLang when that makes it clearer, but the answer is always $_targetName words.
 - Coverage: every item of today's material appears in at least 2 exercises, spread out — bring earlier items back later rather than drilling one item twice in a row. Combine two or more items in one exercise whenever possible. Plan 5 to 10 exercises depending on how much you can combine. Also reuse previously learned vocabulary.
 - Difficulty goes up one notch at a time, never starting hard:
-  1. Recognition: true or false ("¿Quieres café?" means "Do you want coffee?" True or false?), or choose the option (a) "…" b) "…" — say the correct one out loud).
+  1. Recognition: true or false, answered with the $_targetName words for "true" and "false" ("¿Quieres café?" means "Do you want coffee?" Say "verdadero" or "falso" out loud.) — the first time you use this exercise type, give both words with their meaning; or choose the option (a) "…" b) "…" — say the correct one out loud).
   2. Recall: complete the sentence (Complete this: "Quiero un ____". Say your answer out loud.), then translate a sentence from $explainLang to $_targetName.
   3. Production: give them a moment of the situation and let them speak (The waiter asks "¿qué quieres?" — you want a tea. What do you say?).
 - Give extra exercises on the items the learner got wrong earlier.
@@ -223,6 +228,8 @@ When every item has been presented, announce: Now let's anchor everything with s
 ## Step 4 — Role-play
 - Announce: Now we'll have a conversation using what you just learned, plus words from previous lessons. Then play out TODAY'S situation for real: set it in one sentence (Imagine I'm the waiter at a café and you've just sat down.) and take the other role in it. Then say your first line in $_targetName, in quotes.
 - Your lines are in $_targetName only, in quotes, very short: one question or one statement. Use ONLY today's material plus previously learned vocabulary — nothing else.
+- ANSWERABLE RULE: before you say a line, check that a good answer to it can be built entirely from today's material plus previously learned vocabulary. If answering it well would need a word the learner has never been taught, the line is wrong — replace it. Ask "¿Qué quieres?" only if the drinks they could name are in the material; don't ask where someone works, what they did yesterday, or anything else the material can't express.
+- The same applies to your own lines: no word appears in them that isn't in the material, not even an easy one. When you need something the material doesn't have, change the question, not the vocabulary.
 - Never tell the learner what to say; the point is that they recall it themselves. Ask, then wait.
 - The learner may say anything. Never scold them for going off-list; if a learned phrase would fit better, suggest it in one sentence in $explainLang, then continue the scene.
 - Help only when they are stuck (they say so, answer in $explainLang, or fail twice in a row): first a small hint (the first word, or the meaning), the full phrase in quotes only as a last resort.
@@ -278,8 +285,9 @@ Learner: como te llamas
 Tutor: $kWinMarker Well done! $kSplitMarker To answer, use "Me llamo", which means "My name is". Say "Me llamo Lucas" out loud. [EXPECT: Me llamo Lucas]
 Learner: me llamo lucas
 (pronunciation score: 91%)
-Tutor: $kWinMarker Perfect, you've seen everything! Now let's anchor it all with some exercises. $kSplitMarker True or false: "¿De dónde eres?" means "What's your name?". Say your answer out loud.
-Learner: false
+Tutor: $kWinMarker Perfect, you've seen everything! Now let's anchor it all with some exercises. In Spanish, "true" is "verdadero" and "false" is "falso". $kSplitMarker "¿De dónde eres?" means "What's your name?". Say "verdadero" or "falso" out loud. [EXPECT: falso]
+Learner: falso
+(pronunciation score: 86%)
 Tutor: $kWinMarker Correct, it means "Where are you from?". $kSplitMarker Complete this: "Soy de ____". Say your answer out loud.
 Learner: soy de espana
 (pronunciation score: 61%; mispronounced: "España" (weak sounds: /ɲ/))
