@@ -1583,38 +1583,38 @@ abstract class AppLocalizations {
   /// No description provided for @onboardingSignInTitle.
   ///
   /// In fr, this message translates to:
-  /// **'Finalisons ta configuration'**
+  /// **'Connexion'**
   String get onboardingSignInTitle;
 
   /// No description provided for @onboardingSignInSubtitle.
   ///
   /// In fr, this message translates to:
-  /// **'Sauvegarde ta progression et synchronise ton plan.'**
+  /// **'Connecte-toi à ton compte.'**
   String get onboardingSignInSubtitle;
-
-  /// No description provided for @onboardingSignInApple.
-  ///
-  /// In fr, this message translates to:
-  /// **'Se connecter avec Apple'**
-  String get onboardingSignInApple;
-
-  /// No description provided for @onboardingSignInGoogle.
-  ///
-  /// In fr, this message translates to:
-  /// **'Continuer avec Google'**
-  String get onboardingSignInGoogle;
-
-  /// No description provided for @onboardingSignInSkip.
-  ///
-  /// In fr, this message translates to:
-  /// **'Passer pour l\'instant'**
-  String get onboardingSignInSkip;
 
   /// No description provided for @onboardingSignInFailed.
   ///
   /// In fr, this message translates to:
   /// **'Échec de la connexion. Réessaie.'**
   String get onboardingSignInFailed;
+
+  /// No description provided for @onboardingSignInEmail.
+  ///
+  /// In fr, this message translates to:
+  /// **'E-mail'**
+  String get onboardingSignInEmail;
+
+  /// No description provided for @onboardingSignInPassword.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mot de passe'**
+  String get onboardingSignInPassword;
+
+  /// No description provided for @onboardingSignInEmailCta.
+  ///
+  /// In fr, this message translates to:
+  /// **'Se connecter par e-mail'**
+  String get onboardingSignInEmailCta;
 
   /// No description provided for @pronunciationSheetTitle.
   ///

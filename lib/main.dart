@@ -48,9 +48,14 @@ Future<void> main() async {
           ? const AppleDebugProvider()
           : const AppleAppAttestProvider(),
     );
-    await FirebaseAuth.instance.signInAnonymously();
+    // Only when nobody is signed in: signing in anonymously would otherwise
+    // replace a real account (the review sign-in) on every relaunch.
+    if (FirebaseAuth.instance.currentUser == null) {
+      await FirebaseAuth.instance.signInAnonymously();
+    }
     firebaseReady = true;
-    debugPrint('[Main] Firebase initialized, App Check active, anonymous session ready');
+    debugPrint('[Main] Firebase initialized, App Check active, '
+        'session ready (${FirebaseAuth.instance.currentUser?.isAnonymous ?? false ? 'anonymous' : 'account'})');
   } catch (e) {
     debugPrint('[Main] Firebase unavailable, using in-memory store: $e');
   }

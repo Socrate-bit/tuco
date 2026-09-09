@@ -314,29 +314,21 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         _OnboardingStep(
           build: (context, state, cubit) => PlanReadyStep(state: state),
         ),
-        // 17: We want you to try for free → Superwall paywall
+        // 17: We want you to try for free → Superwall paywall, then done.
+        // The session stays anonymous — there is no sign-in step.
         _OnboardingStep(
           onContinue: (context) async {
-            await context
-                .read<SubscriptionCubit>()
-                .registerOnboardingPaywall();
+            final subscription = context.read<SubscriptionCubit>();
+            final onboarding = context.read<OnboardingCubit>();
+            await subscription.registerOnboardingPaywall();
+            await onboarding.completeOnboarding(subscription);
           },
           build: (context, state, cubit) => const FreeTrialStep(),
         ),
-        // 18: Let's finish your set-up
-        _OnboardingStep(
-          ownNavigation: true,
-          build: (context, state, cubit) => SignInStep(
-            onFinish: () async {
-              await cubit
-                  .completeOnboarding(context.read<SubscriptionCubit>());
-            },
-          ),
-        ),
       ];
 
-  /// Existing-user sign-in pushed from the start page: on success we mark
-  /// onboarding complete without overwriting the account's profile.
+  /// Sign-in pushed from the start page (App Store review account only): on
+  /// success we mark onboarding complete without writing a profile.
   void _pushDirectSignIn(OnboardingCubit cubit) {
     final navigator = Navigator.of(context);
     navigator.push(
@@ -353,7 +345,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 ),
                 Expanded(
                   child: SignInStep(
-                    showSkip: false,
                     onFinish: () async {
                       await cubit.markComplete();
                       // Reveal the gate (now showing the app) underneath.

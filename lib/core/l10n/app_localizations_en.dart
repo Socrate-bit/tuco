@@ -826,23 +826,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String get onboardingTrialPoint3 => 'Cancel anytime in two taps';
 
   @override
-  String get onboardingSignInTitle => 'Let\'s finish your set-up';
+  String get onboardingSignInTitle => 'Sign in';
 
   @override
-  String get onboardingSignInSubtitle =>
-      'Save your progress and sync your plan.';
-
-  @override
-  String get onboardingSignInApple => 'Sign in with Apple';
-
-  @override
-  String get onboardingSignInGoogle => 'Continue with Google';
-
-  @override
-  String get onboardingSignInSkip => 'Skip for now';
+  String get onboardingSignInSubtitle => 'Sign in to your account.';
 
   @override
   String get onboardingSignInFailed => 'Sign-in failed. Please try again.';
+
+  @override
+  String get onboardingSignInEmail => 'Email';
+
+  @override
+  String get onboardingSignInPassword => 'Password';
+
+  @override
+  String get onboardingSignInEmailCta => 'Sign in with email';
 
   @override
   String get pronunciationSheetTitle => 'Pronunciation';

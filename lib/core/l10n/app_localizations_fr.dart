@@ -837,23 +837,22 @@ class AppLocalizationsFr extends AppLocalizations {
   String get onboardingTrialPoint3 => 'Annulable à tout moment en deux clics';
 
   @override
-  String get onboardingSignInTitle => 'Finalisons ta configuration';
+  String get onboardingSignInTitle => 'Connexion';
 
   @override
-  String get onboardingSignInSubtitle =>
-      'Sauvegarde ta progression et synchronise ton plan.';
-
-  @override
-  String get onboardingSignInApple => 'Se connecter avec Apple';
-
-  @override
-  String get onboardingSignInGoogle => 'Continuer avec Google';
-
-  @override
-  String get onboardingSignInSkip => 'Passer pour l\'instant';
+  String get onboardingSignInSubtitle => 'Connecte-toi à ton compte.';
 
   @override
   String get onboardingSignInFailed => 'Échec de la connexion. Réessaie.';
+
+  @override
+  String get onboardingSignInEmail => 'E-mail';
+
+  @override
+  String get onboardingSignInPassword => 'Mot de passe';
+
+  @override
+  String get onboardingSignInEmailCta => 'Se connecter par e-mail';
 
   @override
   String get pronunciationSheetTitle => 'Prononciation';
