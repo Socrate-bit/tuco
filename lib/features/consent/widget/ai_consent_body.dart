@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../core/l10n/app_localizations.dart';
-import '../../../core/service/haptics.dart';
+import '../../../core/service/legal_links.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widget/common_widgets.dart';
-import '../../settings/screen/privacy_policy_screen.dart';
 
 /// The AI data disclosure itself: what leaves the device, who receives it and
 /// what they do with it. Shared by the onboarding step, the gate that blocks an
@@ -94,13 +93,7 @@ class AiConsentBody extends StatelessWidget {
         Center(
           child: TextLinkButton(
             label: l10n.aiConsentPrivacyLink,
-            onPressed: () {
-              Haptics.tap();
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const PrivacyPolicyScreen()),
-              );
-            },
+            onPressed: () => openLegalLink(context, LegalLinks.privacyPolicy),
           ),
         ),
       ],

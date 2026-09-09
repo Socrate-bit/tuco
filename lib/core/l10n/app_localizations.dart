@@ -2095,6 +2095,12 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Non autorisé'**
   String get settingsAiConsentDenied;
+
+  /// No description provided for @legalLinkError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible d\'ouvrir la page. Vérifie ta connexion et réessaie.'**
+  String get legalLinkError;
 }
 
 class _AppLocalizationsDelegate
