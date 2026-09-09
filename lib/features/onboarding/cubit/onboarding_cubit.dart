@@ -62,6 +62,12 @@ class OnboardingCubit extends Cubit<OnboardingState> {
   void _step(String step, Map<String, dynamic> props) =>
       _analytics.track('onboarding_step', {'step': step, ...props});
 
+  /// App language chosen from the start-page flag picker.
+  void setNativeLanguage(String code) {
+    emit(state.copyWith(nativeLanguage: code));
+    _step('native_language', {'language': code});
+  }
+
   void setTargetLanguage(String code) {
     emit(state.copyWith(targetLanguage: code));
     _step('language', {'language': code});
@@ -150,6 +156,7 @@ class OnboardingCubit extends Cubit<OnboardingState> {
     _isCompleting = true;
     try {
       final profile = UserProfile(
+        nativeLanguage: state.nativeLanguage,
         targetLanguage: state.targetLanguage,
         level: _profileLevel,
         interests:

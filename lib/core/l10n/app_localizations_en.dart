@@ -563,14 +563,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get onboardingLanguageFr => 'French';
 
   @override
-  String get onboardingLevelTitle => 'What is your Spanish level?';
+  String onboardingLevelTitle(String language) {
+    return 'What is your $language level?';
+  }
 
   @override
   String get onboardingLevelSubtitle =>
       'We\'ll use this to tailor the experience to you.';
 
   @override
-  String get onboardingLevelNew => 'I\'m new to Spanish';
+  String onboardingLevelNew(String language) {
+    return 'I\'m new to $language';
+  }
 
   @override
   String get onboardingLevelSomeWords => 'I know some common words';
@@ -616,7 +620,9 @@ class AppLocalizationsEn extends AppLocalizations {
       'Our method is backed by proven learning science.';
 
   @override
-  String get onboardingChartTitle => 'Your Spanish progress';
+  String onboardingChartTitle(String language) {
+    return 'Your $language progress';
+  }
 
   @override
   String get onboardingChartTraditional => 'Traditional';
@@ -653,16 +659,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get onboardingInterestBusiness => 'Business';
 
   @override
-  String get onboardingFluencyTitle =>
-      'When do you want to be fluent in Spanish?';
+  String onboardingFluencyTitle(String language) {
+    return 'When do you want to be fluent in $language?';
+  }
 
   @override
   String get onboardingFluencySubtitle =>
       'Set your fluency goal. Let\'s make it realistic.';
 
   @override
-  String onboardingFluencyChip(String date) {
-    return '🇪🇸 Fluent by $date!';
+  String onboardingFluencyChip(String flag, String date) {
+    return '$flag Fluent by $date!';
   }
 
   @override
@@ -711,7 +718,9 @@ class AppLocalizationsEn extends AppLocalizations {
       'Tuco will call you at the perfect moment.';
 
   @override
-  String get onboardingNotifTitle => 'Never miss a Spanish lesson again';
+  String onboardingNotifTitle(String language) {
+    return 'Never miss a $language lesson again';
+  }
 
   @override
   String get onboardingNotifSubtitle =>

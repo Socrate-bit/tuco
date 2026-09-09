@@ -567,14 +567,18 @@ class AppLocalizationsFr extends AppLocalizations {
   String get onboardingLanguageFr => 'Français';
 
   @override
-  String get onboardingLevelTitle => 'Quel est ton niveau d\'espagnol ?';
+  String onboardingLevelTitle(String language) {
+    return 'Quel est ton niveau en $language ?';
+  }
 
   @override
   String get onboardingLevelSubtitle =>
       'Nous adapterons l\'expérience à ton profil.';
 
   @override
-  String get onboardingLevelNew => 'Je débute en espagnol';
+  String onboardingLevelNew(String language) {
+    return 'Je débute en $language';
+  }
 
   @override
   String get onboardingLevelSomeWords => 'Je connais quelques mots courants';
@@ -624,7 +628,9 @@ class AppLocalizationsFr extends AppLocalizations {
       'Notre méthode s\'appuie sur la science de l\'apprentissage.';
 
   @override
-  String get onboardingChartTitle => 'Ta progression en espagnol';
+  String onboardingChartTitle(String language) {
+    return 'Ta progression en $language';
+  }
 
   @override
   String get onboardingChartTraditional => 'Traditionnel';
@@ -661,16 +667,17 @@ class AppLocalizationsFr extends AppLocalizations {
   String get onboardingInterestBusiness => 'Business';
 
   @override
-  String get onboardingFluencyTitle =>
-      'Quand veux-tu parler couramment espagnol ?';
+  String onboardingFluencyTitle(String language) {
+    return 'Quand veux-tu parler couramment $language ?';
+  }
 
   @override
   String get onboardingFluencySubtitle =>
       'Fixe ton objectif. Restons réalistes.';
 
   @override
-  String onboardingFluencyChip(String date) {
-    return '🇪🇸 Courant d\'ici $date !';
+  String onboardingFluencyChip(String flag, String date) {
+    return '$flag Courant d\'ici $date !';
   }
 
   @override
@@ -718,7 +725,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get onboardingTimeSubtitle => 'Tuco t\'appellera au moment parfait.';
 
   @override
-  String get onboardingNotifTitle => 'Ne rate plus jamais ta leçon d\'espagnol';
+  String onboardingNotifTitle(String language) {
+    return 'Ne rate plus jamais ta leçon en $language';
+  }
 
   @override
   String get onboardingNotifSubtitle =>

@@ -251,9 +251,19 @@
   "onboardingLanguageEs": "Espagnol",
   "onboardingLanguageEn": "Anglais",
   "onboardingLanguageFr": "Français",
-  "onboardingLevelTitle": "Quel est ton niveau d'espagnol ?",
+  "onboardingLevelTitle": "Quel est ton niveau en {language} ?",
+  "@onboardingLevelTitle": {
+    "placeholders": {
+      "language": {"type": "String"}
+    }
+  },
   "onboardingLevelSubtitle": "Nous adapterons l'expérience à ton profil.",
-  "onboardingLevelNew": "Je débute en espagnol",
+  "onboardingLevelNew": "Je débute en {language}",
+  "@onboardingLevelNew": {
+    "placeholders": {
+      "language": {"type": "String"}
+    }
+  },
   "onboardingLevelSomeWords": "Je connais quelques mots courants",
   "onboardingLevelBasic": "Je peux tenir des conversations simples",
   "onboardingLevelVarious": "Je peux parler de sujets variés",
@@ -268,7 +278,12 @@
   "onboardingChallengeOther": "Autre",
   "onboardingEducation1Title": "Tuco crée des résultats durables",
   "onboardingEducation1Subtitle": "Notre méthode s'appuie sur la science de l'apprentissage.",
-  "onboardingChartTitle": "Ta progression en espagnol",
+  "onboardingChartTitle": "Ta progression en {language}",
+  "@onboardingChartTitle": {
+    "placeholders": {
+      "language": {"type": "String"}
+    }
+  },
   "onboardingChartTraditional": "Traditionnel",
   "onboardingChartMonth1": "Mois 1",
   "onboardingChartMonth12": "Mois 12",
@@ -280,11 +295,17 @@
   "onboardingInterestSport": "Sport",
   "onboardingInterestCulture": "Culture",
   "onboardingInterestBusiness": "Business",
-  "onboardingFluencyTitle": "Quand veux-tu parler couramment espagnol ?",
+  "onboardingFluencyTitle": "Quand veux-tu parler couramment {language} ?",
+  "@onboardingFluencyTitle": {
+    "placeholders": {
+      "language": {"type": "String"}
+    }
+  },
   "onboardingFluencySubtitle": "Fixe ton objectif. Restons réalistes.",
-  "onboardingFluencyChip": "🇪🇸 Courant d'ici {date} !",
+  "onboardingFluencyChip": "{flag} Courant d'ici {date} !",
   "@onboardingFluencyChip": {
     "placeholders": {
+      "flag": {"type": "String"},
       "date": {"type": "String"}
     }
   },
@@ -310,7 +331,12 @@
   "onboardingCompareTuco": "Avec Tuco",
   "onboardingTimeTitle": "Quand veux-tu pratiquer ?",
   "onboardingTimeSubtitle": "Tuco t'appellera au moment parfait.",
-  "onboardingNotifTitle": "Ne rate plus jamais ta leçon d'espagnol",
+  "onboardingNotifTitle": "Ne rate plus jamais ta leçon en {language}",
+  "@onboardingNotifTitle": {
+    "placeholders": {
+      "language": {"type": "String"}
+    }
+  },
   "onboardingNotifSubtitle": "86 % des utilisateurs atteignent leurs objectifs grâce aux rappels quotidiens.",
   "onboardingNotifAllow": "Autoriser les notifications",
   "onboardingNotifLater": "Pas maintenant",

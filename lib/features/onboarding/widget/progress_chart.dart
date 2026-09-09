@@ -6,7 +6,9 @@ import '../../../core/theme/app_theme.dart';
 
 /// "Long-term results" card: Tuco curve vs traditional curve over 12 months.
 class ProgressChart extends StatelessWidget {
-  const ProgressChart({super.key});
+  final String languageName; // learner's target language, shown in the title
+
+  const ProgressChart({super.key, required this.languageName});
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +21,8 @@ class ProgressChart extends StatelessWidget {
       ),
       child: Column(
         children: [
-          Text(l10n.onboardingChartTitle, style: AppTextStyles.itemTitle),
+          Text(l10n.onboardingChartTitle(languageName),
+              style: AppTextStyles.itemTitle),
           SizedBox(height: 16.h),
           SizedBox(
             height: 180.h,

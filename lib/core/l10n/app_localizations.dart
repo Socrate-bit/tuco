@@ -1133,8 +1133,8 @@ abstract class AppLocalizations {
   /// No description provided for @onboardingLevelTitle.
   ///
   /// In fr, this message translates to:
-  /// **'Quel est ton niveau d\'espagnol ?'**
-  String get onboardingLevelTitle;
+  /// **'Quel est ton niveau en {language} ?'**
+  String onboardingLevelTitle(String language);
 
   /// No description provided for @onboardingLevelSubtitle.
   ///
@@ -1145,8 +1145,8 @@ abstract class AppLocalizations {
   /// No description provided for @onboardingLevelNew.
   ///
   /// In fr, this message translates to:
-  /// **'Je débute en espagnol'**
-  String get onboardingLevelNew;
+  /// **'Je débute en {language}'**
+  String onboardingLevelNew(String language);
 
   /// No description provided for @onboardingLevelSomeWords.
   ///
@@ -1235,8 +1235,8 @@ abstract class AppLocalizations {
   /// No description provided for @onboardingChartTitle.
   ///
   /// In fr, this message translates to:
-  /// **'Ta progression en espagnol'**
-  String get onboardingChartTitle;
+  /// **'Ta progression en {language}'**
+  String onboardingChartTitle(String language);
 
   /// No description provided for @onboardingChartTraditional.
   ///
@@ -1307,8 +1307,8 @@ abstract class AppLocalizations {
   /// No description provided for @onboardingFluencyTitle.
   ///
   /// In fr, this message translates to:
-  /// **'Quand veux-tu parler couramment espagnol ?'**
-  String get onboardingFluencyTitle;
+  /// **'Quand veux-tu parler couramment {language} ?'**
+  String onboardingFluencyTitle(String language);
 
   /// No description provided for @onboardingFluencySubtitle.
   ///
@@ -1319,8 +1319,8 @@ abstract class AppLocalizations {
   /// No description provided for @onboardingFluencyChip.
   ///
   /// In fr, this message translates to:
-  /// **'🇪🇸 Courant d\'ici {date} !'**
-  String onboardingFluencyChip(String date);
+  /// **'{flag} Courant d\'ici {date} !'**
+  String onboardingFluencyChip(String flag, String date);
 
   /// No description provided for @onboardingFluencyUnit.
   ///
@@ -1397,8 +1397,8 @@ abstract class AppLocalizations {
   /// No description provided for @onboardingNotifTitle.
   ///
   /// In fr, this message translates to:
-  /// **'Ne rate plus jamais ta leçon d\'espagnol'**
-  String get onboardingNotifTitle;
+  /// **'Ne rate plus jamais ta leçon en {language}'**
+  String onboardingNotifTitle(String language);
 
   /// No description provided for @onboardingNotifSubtitle.
   ///

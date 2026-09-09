@@ -8,11 +8,15 @@ import '../../../core/widget/common_widgets.dart';
 /// "Never miss a lesson" page — fires the iOS notification prompt.
 /// Owns its own navigation (Allow / Not now), no shared Continue button.
 class NotificationStep extends StatelessWidget {
+  final String languageName; // learner's target language, shown in the title
   final Future<void> Function() onAllow;
   final VoidCallback onNext;
 
   const NotificationStep(
-      {super.key, required this.onAllow, required this.onNext});
+      {super.key,
+      required this.languageName,
+      required this.onAllow,
+      required this.onNext});
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +26,8 @@ class NotificationStep extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(l10n.onboardingNotifTitle, style: AppTextStyles.pageTitle),
+          Text(l10n.onboardingNotifTitle(languageName),
+              style: AppTextStyles.pageTitle),
           SizedBox(height: 8.h),
           Text(l10n.onboardingNotifSubtitle, style: AppTextStyles.bodyGrey),
           Expanded(

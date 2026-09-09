@@ -6,6 +6,7 @@ enum PromoStatus { none, checking, valid, invalid, exhausted }
 /// All answers collected during the onboarding funnel.
 /// Flat immutable model — the screen owns page navigation, not this state.
 class OnboardingState extends Equatable {
+  final String nativeLanguage; // app language picked on the start page
   final String targetLanguage; // 'es', ...
   final String? level; // beginner | someWords | basic | various | detailed
   final List<String> challenges; // multi-select challenge ids
@@ -19,6 +20,7 @@ class OnboardingState extends Equatable {
   final bool isComplete;
 
   const OnboardingState({
+    this.nativeLanguage = 'en',
     this.targetLanguage = 'es',
     this.level,
     this.challenges = const [],
@@ -33,6 +35,7 @@ class OnboardingState extends Equatable {
   });
 
   OnboardingState copyWith({
+    String? nativeLanguage,
     String? targetLanguage,
     String? level,
     List<String>? challenges,
@@ -46,6 +49,7 @@ class OnboardingState extends Equatable {
     bool? isComplete,
   }) =>
       OnboardingState(
+        nativeLanguage: nativeLanguage ?? this.nativeLanguage,
         targetLanguage: targetLanguage ?? this.targetLanguage,
         level: level ?? this.level,
         challenges: challenges ?? this.challenges,
@@ -61,6 +65,7 @@ class OnboardingState extends Equatable {
 
   @override
   List<Object?> get props => [
+        nativeLanguage,
         targetLanguage,
         level,
         challenges,

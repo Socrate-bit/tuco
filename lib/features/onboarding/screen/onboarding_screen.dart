@@ -5,6 +5,7 @@ import 'package:in_app_review/in_app_review.dart';
 import 'package:intl/intl.dart';
 
 import '../../../core/l10n/app_localizations.dart';
+import '../../../core/model/app_language.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widget/common_widgets.dart';
 import '../../consent/widget/ai_consent_step.dart';
@@ -14,6 +15,7 @@ import '../cubit/onboarding_state.dart';
 import '../widget/comparison_bars.dart';
 import '../widget/free_trial_step.dart';
 import '../widget/info_step.dart';
+import '../widget/language_selector.dart';
 import '../widget/loading_step.dart';
 import '../widget/notification_step.dart';
 import '../widget/plan_ready_step.dart';
@@ -62,6 +64,21 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   // ---------------- Step list ----------------
+
+  /// Localized display name of the language the learner picked, used to
+  /// keep the funnel copy in sync with their target language.
+  String _languageName(AppLocalizations l10n, String code) {
+    switch (code) {
+      case 'en':
+        return l10n.onboardingLanguageEn;
+      case 'fr':
+        return l10n.onboardingLanguageFr;
+      case 'es':
+        return l10n.onboardingLanguageEs;
+      default:
+        return AppLanguages.of(code).label;
+    }
+  }
 
   String _fluentByLabel(BuildContext context, int months) {
     final target = DateTime.now().add(Duration(days: months * 30));
@@ -112,11 +129,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         _OnboardingStep(
           canContinue: (s) => s.level != null,
           build: (context, state, cubit) => SurveyStep(
-            title: l10n.onboardingLevelTitle,
+            title: l10n.onboardingLevelTitle(
+                _languageName(l10n, state.targetLanguage)),
             subtitle: l10n.onboardingLevelSubtitle,
             options: [
               for (final (id, label, bars) in [
-                ('new', l10n.onboardingLevelNew, 1),
+                ('new', l10n.onboardingLevelNew(
+                    _languageName(l10n, state.targetLanguage)), 1),
                 ('someWords', l10n.onboardingLevelSomeWords, 2),
                 ('basic', l10n.onboardingLevelBasic, 3),
                 ('various', l10n.onboardingLevelVarious, 4),
@@ -157,7 +176,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           build: (context, state, cubit) => InfoStep(
             title: l10n.onboardingEducation1Title,
             subtitle: l10n.onboardingEducation1Subtitle,
-            child: const ProgressChart(),
+            child: ProgressChart(
+                languageName: _languageName(l10n, state.targetLanguage)),
           ),
         ),
         // 6: What are your topics of interest?
@@ -187,10 +207,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         // 7: When do you want to be fluent?
         _OnboardingStep(
           build: (context, state, cubit) => SliderStep(
-            title: l10n.onboardingFluencyTitle,
+            title: l10n.onboardingFluencyTitle(
+                _languageName(l10n, state.targetLanguage)),
             subtitle: l10n.onboardingFluencySubtitle,
-            factChip: l10n
-                .onboardingFluencyChip(_fluentByLabel(context, state.fluencyMonths)),
+            factChip: l10n.onboardingFluencyChip(
+                AppLanguages.of(state.targetLanguage).flag,
+                _fluentByLabel(context, state.fluencyMonths)),
             valueLabel: '${state.fluencyMonths}',
             valueUnit: l10n.onboardingFluencyUnit,
             circular: true,
@@ -243,6 +265,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         _OnboardingStep(
           ownNavigation: true,
           build: (context, state, cubit) => NotificationStep(
+            languageName: _languageName(l10n, state.targetLanguage),
             onAllow: cubit.requestNotifications,
             onNext: _next,
           ),
@@ -387,6 +410,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   progress: _page / (steps.length - 1),
                   showBack: !_backHidden,
                   showBar: _page > 0,
+                  showLanguage: _page == 0,
                   onBack: _back,
                 ),
                 Expanded(
@@ -429,16 +453,19 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 }
 
 /// Fixed header: back chevron zone + progress bar + Tuco mascot zone.
+/// On the start page the mascot gives way to the language picker.
 class _Header extends StatelessWidget {
   final double progress;
   final bool showBack;
   final bool showBar;
+  final bool showLanguage;
   final VoidCallback onBack;
 
   const _Header({
     required this.progress,
     required this.showBack,
     required this.showBar,
+    required this.showLanguage,
     required this.onBack,
   });
 
@@ -468,8 +495,14 @@ class _Header extends StatelessWidget {
           ),
           SizedBox(
             width: 52.w,
-            child: Image.asset('assets/images/game/pet_rest_animation.gif',
-                width: 40.w),
+            child: showLanguage
+                ? const FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: Alignment.centerRight,
+                    child: LanguageFlagButton(),
+                  )
+                : Image.asset('assets/images/game/pet_rest_animation.gif',
+                    width: 40.w),
           ),
         ],
       ),
