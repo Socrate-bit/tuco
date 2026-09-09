@@ -982,4 +982,125 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get settingsReplayOnboarding => 'Rejouer l\'onboarding';
+
+  @override
+  String get aiConsentTitle =>
+      'Ta voix et tes messages sont traités par des IA';
+
+  @override
+  String get aiConsentSubtitle =>
+      'Les conversations avec Tuco reposent sur des services d\'IA externes. Voici exactement ce qui quitte ton appareil.';
+
+  @override
+  String get aiConsentSentTitle => 'Ce que nous envoyons';
+
+  @override
+  String get aiConsentSentVoice =>
+      'L\'enregistrement de ta voix quand tu parles pendant un appel';
+
+  @override
+  String get aiConsentSentTranscript =>
+      'Le texte de ce que tu as dit, transcrit sur ton appareil';
+
+  @override
+  String get aiConsentSentTyped => 'Les messages que tu écris à Tuco';
+
+  @override
+  String get aiConsentSentContext =>
+      'Le contexte de la conversation : ton prénom, ton niveau, la langue que tu apprends, le vocabulaire de la leçon et tes derniers messages';
+
+  @override
+  String get aiConsentRecipientsTitle => 'Qui les reçoit';
+
+  @override
+  String get aiConsentProviderGoogle => 'Google (Gemini)';
+
+  @override
+  String get aiConsentProviderGoogleRole =>
+      'Rédige les réponses de Tuco et corrige tes phrases. Ne reçoit que du texte : tes messages et le contexte de la conversation.';
+
+  @override
+  String get aiConsentProviderMicrosoft => 'Microsoft (Azure AI Speech)';
+
+  @override
+  String get aiConsentProviderMicrosoftRole =>
+      'Transforme les réponses de Tuco en voix. Ne reçoit que le texte de la réponse à lire.';
+
+  @override
+  String get aiConsentProviderSpeechSuper => 'SpeechSuper';
+
+  @override
+  String get aiConsentProviderSpeechSuperRole =>
+      'Évalue ta prononciation. Reçoit l\'enregistrement de ta voix et la phrase que tu devais dire.';
+
+  @override
+  String get aiConsentOnDeviceTitle => 'Sur ton appareil';
+
+  @override
+  String get aiConsentOnDeviceBody =>
+      'Ta voix est transcrite en texte par iOS, directement sur ton appareil. L\'enregistrement ne le quitte que pour l\'évaluation de la prononciation.';
+
+  @override
+  String get aiConsentUseTitle => 'Ce qu\'elles en font';
+
+  @override
+  String get aiConsentUseBody =>
+      'Ces données servent uniquement à faire fonctionner ta conversation. Google, Microsoft et SpeechSuper les traitent pour répondre à la demande, ne les conservent pas après traitement et ne les utilisent pas pour entraîner leurs modèles.\n\nTes enregistrements sont conservés sur ton compte Tuco pour que tu puisses les réécouter. Tu peux tout supprimer à tout moment depuis les Réglages.';
+
+  @override
+  String get aiConsentPrivacyLink => 'Lire la politique de confidentialité';
+
+  @override
+  String get aiConsentAgree => 'Accepter et continuer';
+
+  @override
+  String get aiConsentNotNow => 'Pas maintenant';
+
+  @override
+  String get aiConsentDeclineTitle => 'Continuer sans les conversations IA ?';
+
+  @override
+  String get aiConsentDeclineBody =>
+      'Sans ton accord, Tuco ne peut pas lancer d\'appel, évaluer ta prononciation ni corriger tes phrases. Tu peux quand même parcourir les leçons et ton vocabulaire, et donner ton accord plus tard dans les Réglages.';
+
+  @override
+  String get aiConsentDeclineBack => 'Revenir';
+
+  @override
+  String get aiConsentDeclineConfirm => 'Continuer sans IA';
+
+  @override
+  String get aiConsentStatusGranted => 'Tu as donné ton accord';
+
+  @override
+  String get aiConsentWithdraw => 'Retirer mon accord';
+
+  @override
+  String get aiConsentWithdrawTitle => 'Retirer ton accord ?';
+
+  @override
+  String get aiConsentWithdrawBody =>
+      'Tuco cessera d\'envoyer ta voix et tes messages aux services d\'IA. Les conversations, les scores de prononciation et les corrections seront indisponibles jusqu\'à ce que tu donnes à nouveau ton accord.';
+
+  @override
+  String get aiConsentWithdrawCancel => 'Annuler';
+
+  @override
+  String get aiConsentWithdrawConfirm => 'Retirer';
+
+  @override
+  String get aiConsentBlocked =>
+      'Donne ton accord pour le traitement par IA afin de démarrer une conversation.';
+
+  @override
+  String get settingsPrivacy => 'CONFIDENTIALITÉ';
+
+  @override
+  String get settingsAiConsent => 'Traitement par IA';
+
+  @override
+  String get settingsAiConsentGranted => 'Autorisé';
+
+  @override
+  String get settingsAiConsentDenied => 'Non autorisé';
 }

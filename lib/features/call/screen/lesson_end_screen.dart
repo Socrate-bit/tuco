@@ -9,6 +9,7 @@ import '../../../core/l10n/app_localizations.dart';
 import '../../../core/service/haptics.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widget/common_widgets.dart';
+import '../../consent/screen/ai_consent_screen.dart';
 import '../../curriculum/model/curriculum_models.dart';
 import '../../game/screen/coin_reward_screen.dart';
 import '../../game/service/heart_service.dart';
@@ -188,6 +189,10 @@ class _LessonEndScreenState extends State<LessonEndScreen> {
     if (!context.mounted) return;
     if (next == null) {
       Navigator.of(context).pop();
+      return;
+    }
+    // Consent can be withdrawn mid-session: re-check before chaining a call.
+    if (!await ensureAiConsent(context, source: 'call') || !context.mounted) {
       return;
     }
     Navigator.of(context).pushReplacement(MaterialPageRoute(

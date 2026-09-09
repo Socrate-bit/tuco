@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
 import '../../../core/model/app_language.dart';
+import '../../consent/service/ai_consent_service.dart';
 
 /// Transcribes a recorded audio file with Apple's on-device Speech framework
 /// (`SFSpeechRecognizer`) over a platform channel.
@@ -19,6 +20,9 @@ class AppleSpeechService {
   /// ('es', 'fr', 'zh', 'en'). Returns the recognized text, or null when
   /// nothing was recognized / recognition failed.
   Future<String?> transcribeFile(String path, String languageCode) async {
+    // Recognition runs on-device whenever the locale supports it, but iOS falls
+    // back to Apple's servers when it doesn't — so it sits behind the gate too.
+    if (!AiConsentService.allows('apple.transcribe')) return null;
     try {
       final localeId = AppLanguages.of(languageCode).sttLocale; // e.g. es_ES
       final text = await _channel.invokeMethod<String>('transcribeFile', {

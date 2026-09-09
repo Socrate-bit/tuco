@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/foundation.dart';
 
+import '../../consent/service/ai_consent_service.dart';
 import '../model/pronunciation_result.dart';
 
 /// Scoring granularity — selects the SpeechSuper coreType (single word vs
@@ -36,6 +37,8 @@ class SpeechSuperService {
     required String languageCode,
     SpeechSuperCoreType coreType = SpeechSuperCoreType.sentence,
   }) async {
+    // This is the only request that carries the raw recording off the device.
+    if (!AiConsentService.allows('speechsuper.assess')) return null;
     final ref = referenceText.trim();
     if (ref.isEmpty) {
       debugPrint('[SpeechSuperService] Empty referenceText — skipping.');

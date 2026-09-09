@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 import '../../../core/l10n/app_localizations.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widget/common_widgets.dart';
+import '../../consent/widget/ai_consent_step.dart';
 import '../../subscription/cubit/subscription_cubit.dart';
 import '../cubit/onboarding_cubit.dart';
 import '../cubit/onboarding_state.dart';
@@ -246,7 +247,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             onNext: _next,
           ),
         ),
-        // 12: Ask review / built for people like you
+        // 12: AI data disclosure + consent. Sits here, before anything can
+        // reach a call or the microphone, so no user data is sent to an AI
+        // provider until the learner has agreed (App Store 5.1.1(i)/5.1.2(i)).
+        _OnboardingStep(
+          ownNavigation: true,
+          build: (context, state, cubit) => AiConsentStep(onNext: _next),
+        ),
+        // 13: Ask review / built for people like you
         _OnboardingStep(
           onContinue: (context) async {
             final review = InAppReview.instance;
@@ -254,7 +262,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           },
           build: (context, state, cubit) => const RatingStep(),
         ),
-        // 13: Promo code (optional) — validated before advancing
+        // 14: Promo code (optional) — validated before advancing
         _OnboardingStep(
           canContinue: (s) =>
               s.promoStatus != PromoStatus.checking &&
@@ -274,16 +282,16 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             onCodeChanged: cubit.setPromoCode,
           ),
         ),
-        // 14: Making your plan (auto-advances)
+        // 15: Making your plan (auto-advances)
         _OnboardingStep(
           ownNavigation: true,
           build: (context, state, cubit) => LoadingStep(onDone: _next),
         ),
-        // 15: Your custom plan is ready
+        // 16: Your custom plan is ready
         _OnboardingStep(
           build: (context, state, cubit) => PlanReadyStep(state: state),
         ),
-        // 16: We want you to try for free → Superwall paywall
+        // 17: We want you to try for free → Superwall paywall
         _OnboardingStep(
           onContinue: (context) async {
             await context
@@ -292,7 +300,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           },
           build: (context, state, cubit) => const FreeTrialStep(),
         ),
-        // 17: Let's finish your set-up
+        // 18: Let's finish your set-up
         _OnboardingStep(
           ownNavigation: true,
           build: (context, state, cubit) => SignInStep(
@@ -355,8 +363,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     if (_page > 0) _goTo(_page - 1);
   }
 
+  /// Index of the "making your plan" loading page — the point of no return.
+  static const _loadingStepIndex = 15;
+
   /// Pages where going back makes no sense (loading and after it).
-  bool get _backHidden => _page == 0 || _page >= 14;
+  bool get _backHidden => _page == 0 || _page >= _loadingStepIndex;
 
   @override
   Widget build(BuildContext context) {

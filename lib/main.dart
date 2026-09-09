@@ -14,6 +14,8 @@ import 'core/service/analytics_service.dart';
 import 'core/service/data_repository.dart';
 import 'core/cubit/connectivity_cubit.dart';
 import 'core/theme/app_theme.dart';
+import 'features/consent/cubit/ai_consent_cubit.dart';
+import 'features/consent/service/ai_consent_service.dart';
 import 'features/feedback/cubit/feedback_cubit.dart';
 import 'features/game/cubit/game_cubit.dart';
 import 'features/game/cubit/shop_cubit.dart';
@@ -62,6 +64,11 @@ Future<void> main() async {
   // Skip the funnel for users who already completed it.
   final onboardingDone = await OnboardingCubit.readCompletedFlag();
 
+  // Read the AI consent decision before the first frame, so the gate is
+  // accurate on the very first request. Users updating from a build without
+  // this screen start at "not granted" and are asked before their next AI call.
+  await AiConsentService.load();
+
   runApp(TucoApp(
     repository: DataRepository(useFirestore: firebaseReady),
     analytics: analytics,
@@ -108,6 +115,7 @@ class TucoApp extends StatelessWidget {
               create: (_) => OnboardingCubit(repository, analytics,
                   alreadyComplete: onboardingDone)),
           BlocProvider(create: (_) => SubscriptionCubit(analytics)),
+          BlocProvider(create: (_) => AiConsentCubit(analytics)),
         ],
         child: ScreenUtilInit(
           designSize: const Size(414, 896),

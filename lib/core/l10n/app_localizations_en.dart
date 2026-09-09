@@ -969,4 +969,123 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsReplayOnboarding => 'Replay onboarding';
+
+  @override
+  String get aiConsentTitle => 'Your voice and messages are processed by AI';
+
+  @override
+  String get aiConsentSubtitle =>
+      'Tuco\'s conversations run on external AI services. Here is exactly what leaves your device.';
+
+  @override
+  String get aiConsentSentTitle => 'What we send';
+
+  @override
+  String get aiConsentSentVoice =>
+      'Your voice recording when you speak during a call';
+
+  @override
+  String get aiConsentSentTranscript =>
+      'The text of what you said, transcribed on your device';
+
+  @override
+  String get aiConsentSentTyped => 'The messages you type to Tuco';
+
+  @override
+  String get aiConsentSentContext =>
+      'Your conversation context: your first name, your level, the language you are learning, the lesson vocabulary and your recent messages';
+
+  @override
+  String get aiConsentRecipientsTitle => 'Who receives it';
+
+  @override
+  String get aiConsentProviderGoogle => 'Google (Gemini)';
+
+  @override
+  String get aiConsentProviderGoogleRole =>
+      'Writes Tuco\'s replies and corrects your sentences. Receives text only: your messages and your conversation context.';
+
+  @override
+  String get aiConsentProviderMicrosoft => 'Microsoft (Azure AI Speech)';
+
+  @override
+  String get aiConsentProviderMicrosoftRole =>
+      'Turns Tuco\'s replies into the voice you hear. Receives only the reply text to read out.';
+
+  @override
+  String get aiConsentProviderSpeechSuper => 'SpeechSuper';
+
+  @override
+  String get aiConsentProviderSpeechSuperRole =>
+      'Scores your pronunciation. Receives your voice recording and the phrase you were asked to say.';
+
+  @override
+  String get aiConsentOnDeviceTitle => 'On your device';
+
+  @override
+  String get aiConsentOnDeviceBody =>
+      'Your speech is turned into text by iOS, directly on your device. The recording itself only leaves your device for pronunciation scoring.';
+
+  @override
+  String get aiConsentUseTitle => 'What happens to it';
+
+  @override
+  String get aiConsentUseBody =>
+      'This data is used only to run your conversation. Google, Microsoft and SpeechSuper process it to answer the request, do not keep it after processing, and do not use it to train their models.\n\nYour recordings are kept in your Tuco account so you can listen back to them. You can delete everything at any time from Settings.';
+
+  @override
+  String get aiConsentPrivacyLink => 'Read the Privacy Policy';
+
+  @override
+  String get aiConsentAgree => 'Agree and continue';
+
+  @override
+  String get aiConsentNotNow => 'Not now';
+
+  @override
+  String get aiConsentDeclineTitle => 'Continue without AI conversations?';
+
+  @override
+  String get aiConsentDeclineBody =>
+      'Without your permission, Tuco cannot start a call, score your pronunciation or correct your sentences. You can still browse the lessons and your vocabulary, and give your permission later in Settings.';
+
+  @override
+  String get aiConsentDeclineBack => 'Go back';
+
+  @override
+  String get aiConsentDeclineConfirm => 'Continue without AI';
+
+  @override
+  String get aiConsentStatusGranted => 'You have given your permission';
+
+  @override
+  String get aiConsentWithdraw => 'Withdraw my permission';
+
+  @override
+  String get aiConsentWithdrawTitle => 'Withdraw your permission?';
+
+  @override
+  String get aiConsentWithdrawBody =>
+      'Tuco will stop sending your voice and messages to the AI services. Conversations, pronunciation scores and corrections will be unavailable until you give your permission again.';
+
+  @override
+  String get aiConsentWithdrawCancel => 'Cancel';
+
+  @override
+  String get aiConsentWithdrawConfirm => 'Withdraw';
+
+  @override
+  String get aiConsentBlocked => 'Allow AI processing to start a conversation.';
+
+  @override
+  String get settingsPrivacy => 'PRIVACY';
+
+  @override
+  String get settingsAiConsent => 'AI data processing';
+
+  @override
+  String get settingsAiConsentGranted => 'Allowed';
+
+  @override
+  String get settingsAiConsentDenied => 'Not allowed';
 }

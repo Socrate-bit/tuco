@@ -1879,6 +1879,222 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Rejouer l\'onboarding'**
   String get settingsReplayOnboarding;
+
+  /// No description provided for @aiConsentTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ta voix et tes messages sont traités par des IA'**
+  String get aiConsentTitle;
+
+  /// No description provided for @aiConsentSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les conversations avec Tuco reposent sur des services d\'IA externes. Voici exactement ce qui quitte ton appareil.'**
+  String get aiConsentSubtitle;
+
+  /// No description provided for @aiConsentSentTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ce que nous envoyons'**
+  String get aiConsentSentTitle;
+
+  /// No description provided for @aiConsentSentVoice.
+  ///
+  /// In fr, this message translates to:
+  /// **'L\'enregistrement de ta voix quand tu parles pendant un appel'**
+  String get aiConsentSentVoice;
+
+  /// No description provided for @aiConsentSentTranscript.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le texte de ce que tu as dit, transcrit sur ton appareil'**
+  String get aiConsentSentTranscript;
+
+  /// No description provided for @aiConsentSentTyped.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les messages que tu écris à Tuco'**
+  String get aiConsentSentTyped;
+
+  /// No description provided for @aiConsentSentContext.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le contexte de la conversation : ton prénom, ton niveau, la langue que tu apprends, le vocabulaire de la leçon et tes derniers messages'**
+  String get aiConsentSentContext;
+
+  /// No description provided for @aiConsentRecipientsTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Qui les reçoit'**
+  String get aiConsentRecipientsTitle;
+
+  /// No description provided for @aiConsentProviderGoogle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Google (Gemini)'**
+  String get aiConsentProviderGoogle;
+
+  /// No description provided for @aiConsentProviderGoogleRole.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rédige les réponses de Tuco et corrige tes phrases. Ne reçoit que du texte : tes messages et le contexte de la conversation.'**
+  String get aiConsentProviderGoogleRole;
+
+  /// No description provided for @aiConsentProviderMicrosoft.
+  ///
+  /// In fr, this message translates to:
+  /// **'Microsoft (Azure AI Speech)'**
+  String get aiConsentProviderMicrosoft;
+
+  /// No description provided for @aiConsentProviderMicrosoftRole.
+  ///
+  /// In fr, this message translates to:
+  /// **'Transforme les réponses de Tuco en voix. Ne reçoit que le texte de la réponse à lire.'**
+  String get aiConsentProviderMicrosoftRole;
+
+  /// No description provided for @aiConsentProviderSpeechSuper.
+  ///
+  /// In fr, this message translates to:
+  /// **'SpeechSuper'**
+  String get aiConsentProviderSpeechSuper;
+
+  /// No description provided for @aiConsentProviderSpeechSuperRole.
+  ///
+  /// In fr, this message translates to:
+  /// **'Évalue ta prononciation. Reçoit l\'enregistrement de ta voix et la phrase que tu devais dire.'**
+  String get aiConsentProviderSpeechSuperRole;
+
+  /// No description provided for @aiConsentOnDeviceTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sur ton appareil'**
+  String get aiConsentOnDeviceTitle;
+
+  /// No description provided for @aiConsentOnDeviceBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ta voix est transcrite en texte par iOS, directement sur ton appareil. L\'enregistrement ne le quitte que pour l\'évaluation de la prononciation.'**
+  String get aiConsentOnDeviceBody;
+
+  /// No description provided for @aiConsentUseTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ce qu\'elles en font'**
+  String get aiConsentUseTitle;
+
+  /// No description provided for @aiConsentUseBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ces données servent uniquement à faire fonctionner ta conversation. Google, Microsoft et SpeechSuper les traitent pour répondre à la demande, ne les conservent pas après traitement et ne les utilisent pas pour entraîner leurs modèles.\n\nTes enregistrements sont conservés sur ton compte Tuco pour que tu puisses les réécouter. Tu peux tout supprimer à tout moment depuis les Réglages.'**
+  String get aiConsentUseBody;
+
+  /// No description provided for @aiConsentPrivacyLink.
+  ///
+  /// In fr, this message translates to:
+  /// **'Lire la politique de confidentialité'**
+  String get aiConsentPrivacyLink;
+
+  /// No description provided for @aiConsentAgree.
+  ///
+  /// In fr, this message translates to:
+  /// **'Accepter et continuer'**
+  String get aiConsentAgree;
+
+  /// No description provided for @aiConsentNotNow.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pas maintenant'**
+  String get aiConsentNotNow;
+
+  /// No description provided for @aiConsentDeclineTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Continuer sans les conversations IA ?'**
+  String get aiConsentDeclineTitle;
+
+  /// No description provided for @aiConsentDeclineBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sans ton accord, Tuco ne peut pas lancer d\'appel, évaluer ta prononciation ni corriger tes phrases. Tu peux quand même parcourir les leçons et ton vocabulaire, et donner ton accord plus tard dans les Réglages.'**
+  String get aiConsentDeclineBody;
+
+  /// No description provided for @aiConsentDeclineBack.
+  ///
+  /// In fr, this message translates to:
+  /// **'Revenir'**
+  String get aiConsentDeclineBack;
+
+  /// No description provided for @aiConsentDeclineConfirm.
+  ///
+  /// In fr, this message translates to:
+  /// **'Continuer sans IA'**
+  String get aiConsentDeclineConfirm;
+
+  /// No description provided for @aiConsentStatusGranted.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tu as donné ton accord'**
+  String get aiConsentStatusGranted;
+
+  /// No description provided for @aiConsentWithdraw.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retirer mon accord'**
+  String get aiConsentWithdraw;
+
+  /// No description provided for @aiConsentWithdrawTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retirer ton accord ?'**
+  String get aiConsentWithdrawTitle;
+
+  /// No description provided for @aiConsentWithdrawBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tuco cessera d\'envoyer ta voix et tes messages aux services d\'IA. Les conversations, les scores de prononciation et les corrections seront indisponibles jusqu\'à ce que tu donnes à nouveau ton accord.'**
+  String get aiConsentWithdrawBody;
+
+  /// No description provided for @aiConsentWithdrawCancel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Annuler'**
+  String get aiConsentWithdrawCancel;
+
+  /// No description provided for @aiConsentWithdrawConfirm.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retirer'**
+  String get aiConsentWithdrawConfirm;
+
+  /// No description provided for @aiConsentBlocked.
+  ///
+  /// In fr, this message translates to:
+  /// **'Donne ton accord pour le traitement par IA afin de démarrer une conversation.'**
+  String get aiConsentBlocked;
+
+  /// No description provided for @settingsPrivacy.
+  ///
+  /// In fr, this message translates to:
+  /// **'CONFIDENTIALITÉ'**
+  String get settingsPrivacy;
+
+  /// No description provided for @settingsAiConsent.
+  ///
+  /// In fr, this message translates to:
+  /// **'Traitement par IA'**
+  String get settingsAiConsent;
+
+  /// No description provided for @settingsAiConsentGranted.
+  ///
+  /// In fr, this message translates to:
+  /// **'Autorisé'**
+  String get settingsAiConsentGranted;
+
+  /// No description provided for @settingsAiConsentDenied.
+  ///
+  /// In fr, this message translates to:
+  /// **'Non autorisé'**
+  String get settingsAiConsentDenied;
 }
 
 class _AppLocalizationsDelegate

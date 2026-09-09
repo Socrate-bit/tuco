@@ -5,6 +5,8 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../consent/service/ai_consent_service.dart';
+
 /// Uploads voice recordings to Firebase Storage so they can be played back
 /// later ("listen to your recording"), including from call history.
 class RecordingStorageService {
@@ -13,6 +15,8 @@ class RecordingStorageService {
   /// Upload [wav] and return its download URL, or null on failure. Failure is
   /// non-fatal — scoring still works, the recording just won't be replayable.
   Future<String?> upload(File wav) async {
+    // The recording is voice data leaving the device; same gate as the rest.
+    if (!AiConsentService.allows('storage.uploadRecording')) return null;
     try {
       final uid = FirebaseAuth.instance.currentUser?.uid ?? 'anon';
       final ref = _storage.ref('recordings/$uid/${const Uuid().v4()}.wav');
