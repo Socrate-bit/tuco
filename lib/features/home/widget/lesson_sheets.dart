@@ -97,10 +97,15 @@ class _LessonStartSheetState extends State<_LessonStartSheet> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    _HeaderChip(label: l10n.wordsChip(lesson.vocab.length)),
-                    SizedBox(width: 14.w),
-                    _HeaderChip(
-                        label: l10n.grammarChip(lesson.grammarPoints.length)),
+                    // A lesson carries words or grammar points, not both.
+                    if (lesson.vocab.isNotEmpty)
+                      _HeaderChip(label: l10n.wordsChip(lesson.vocab.length)),
+                    if (lesson.vocab.isNotEmpty &&
+                        lesson.grammarPoints.isNotEmpty)
+                      SizedBox(width: 14.w),
+                    if (lesson.grammarPoints.isNotEmpty)
+                      _HeaderChip(
+                          label: l10n.grammarChip(lesson.grammarPoints.length)),
                   ],
                 ),
               ],

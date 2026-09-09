@@ -108,16 +108,25 @@ This is a FREE CONVERSATION. Chat naturally in simple $_targetName adapted to th
 SCORING: whenever the learner's message is an attempt to speak $_targetName, start your reply with the exact marker $kWinMarker if the sentence is correct, makes sense in the context of the conversation, and its pronunciation score (when present) is 70 or higher, or $kFailMarker if it contains mistakes, doesn't fit the context (e.g. an answer that doesn't match your question, even if grammatically correct), or a pronunciation score below 70. On a failure caused by pronunciation, say the words were right but the pronunciation needs work: name the specific word and sound(s) that were off (from the note's "mispronounced" list), give the phoneme and a short, concrete tip on how to produce it (tongue/lips/mouth), then ask them to say it again. Emit NO marker when the message isn't $_targetName practice (e.g. a question in $_nativeName). Never mention these markers to the learner.''';
     }
 
-    final vocabList =
+    final items =
         lesson!.vocab.map((w) => '${w.word} = ${w.translation}').join('; ');
+    // A lesson teaches either a small word family or one grammar rule, never
+    // both: the material block tells the tutor which of the two it is.
+    final material = lesson!.type == LessonType.grammar
+        ? '''This is a GRAMMAR lesson — teach the rule itself, not new vocabulary.
+Rule to teach: ${lesson!.grammarPoints.join('; ')}.
+Forms to drill: $items.
+State the rule plainly in $explainLang, present the forms one by one as a set the learner can see the pattern in, then drill them (name a subject, the learner produces the form) before building full sentences with them. Use no words outside these forms and the vocabulary already known.'''
+        : '''This is a VOCABULARY lesson — teach these words, no new grammar.
+Words to teach: $items.
+Present each word, then put them into sentences using only the grammar and vocabulary the learner already knows.''';
     final phase = startAtPractice
         ? 'Start directly at the PRACTICE phase (skip teaching).'
         : 'Start with the LESSON phase.';
     final review = _reviewVocab;
     return '''$base
 This call teaches the lesson "${lesson!.title}" (${lesson!.description}).
-Lesson vocabulary: $vocabList.
-Grammar focus: ${lesson!.grammarPoints.join('; ')}.
+$material
 ${review.isEmpty ? '' : 'Vocabulary already known from previous lessons (reusable in practice): $review.\n'}
 
 STYLE: break your reply into several short chat bubbles — one idea per bubble — by putting the exact marker $kSplitMarker between bubbles (e.g. Perfect! Now, let's add a country. $kSplitMarker "España" means "Spain". Say "España" out loud.). Most replies should have 2-3 bubbles. Never mention this marker to the learner. Always wrap target-language model phrases in double quotes (e.g. Say "Me llamo" out loud.). Vary your exercises and tools based on what the lesson needs.
@@ -135,11 +144,11 @@ LESSON phase:
 
 1. INTRODUCTION (first message) — goal: give an overview of the lesson.
 - Greet the learner by name and present yourself and today's topic.
-- Give an overview with a few example words and phrases they're going to learn (in quotes) and the grammar focus.
+- Give an overview of what they're going to learn: the words (in quotes) on a vocabulary lesson, the rule on a grammar lesson.
 - Ask: Are you ready?
 
 2. PRESENTATION (new words and sentences) — goal: show ALL the lesson material, item by item.
-Iterate over ALL the lesson vocabulary and grammar, one item at a time. For each new word, phrase or grammar point:
+Iterate over ALL the lesson material above, one item at a time. For each new word, form or grammar point:
 - Introduce it: give it in quotes with its translation. If a sentence contains words not yet learned, break it down with a word-by-word translation on separate lines (e.g. "de" = "from", "dónde" = "where", "eres" = "are you").
 - Have the learner say it once so they hear and produce it (Say "..." out loud.), then move on to the next item.
 Keep this phase light: just present and a single repeat per item.
@@ -148,7 +157,7 @@ Keep this phase light: just present and a single repeat per item.
 
 3. ANCHORING (end of lesson) — goal: once every item has been presented, drill them all with exercises until they are firmly anchored in memory.
 When everything has been presented, announce: now let's anchor everything you learned with some exercises. Then give a series of exercises built from the whole lesson material (plus known vocabulary), one at a time. Rules:
-- Cover EVERY item: give MULTIPLE exercises (at least two or three turns) for each lesson vocabulary item and each grammar point — no item is anchored after a single correct answer. Spread them out and keep bringing earlier items back so they anchor by repetition, not by cramming.
+- Cover EVERY item: give MULTIPLE exercises (at least two or three turns) for each word, form and grammar point of the lesson — no item is anchored after a single correct answer. Spread them out and keep bringing earlier items back so they anchor by repetition, not by cramming.
 - Combine items whenever possible: as soon as several items are anchored individually, mix them together into fuller phrases and exercises that use two or more items at once.
 - Vary the exercise types and ramp difficulty strictly and progressively across the series:
   * Start (easy): repeat/read, true-or-false, or choose-the-answer (options a) and b), say the correct one out loud) on single items.
@@ -284,10 +293,13 @@ $phase''';
       final knownVocab = review.isNotEmpty
           ? 'Vocabulary the learner already knows from past lessons: $review. '
           : '';
+      final grammar = lesson == null || lesson!.grammarPoints.isEmpty
+          ? ''
+          : 'Grammar: ${lesson!.grammarPoints.join('; ')}. ';
       final vocabConstraint = lesson != null
-          ? 'Use ONLY this lesson vocabulary and grammar (plus basic words the learner already knows): '
+          ? 'Use ONLY this lesson material (plus basic words the learner already knows): '
               '${lesson!.vocab.map((w) => w.word).join(', ')}. '
-              'Grammar: ${lesson!.grammarPoints.join('; ')}. '
+              '$grammar'
               '$knownVocab'
           : knownVocab;
       final resp = await _model(json: true).generateContent([
@@ -436,7 +448,10 @@ $phase''';
       return '$kWinMarker Almost there! Challenge 3: make your own full sentence in $_targetName using "${w1.word}" and "${w2.word}".';
     }
     if (challengeStep == 3) {
-      return '$kWinMarker Excellent work! Our grammar focus is: ${l.grammarPoints.join(', ')}. '
+      final grammar = l.grammarPoints.isEmpty
+          ? ''
+          : 'Our grammar focus is: ${l.grammarPoints.join(', ')}. ';
+      return '$kWinMarker Excellent work! $grammar'
           'You now know all the material of this lesson! $kLessonDoneMarker';
     }
     if (challengeStep == 4) {
