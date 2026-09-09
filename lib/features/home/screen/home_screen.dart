@@ -9,6 +9,7 @@ import '../../../core/service/data_repository.dart';
 import '../../../core/service/haptics.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../call/screen/call_screen.dart';
+import '../../consent/screen/ai_consent_screen.dart';
 import '../../curriculum/model/curriculum_models.dart';
 import '../../game/cubit/game_cubit.dart';
 import '../../game/screen/hospital_screen.dart';
@@ -189,7 +190,7 @@ class _HomeScreenState extends State<HomeScreen> {
       final resumeChoice = await showResumeLessonSheet(context);
       if (resumeChoice == null || !mounted) return;
       if (resumeChoice == 'resume') {
-        _startCall(CallScreenArgs(lesson: lesson, resumeSession: saved));
+        await _startCall(CallScreenArgs(lesson: lesson, resumeSession: saved));
         return;
       }
       // Restart: fall through to the lesson detail sheet instead of starting
@@ -204,7 +205,7 @@ class _HomeScreenState extends State<HomeScreen> {
       await repo.deleteSession(lesson.id);
       if (!mounted) return;
     }
-    _startCall(CallScreenArgs(
+    await _startCall(CallScreenArgs(
       lesson: lesson,
       startAtPractice: choice == 'practice',
     ));
@@ -213,10 +214,14 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _startFreeConversation() async {
     if (!await _checkHospital() || !mounted) return;
     if (!_checkInternet()) return;
-    _startCall(const CallScreenArgs(lesson: null));
+    await _startCall(const CallScreenArgs(lesson: null));
   }
 
-  void _startCall(CallScreenArgs args) {
+  /// Single entry to a call. A call cannot start without AI consent: the
+  /// disclosure is presented instead, and the call only opens if it is granted.
+  Future<void> _startCall(CallScreenArgs args) async {
+    if (!await ensureAiConsent(context, source: 'call')) return;
+    if (!mounted) return;
     Navigator.push(
       context,
       MaterialPageRoute(builder: (_) => CallScreen(args: args)),

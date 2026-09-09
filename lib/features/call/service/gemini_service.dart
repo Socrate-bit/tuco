@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 
 import '../../../core/model/app_language.dart';
 import '../../../core/model/models.dart';
+import '../../consent/service/ai_consent_service.dart';
 import '../../curriculum/data/curriculum_data.dart';
 import '../../curriculum/model/curriculum_models.dart';
 import '../../pronunciation/model/pronunciation_result.dart';
@@ -328,6 +329,7 @@ Tutor: $kWinMarker "Adiós, Lucas." $kSplitMarker • New words: "Soy de", "Me l
     required bool startAtPractice,
     List<ChatMessage> history = const [],
   }) async {
+    if (!AiConsentService.allows('gemini.start')) return '';
     if (!available) return _scriptedReply(null);
     try {
       final model = _model(systemPrompt: _tutorPrompt(startAtPractice: startAtPractice));
@@ -356,6 +358,7 @@ Tutor: $kWinMarker "Adiós, Lucas." $kSplitMarker • New words: "Soy de", "Me l
   /// [pron] is attached as a note on voice messages so the tutor can fail
   /// attempts pronounced too poorly and point out exactly which sounds were off.
   Future<String> send(String userText, {PronunciationResult? pron}) async {
+    if (!AiConsentService.allows('gemini.send')) return '';
     if (!available || _chat == null) return _scriptedReply(userText);
     try {
       final annotated =
@@ -398,6 +401,7 @@ Tutor: $kWinMarker "Adiós, Lucas." $kSplitMarker • New words: "Soy de", "Me l
 
   /// Translate [text] to the learner's native language.
   Future<String> translate(String text) async {
+    if (!AiConsentService.allows('gemini.translate')) return text;
     if (!available) return text;
     try {
       final resp = await _model().generateContent([
@@ -413,6 +417,7 @@ Tutor: $kWinMarker "Adiós, Lucas." $kSplitMarker • New words: "Soy de", "Me l
 
   /// Suggest example replies for the learner ("Inspiration" button).
   Future<List<String>> inspiration(List<ChatMessage> history) async {
+    if (!AiConsentService.allows('gemini.inspiration')) return const [];
     if (!available) return ['Estoy listo para empezar.'];
     try {
       // Last few real messages so the model sees the full exercise, not just
@@ -470,6 +475,7 @@ Tutor: $kWinMarker "Adiós, Lucas." $kSplitMarker • New words: "Soy de", "Me l
         String? alternativeTranslation,
         String? alternativeExplanation,
       })?> feedback(String userText, {String? tutorPrompt}) async {
+    if (!AiConsentService.allows('gemini.feedback')) return null;
     if (!available) return null;
     // Skip trivial one-word answers.
     if (userText.trim().split(RegExp(r'\s+')).length < 2) return null;

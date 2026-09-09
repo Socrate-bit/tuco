@@ -7,6 +7,7 @@ import '../../../core/service/analytics_service.dart';
 import '../../../core/service/haptics.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widget/common_widgets.dart';
+import '../../consent/screen/ai_consent_screen.dart';
 import '../cubit/word_practice_cubit.dart';
 import '../data/phoneme_tips.dart';
 import '../model/pronunciation_result.dart';
@@ -93,14 +94,23 @@ class _WordDetailView extends StatelessWidget {
                             ReviewActionButton(
                               icon: Icons.mic_rounded,
                               label: l10n.tryAgainButton,
-                              onTap: () => showRecordSheet<WordPracticeCubit,
-                                  WordPracticeState>(
-                                context,
-                                cubit: cubit,
-                                recording: (s) => s.recording,
-                                assessing: (s) => s.assessing,
-                                onToggle: (c) => c.toggleRecording(),
-                              ),
+                              // Scoring uploads the recording, so the same
+                              // gate applies as for a call.
+                              onTap: () async {
+                                if (!await ensureAiConsent(context,
+                                    source: 'pronunciation')) {
+                                  return;
+                                }
+                                if (!context.mounted) return;
+                                await showRecordSheet<WordPracticeCubit,
+                                    WordPracticeState>(
+                                  context,
+                                  cubit: cubit,
+                                  recording: (s) => s.recording,
+                                  assessing: (s) => s.assessing,
+                                  onToggle: (c) => c.toggleRecording(),
+                                );
+                              },
                             ),
                           ],
                         ),

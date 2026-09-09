@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../core/l10n/app_localizations.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../consent/screen/ai_consent_screen.dart';
 import '../cubit/pronunciation_review_cubit.dart';
 import '../screen/word_detail_screen.dart';
 import 'pronunciation_review.dart';
@@ -70,14 +71,23 @@ class PronunciationReviewBody extends StatelessWidget {
                 ReviewActionButton(
                   icon: Icons.mic_rounded,
                   label: l10n.tryAgainButton,
-                  onTap: () => showRecordSheet<PronunciationReviewCubit,
-                      PronunciationReviewState>(
-                    context,
-                    cubit: cubit,
-                    recording: (s) => s.recording,
-                    assessing: (s) => s.assessing,
-                    onToggle: (c) => c.toggleRecording(),
-                  ),
+                  // Scoring uploads the recording, so the same gate applies
+                  // as for a call.
+                  onTap: () async {
+                    if (!await ensureAiConsent(context,
+                        source: 'pronunciation')) {
+                      return;
+                    }
+                    if (!context.mounted) return;
+                    await showRecordSheet<PronunciationReviewCubit,
+                        PronunciationReviewState>(
+                      context,
+                      cubit: cubit,
+                      recording: (s) => s.recording,
+                      assessing: (s) => s.assessing,
+                      onToggle: (c) => c.toggleRecording(),
+                    );
+                  },
                 ),
               ],
             ),

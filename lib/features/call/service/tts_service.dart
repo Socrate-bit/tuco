@@ -10,6 +10,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 
 import '../../../core/model/app_language.dart';
+import '../../consent/service/ai_consent_service.dart';
 
 /// Character voice, backed by Azure AI Speech behind two Cloud Functions —
 /// the key stays server-side either way.
@@ -113,6 +114,14 @@ class TtsService {
 
   Future<void> _speak(String text,
       {required bool wait, String? prefetchNext}) async {
+    // Without AI consent nothing may reach Azure. The on-device voice keeps
+    // vocabulary and word practice usable in the limited mode: it synthesizes
+    // locally, so no text leaves the phone.
+    if (!AiConsentService.allows('tts.speak')) {
+      await stop();
+      await _speakFallback(text);
+      return;
+    }
     // Claim any prefetched audio before stop() discards it.
     final prefetched = _takePrefetched(text);
     await stop();
@@ -173,6 +182,7 @@ class TtsService {
   /// headers, so the Firebase ID token travels as a query parameter; the
   /// function verifies it. Returns null when there is no signed-in user.
   Future<String?> _streamUrl(String text) async {
+    if (!AiConsentService.allows('tts.stream')) return null;
     try {
       final token = await FirebaseAuth.instance.currentUser?.getIdToken();
       if (token == null) return null;
@@ -236,6 +246,11 @@ class TtsService {
   /// is always sent: the voice auto-detects, but guesses English for short
   /// Spanish inputs.
   Future<Uint8List> _synthesize(String text) async {
+    // Second line of defence: the prefetch path reaches here without going
+    // through _speak.
+    if (!AiConsentService.allows('tts.synthesize')) {
+      throw StateError('AI consent not granted');
+    }
     final result = await _tts
         .call<Map<String, dynamic>>({'text': text, 'languageCode': _languageCode});
     return base64Decode(result.data['audio'] as String);

@@ -9,6 +9,9 @@ import '../../../core/service/data_repository.dart';
 import '../../../core/service/haptics.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widget/common_widgets.dart';
+import '../../consent/cubit/ai_consent_cubit.dart';
+import '../../consent/cubit/ai_consent_state.dart';
+import '../../consent/screen/ai_consent_screen.dart';
 import '../../onboarding/cubit/onboarding_cubit.dart';
 import '../../subscription/cubit/subscription_cubit.dart';
 import '../../subscription/cubit/subscription_state.dart';
@@ -161,6 +164,25 @@ class SettingsScreen extends StatelessWidget {
                     icon: Icons.copy_outlined,
                     label: l10n.settingsCopyUserId,
                     onTap: () => _copyUserId(context),
+                  ),
+                ]),
+              ),
+              SizedBox(height: 24.h),
+              // AI consent status — always visible, and the way to review the
+              // disclosure or withdraw permission (App Store 5.1.1(i)/5.1.2(i)).
+              _SectionTitle(title: l10n.settingsPrivacy),
+              BlocBuilder<AiConsentCubit, AiConsentState>(
+                builder: (context, consent) => _SettingsCard(children: [
+                  _LinkRow(
+                    icon: Icons.auto_awesome_outlined,
+                    label: l10n.settingsAiConsent,
+                    value: consent.granted
+                        ? l10n.settingsAiConsentGranted
+                        : l10n.settingsAiConsentDenied,
+                    onTap: () => _push(
+                        context,
+                        const AiConsentScreen(
+                            source: 'settings', reviewing: true)),
                   ),
                 ]),
               ),
