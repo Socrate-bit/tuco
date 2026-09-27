@@ -542,6 +542,42 @@ abstract class AppLocalizations {
   /// **'Impossible de supprimer vos données. Veuillez réessayer.'**
   String get settingsDeleteAccountError;
 
+  /// No description provided for @settingsLogout.
+  ///
+  /// In fr, this message translates to:
+  /// **'Se déconnecter'**
+  String get settingsLogout;
+
+  /// No description provided for @settingsLogoutTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Se déconnecter ?'**
+  String get settingsLogoutTitle;
+
+  /// No description provided for @settingsLogoutBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vous serez déconnecté et ramené au début. Vos données restent sur cet appareil.'**
+  String get settingsLogoutBody;
+
+  /// No description provided for @settingsLogoutConfirm.
+  ///
+  /// In fr, this message translates to:
+  /// **'Se déconnecter'**
+  String get settingsLogoutConfirm;
+
+  /// No description provided for @settingsLogoutCancel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Annuler'**
+  String get settingsLogoutCancel;
+
+  /// No description provided for @settingsLogoutError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible de vous déconnecter. Veuillez réessayer.'**
+  String get settingsLogoutError;
+
   /// No description provided for @callTimeTitle.
   ///
   /// In fr, this message translates to:

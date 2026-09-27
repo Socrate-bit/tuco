@@ -243,6 +243,26 @@ class AppLocalizationsFr extends AppLocalizations {
       'Impossible de supprimer vos données. Veuillez réessayer.';
 
   @override
+  String get settingsLogout => 'Se déconnecter';
+
+  @override
+  String get settingsLogoutTitle => 'Se déconnecter ?';
+
+  @override
+  String get settingsLogoutBody =>
+      'Vous serez déconnecté et ramené au début. Vos données restent sur cet appareil.';
+
+  @override
+  String get settingsLogoutConfirm => 'Se déconnecter';
+
+  @override
+  String get settingsLogoutCancel => 'Annuler';
+
+  @override
+  String get settingsLogoutError =>
+      'Impossible de vous déconnecter. Veuillez réessayer.';
+
+  @override
   String get callTimeTitle => 'Temps passé en appel';
 
   @override

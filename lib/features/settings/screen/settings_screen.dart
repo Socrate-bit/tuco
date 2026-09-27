@@ -127,6 +127,52 @@ class SettingsScreen extends StatelessWidget {
     }
   }
 
+  // Confirms then signs out. The user keeps local data; the onboarding gate
+  // rebuilds at root and mints a fresh anonymous session on relaunch.
+  Future<void> _logout(BuildContext context) async {
+    final l10n = AppLocalizations.of(context)!;
+    final messenger = ScaffoldMessenger.of(context);
+    final onboarding = context.read<OnboardingCubit>();
+    final navigator = Navigator.of(context);
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l10n.settingsLogoutTitle),
+        content: Text(l10n.settingsLogoutBody),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Haptics.tap();
+              Navigator.pop(dialogContext, false);
+            },
+            child: Text(l10n.settingsLogoutCancel),
+          ),
+          TextButton(
+            onPressed: () {
+              Haptics.tap();
+              Navigator.pop(dialogContext, true);
+            },
+            child: Text(l10n.settingsLogoutConfirm),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+
+    try {
+      await FirebaseAuth.instance.signOut();
+      // Send the user back through onboarding (gate rebuilds at root).
+      await onboarding.reset();
+      navigator.popUntil((route) => route.isFirst);
+      debugPrint('[SettingsScreen] User logged out');
+    } catch (e) {
+      debugPrint('[SettingsScreen] logout error: $e');
+      messenger
+          .showSnackBar(SnackBar(content: Text(l10n.settingsLogoutError)));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -206,6 +252,12 @@ class SettingsScreen extends StatelessWidget {
               SizedBox(height: 24.h),
               _SectionTitle(title: l10n.settingsDangerZone),
               _SettingsCard(children: [
+                _LinkRow(
+                  icon: Icons.logout_outlined,
+                  label: l10n.settingsLogout,
+                  onTap: () => _logout(context),
+                ),
+                const _RowDivider(),
                 _LinkRow(
                   icon: Icons.delete_forever_outlined,
                   label: l10n.settingsDeleteAccount,

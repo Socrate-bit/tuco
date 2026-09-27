@@ -240,6 +240,25 @@ class AppLocalizationsEn extends AppLocalizations {
       'Could not delete your data. Please try again.';
 
   @override
+  String get settingsLogout => 'Log out';
+
+  @override
+  String get settingsLogoutTitle => 'Log out?';
+
+  @override
+  String get settingsLogoutBody =>
+      'You\'ll be signed out and returned to the start. Your data stays on this device.';
+
+  @override
+  String get settingsLogoutConfirm => 'Log out';
+
+  @override
+  String get settingsLogoutCancel => 'Cancel';
+
+  @override
+  String get settingsLogoutError => 'Could not log out. Please try again.';
+
+  @override
   String get callTimeTitle => 'Time spent on calls';
 
   @override
